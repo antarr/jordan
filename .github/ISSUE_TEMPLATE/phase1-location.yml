@@ -1,0 +1,119 @@
+name: "Phase 1 - Location Task"
+description: "Create a new Phase 1 location-related task"
+title: "[Phase 1] [Location] "
+labels: ["phase-1", "enhancement", "location"]
+body:
+  - type: input
+    id: task-name
+    attributes:
+      label: "Location Task Name"
+      description: "Brief description of the location task"
+      placeholder: "e.g., Setup PostGIS for Geospatial Data"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: location-feature
+    attributes:
+      label: "Location Feature Type"
+      description: "Select the type of location functionality"
+      options:
+        - Geospatial Database Setup
+        - Address Geocoding
+        - Distance Calculations
+        - Map Integration
+        - Location Search
+        - Geofencing
+        - GPS Tracking
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: "Acceptance Criteria"
+      description: "Clear, testable criteria that define when this location task is complete"
+      placeholder: |
+        - [ ] PostGIS extension installed and configured
+        - [ ] Geospatial data models created
+        - [ ] Location-based queries working
+        - [ ] Distance calculations accurate
+        - [ ] Performance meets requirements
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: "Dependencies"
+      description: "List which other issues must be completed before this location task can be started"
+      placeholder: |
+        - Issue #X: Database setup
+        - Issue #Y: User model creation
+        
+        Or write "None" if no dependencies exist.
+
+  - type: textarea
+    id: technical-requirements
+    attributes:
+      label: "Technical Requirements"
+      description: "Location-specific technical implementation details"
+      placeholder: |
+        - Database extensions (PostGIS, etc.)
+        - Geospatial data types and indexes
+        - Third-party APIs (Google Maps, Mapbox, etc.)
+        - Coordinate systems and projections
+        - Geocoding service integration
+        - Distance calculation algorithms
+    validations:
+      required: true
+
+  - type: textarea
+    id: data-requirements
+    attributes:
+      label: "Data Requirements"
+      description: "Location data structure and storage needs"
+      placeholder: |
+        - Geographic coordinate storage (lat/lng)
+        - Address field requirements
+        - Spatial indexing strategy
+        - Data validation rules
+        - Privacy considerations for location data
+    validations:
+      required: true
+
+  - type: textarea
+    id: performance-requirements
+    attributes:
+      label: "Performance Requirements"
+      description: "Location-specific performance and accuracy needs"
+      placeholder: |
+        - Query response time requirements
+        - Accuracy requirements for distance calculations
+        - Scalability for large datasets
+        - Caching strategy for location data
+        - Rate limiting for geocoding APIs
+    validations:
+      required: true
+
+  - type: textarea
+    id: testing-requirements
+    attributes:
+      label: "Testing Requirements"
+      description: "Location-specific testing scenarios"
+      placeholder: |
+        - Geospatial query accuracy tests
+        - Distance calculation precision tests
+        - Performance tests with large datasets
+        - Integration tests with mapping APIs
+        - Edge case testing (invalid coordinates, etc.)
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-notes
+    attributes:
+      label: "Additional Notes"
+      description: "Any other location-related information or considerations"
+      placeholder: "Optional: Add any additional context or notes..."

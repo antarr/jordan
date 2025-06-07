@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📋 Project Planning Discussion
+    url: https://github.com/antarr/ragged/discussions
+    about: For general project planning and architecture discussions
+  - name: 🐛 Bug Report
+    url: https://github.com/antarr/ragged/issues/new?template=bug_report.md
+    about: Report bugs or unexpected behavior
