@@ -5,9 +5,6 @@ Rails.application.routes.draw do
 
   # Authentication routes
   resource :session, only: %i[new create destroy]
-  # get 'sign_in', to: 'sessions#new', as: :new_session
-  # post 'sign_in', to: 'sessions#create'
-  # delete 'sign_out', to: 'sessions#destroy', as: :destroy_session
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
