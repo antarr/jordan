@@ -66,7 +66,7 @@ group :test do
 
   # JUnit formatter for RSpec
   gem 'rspec_junit_formatter'
-  
+
   # Integration testing
   gem 'capybara'
   gem 'selenium-webdriver'
