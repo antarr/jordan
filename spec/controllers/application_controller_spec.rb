@@ -2,12 +2,13 @@ require 'rails_helper'
 
 RSpec.describe ApplicationController, type: :controller do
   controller do
+    before_action :require_authentication, only: [:authenticated_action]
+
     def index
       render plain: 'test'
     end
 
     def authenticated_action
-      require_authentication
       render plain: 'authenticated'
     end
   end

@@ -56,3 +56,6 @@ build-iPhoneSimulator/
 # .rubocop-https?--*
 log/development.log
 *.key
+/log
+storage/test.sqlite3
+/storage
