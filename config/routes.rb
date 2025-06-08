@@ -5,6 +5,18 @@ Rails.application.routes.draw do
 
   # Authentication routes
   resource :session, only: %i[new create destroy]
+  resource :registration, only: %i[new create]
+
+  # Dashboard routes
+  get 'dashboard' => 'dashboard#index', as: :dashboard
+
+  # Cypress test helpers (test and development environment only)
+  if Rails.env.test? || Rails.env.development?
+    namespace :cypress_test_helpers do
+      delete 'clear_users'
+      post 'create_user'
+    end
+  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
@@ -16,7 +28,7 @@ Rails.application.routes.draw do
 
   # Coming soon page
   get 'coming-soon' => 'pages#coming_soon', as: :coming_soon
-  
+
   # Defines the root path route ("/")
-  root "pages#coming_soon"
+  root 'pages#coming_soon'
 end

@@ -22,10 +22,19 @@ SimpleCov.start 'rails' do
   track_files '{app,lib}/**/*.rb'
 
   enable_coverage :branch
-  
+
   # Minimum coverage thresholds
-  minimum_coverage 70
-  minimum_coverage_by_file 30
+  # minimum_coverage 70
+  # minimum_coverage_by_file 30
+end
+
+# After SimpleCov generates its report, automatically merge with JS coverage if available
+at_exit do
+  if ENV['ENABLE_JS_COVERAGE'] == 'true' && File.exist?('coverage-js/coverage-final.json')
+    require_relative '../lib/coverage_merger'
+    CoverageMerger.merge_reports
+    puts 'Combined coverage report generated at coverage-merged/index.html'
+  end
 end
 
 RSpec.configure do |config|

@@ -1,0 +1,14 @@
+{
+  "validUser": {
+    "email": "cypress-test@example.com",
+    "password": "SecurePass123!"
+  },
+  "invalidUser": {
+    "email": "invalid-email",
+    "password": "weak"
+  },
+  "existingUser": {
+    "email": "existing@example.com", 
+    "password": "ExistingPass123!"
+  }
+}

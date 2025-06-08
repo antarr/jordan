@@ -1,0 +1,26 @@
+{
+  "all": true,
+  "include": [
+    "app/javascript/**/*.js"
+  ],
+  "exclude": [
+    "node_modules/**",
+    "cypress/**",
+    "coverage/**",
+    "**/*.cy.js",
+    "**/*.test.js",
+    "**/*.spec.js"
+  ],
+  "reporter": [
+    "text",
+    "html",
+    "json",
+    "lcov",
+    "clover"
+  ],
+  "report-dir": "coverage-js",
+  "temp-dir": ".nyc_output",
+  "instrument": false,
+  "source-map": false,
+  "produce-source-map": false
+}

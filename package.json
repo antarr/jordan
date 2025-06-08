@@ -1,0 +1,34 @@
+{
+  "name": "ragged",
+  "version": "1.0.0",
+  "description": "[![CI](https://github.com/antarr/ragged/actions/workflows/ci.yml/badge.svg)](https://github.com/antarr/ragged/actions/workflows/ci.yml) [![codecov](https://codecov.io/gh/antarr/ragged/branch/main/graph/badge.svg)](https://codecov.io/gh/antarr/ragged) [![Ruby](https://img.shields.io/badge/ruby-3.2+-red.svg)](https://ruby-lang.org) [![Rails](https://img.shields.io/badge/rails-8.0.2-red.svg)](https://rubyonrails.org)",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antarr/ragged.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/antarr/ragged/issues"
+  },
+  "homepage": "https://github.com/antarr/ragged#readme",
+  "devDependencies": {
+    "@babel/core": "^7.27.4",
+    "@babel/preset-env": "^7.27.2",
+    "@cypress/code-coverage": "^3.14.4",
+    "babel-plugin-istanbul": "^7.0.0",
+    "cypress": "^14.4.1",
+    "nyc": "^17.1.0"
+  }
+}

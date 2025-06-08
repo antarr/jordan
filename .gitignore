@@ -2,6 +2,9 @@
 *.rbc
 /.config
 /coverage/
+/coverage-js/
+/coverage-merged/
+/.nyc_output/
 /InstalledFiles
 /pkg/
 /spec/reports/
@@ -59,3 +62,4 @@ log/development.log
 /log
 storage/test.sqlite3
 /storage
+/node_modules
