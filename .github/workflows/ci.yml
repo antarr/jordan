@@ -43,6 +43,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
+    - name: Copy CI database configuration
+      run: cp config/ci.database.yml config/database.yml
+    
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
