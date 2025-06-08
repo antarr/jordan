@@ -14,7 +14,9 @@
 /tmp/
 
 # Used by dotenv library to load environment variables.
-# .env
+.env
+.env.local
+.env.*.local
 
 # Ignore Byebug command history file.
 .byebug_history
@@ -63,3 +65,4 @@ log/development.log
 storage/test.sqlite3
 /storage
 /node_modules
+config/database.yml

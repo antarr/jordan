@@ -10,6 +10,21 @@ jobs:
   test:
     runs-on: ubuntu-latest
     
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ragged_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
     strategy:
       matrix:
         ruby-version: ['3.2']
@@ -18,6 +33,11 @@ jobs:
     env:
       RAILS_ENV: test
       CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ragged_test
     
     steps:
     - name: Checkout code
@@ -52,6 +72,11 @@ jobs:
       run: |
         RAILS_ENV=development bin/rails db:create
         RAILS_ENV=development bin/rails db:migrate
+      env:
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
     
     - name: Precompile assets for test
       run: bin/rails assets:precompile
