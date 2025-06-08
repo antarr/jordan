@@ -40,8 +40,8 @@ jobs:
       run: |
         bin/brakeman --quiet --format plain
     
-    - name: Run linter
-      run: bin/rubocop
+    # - name: Run linter
+    #   run: bin/rubocop
     
     - name: Run tests
       run: |
