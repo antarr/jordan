@@ -1,0 +1,87 @@
+name: "Phase 1 - General Task"
+description: "Create a new Phase 1 task for the project"
+title: "[Phase 1] [General] "
+labels: ["phase-1", "enhancement"]
+body:
+  - type: input
+    id: task-name
+    attributes:
+      label: "Task Name"
+      description: "Brief description of the task"
+      placeholder: "e.g., Setup User Registration System"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: group
+    attributes:
+      label: "Group/Category"
+      description: "Select the most appropriate group for this task"
+      options:
+        - Auth
+        - OAuth
+        - Location
+        - Messaging
+        - Database
+        - Frontend
+        - Backend
+        - Infrastructure
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: "Acceptance Criteria"
+      description: "Clear, testable criteria that define when this task is complete"
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: "Dependencies"
+      description: "List which other issues must be completed before this one can be started"
+      placeholder: |
+        - Issue #X: Description
+        - Issue #Y: Description
+        
+        Or write "None" if no dependencies exist.
+
+  - type: textarea
+    id: technical-requirements
+    attributes:
+      label: "Technical Requirements"
+      description: "Specific technical implementation details, frameworks, libraries, or patterns to use"
+      placeholder: |
+        - Framework/Library requirements
+        - Database schema changes
+        - API endpoints needed
+        - Security considerations
+    validations:
+      required: true
+
+  - type: textarea
+    id: testing-requirements
+    attributes:
+      label: "Testing Requirements"
+      description: "What types of tests need to be written and what scenarios should be covered"
+      placeholder: |
+        - Unit tests for core functionality
+        - Integration tests for API endpoints
+        - End-to-end tests for user workflows
+        - Performance/load testing requirements
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-notes
+    attributes:
+      label: "Additional Notes"
+      description: "Any other relevant information, design decisions, or considerations"
+      placeholder: "Optional: Add any additional context or notes..."
