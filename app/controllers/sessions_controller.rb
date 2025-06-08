@@ -12,11 +12,11 @@ class SessionsController < ApplicationController
         sign_in(user)
         redirect_to dashboard_path
       else
-        flash[:alert] = "Please verify your email address before signing in."
+        flash[:alert] = I18n.t('controllers.sessions.create.unverified_email')
         redirect_to new_session_path
       end
     else
-      flash.now[:alert] = "Invalid email or password."
+      flash.now[:alert] = I18n.t('controllers.sessions.create.invalid_credentials')
       render :new, status: :unprocessable_entity
     end
   end

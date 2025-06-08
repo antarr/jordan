@@ -11,6 +11,6 @@ class DashboardController < ApplicationController
   def require_email_verification
     return if current_user&.email_verified?
 
-    redirect_to new_session_path, alert: 'Please verify your email address to access the dashboard.'
+    redirect_to new_session_path, alert: I18n.t('controllers.dashboard.require_email_verification.alert')
   end
 end

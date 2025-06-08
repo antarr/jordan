@@ -1,9 +1,9 @@
 class RegistrationsController < ApplicationController
   include Wicked::Wizard
-  
+
   steps :contact_details, :username, :bio, :profile_photo
-  
-  before_action :find_or_create_user, only: [:show, :update]
+
+  before_action :find_or_create_user, only: %i[show update]
 
   def new
     @user = User.new
@@ -12,14 +12,14 @@ class RegistrationsController < ApplicationController
   def create
     unless params[:contact_method].present?
       @user = User.new
-      flash.now[:alert] = "Please select a contact method"
+      flash.now[:alert] = I18n.t('controllers.registrations.create.contact_method_required')
       render :new, status: :unprocessable_entity
       return
     end
 
     @user = User.new(contact_method: params[:contact_method])
     @user.registration_step = 1
-    
+
     if @user.save(validate: false)
       session[:registration_user_id] = @user.id
       redirect_to registration_step_path(:contact_details)
@@ -37,14 +37,14 @@ class RegistrationsController < ApplicationController
 
   def update
     @user = current_user_registration
-    
+
     case step
     when :contact_details
       @user.assign_attributes(contact_details_params)
       @user.registration_step = 2
       if @user.save
         if @user.contact_method == 'email' && @user.email_verification_token.blank?
-          @user.generate_email_verification_token! 
+          @user.generate_email_verification_token!
         end
         redirect_to next_wizard_path
       else
@@ -91,10 +91,10 @@ class RegistrationsController < ApplicationController
     if @user.contact_method == 'email'
       EmailVerificationJob.perform_later(@user)
       session[:registration_user_id] = nil
-      redirect_to new_session_path, notice: "Account created successfully! Please check your email to verify your account."
+      redirect_to new_session_path, notice: I18n.t('controllers.registrations.complete_registration.email_success')
     else
       session[:registration_user_id] = nil
-      redirect_to new_session_path, notice: "Account created successfully! You can now sign in."
+      redirect_to new_session_path, notice: I18n.t('controllers.registrations.complete_registration.phone_success')
     end
   end
 
@@ -137,6 +137,7 @@ class RegistrationsController < ApplicationController
     else 'Getting Started'
     end
   end
-  
+
   helper_method :step_number, :step_name
 end
+

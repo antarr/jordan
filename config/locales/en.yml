@@ -28,4 +28,75 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  controllers:
+    dashboard:
+      require_email_verification:
+        alert: "Please verify your email address to access the dashboard."
+    
+    email_verifications:
+      show:
+        success: "Your email has been verified successfully!"
+        invalid_or_expired: "Invalid or expired verification link."
+      create:
+        already_verified: "Your email is already verified."
+        sent: "Verification email sent! Please check your inbox."
+    
+    email_verification_requests:
+      create:
+        sent: "If an account exists with that email, we have sent a new verification link."
+    
+    registrations:
+      create:
+        contact_method_required: "Please select a contact method"
+      complete_registration:
+        email_success: "Account created successfully! Please check your email to verify your account."
+        phone_success: "Account created successfully! You can now sign in."
+    
+    sessions:
+      create:
+        unverified_email: "Please verify your email address before signing in."
+        invalid_credentials: "Invalid email or password."
+  
+  activerecord:
+    attributes:
+      user:
+        email: "Email"
+        password: "Password"
+        password_confirmation: "Password confirmation"
+        phone: "Phone number"
+        username: "Username"
+        bio: "Bio"
+        contact_method: "Contact method"
+        profile_photo: "Profile photo"
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              blank: "can't be blank"
+              taken: "has already been taken"
+              invalid: "is not a valid email address"
+            password:
+              blank: "can't be blank"
+              too_short: "is too short (minimum is %{count} characters)"
+              too_long: "is too long (maximum is %{count} characters)"
+            password_confirmation:
+              blank: "can't be blank"
+              confirmation: "doesn't match Password"
+            phone:
+              blank: "can't be blank"
+              taken: "has already been taken"
+              invalid: "is not a valid phone number"
+            username:
+              blank: "can't be blank"
+              taken: "has already been taken"
+              invalid: "can only contain letters, numbers, and underscores"
+            bio:
+              blank: "can't be blank"
+              too_short: "is too short (minimum is %{count} characters)"
+            contact_method:
+              inclusion: "is not included in the list"
+  
+  user_mailer:
+    email_verification:
+      subject: "Please verify your email address"

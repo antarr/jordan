@@ -30,7 +30,7 @@ RSpec.describe SessionsController, type: :controller do
           
           expect(session[:user_id]).to be_nil
           expect(response).to redirect_to(new_session_path)
-          expect(flash[:alert]).to eq("Please verify your email address before signing in. Check your inbox for the verification link.")
+          expect(flash[:alert]).to eq(I18n.t('controllers.sessions.create.unverified_email'))
         end
       end
     end
