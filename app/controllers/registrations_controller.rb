@@ -7,8 +7,8 @@ class RegistrationsController < ApplicationController
     @user = User.new(user_params)
     
     if @user.save
-      sign_in(@user)
-      redirect_to dashboard_path, notice: "Welcome! Your account has been created successfully."
+      EmailVerificationJob.perform_later(@user)
+      redirect_to new_session_path, notice: "Account created successfully! Please check your email to verify your account."
     else
       render :new, status: :unprocessable_entity
     end

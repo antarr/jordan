@@ -147,5 +147,125 @@ RSpec.describe User, type: :model do
       user = User.create!(email: '  Test@Example.com  ', password: 'password123')
       expect(user.email).to eq('test@example.com')
     end
+
+    it 'generates email verification token before creation' do
+      user = User.new(email: 'test@example.com', password: 'password123')
+      expect(user.email_verification_token).to be_nil
+      user.save!
+      expect(user.email_verification_token).to be_present
+      expect(user.email_verification_token_expires_at).to be_present
+    end
+  end
+
+  describe 'scopes' do
+    let!(:verified_user) { User.create!(email: 'verified@example.com', password: 'password123', email_verified_at: Time.current) }
+    let!(:unverified_user) { User.create!(email: 'unverified@example.com', password: 'password123') }
+
+    describe '.verified' do
+      it 'returns only verified users' do
+        expect(User.verified).to include(verified_user)
+        expect(User.verified).not_to include(unverified_user)
+      end
+    end
+
+    describe '.unverified' do
+      it 'returns only unverified users' do
+        expect(User.unverified).to include(unverified_user)
+        expect(User.unverified).not_to include(verified_user)
+      end
+    end
+  end
+
+  describe '#email_verified?' do
+    it 'returns true when email_verified_at is present' do
+      user = User.create!(email: 'test@example.com', password: 'password123', email_verified_at: Time.current)
+      expect(user.email_verified?).to be true
+    end
+
+    it 'returns false when email_verified_at is nil' do
+      user = User.create!(email: 'test@example.com', password: 'password123')
+      expect(user.email_verified?).to be false
+    end
+  end
+
+  describe '#verify_email!' do
+    let(:user) { User.create!(email: 'test@example.com', password: 'password123') }
+
+    it 'sets email_verified_at to current time' do
+      expect(user.email_verified_at).to be_nil
+      user.verify_email!
+      expect(user.email_verified_at).to be_present
+      expect(user.email_verified_at).to be_within(1.second).of(Time.current)
+    end
+
+    it 'clears email_verification_token' do
+      expect(user.email_verification_token).to be_present
+      user.verify_email!
+      expect(user.email_verification_token).to be_nil
+    end
+
+    it 'clears email_verification_token_expires_at' do
+      expect(user.email_verification_token_expires_at).to be_present
+      user.verify_email!
+      expect(user.email_verification_token_expires_at).to be_nil
+    end
+  end
+
+  describe '#generate_email_verification_token!' do
+    let(:user) { User.create!(email: 'test@example.com', password: 'password123') }
+
+    it 'generates a new token' do
+      old_token = user.email_verification_token
+      user.generate_email_verification_token!
+      expect(user.email_verification_token).not_to eq(old_token)
+    end
+
+    it 'sets expiration time to 24 hours from now' do
+      user.generate_email_verification_token!
+      expect(user.email_verification_token_expires_at).to be_within(1.minute).of(24.hours.from_now)
+    end
+  end
+
+  describe '#email_verification_token_expired?' do
+    let(:user) { User.create!(email: 'test@example.com', password: 'password123') }
+
+    it 'returns false for unexpired tokens' do
+      user.update!(email_verification_token_expires_at: 1.hour.from_now)
+      expect(user.email_verification_token_expired?).to be false
+    end
+
+    it 'returns true for expired tokens' do
+      user.update!(email_verification_token_expires_at: 1.hour.ago)
+      expect(user.email_verification_token_expired?).to be true
+    end
+
+    it 'returns false when expiration time is nil' do
+      user.update!(email_verification_token_expires_at: nil)
+      expect(user.email_verification_token_expired?).to be false
+    end
+  end
+
+  describe '#email_verification_token_valid?' do
+    let(:user) { User.create!(email: 'test@example.com', password: 'password123') }
+
+    it 'returns true for valid, unexpired token' do
+      token = user.email_verification_token
+      expect(user.email_verification_token_valid?(token)).to be true
+    end
+
+    it 'returns false for invalid token' do
+      expect(user.email_verification_token_valid?('invalid_token')).to be false
+    end
+
+    it 'returns false for expired token' do
+      user.update!(email_verification_token_expires_at: 1.hour.ago)
+      token = user.email_verification_token
+      expect(user.email_verification_token_valid?(token)).to be false
+    end
+
+    it 'returns false when token is blank' do
+      user.update!(email_verification_token: nil)
+      expect(user.email_verification_token_valid?('any_token')).to be false
+    end
   end
 end

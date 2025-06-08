@@ -22,16 +22,19 @@ RSpec.describe RegistrationsController, type: :controller do
         }
       end
 
-      it 'creates a new user, signs them in, and redirects to dashboard' do
+      it 'creates a new user, sends verification email, and redirects to login' do
+        expect(EmailVerificationJob).to receive(:perform_later)
+        
         expect {
           post :create, params: valid_params
         }.to change(User, :count).by(1)
 
         user = User.last
         expect(user.email).to eq('newuser@example.com')
-        expect(session[:user_id]).to eq(user.id)
-        expect(response).to redirect_to(dashboard_path)
-        expect(flash[:notice]).to eq("Welcome! Your account has been created successfully.")
+        expect(user.email_verified?).to be false
+        expect(session[:user_id]).to be_nil
+        expect(response).to redirect_to(new_session_path)
+        expect(flash[:notice]).to eq("Account created successfully! Please check your email to verify your account.")
       end
     end
 

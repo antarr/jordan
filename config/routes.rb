@@ -6,6 +6,11 @@ Rails.application.routes.draw do
   # Authentication routes
   resource :session, only: %i[new create destroy]
   resource :registration, only: %i[new create]
+  
+  # Email verification routes
+  get 'email_verification/:token', to: 'email_verifications#show', as: :email_verification
+  resource :email_verification, only: [:create], path: 'email_verification'
+  resource :email_verification_request, only: [:new, :create], path: 'resend_verification'
 
   # Dashboard routes
   get 'dashboard' => 'dashboard#index', as: :dashboard

@@ -1,0 +1,61 @@
+require 'rails_helper'
+
+RSpec.describe EmailVerificationRequestsController, type: :controller do
+  describe 'GET #new' do
+    it 'renders the new template' do
+      get :new
+      expect(response).to render_template(:new)
+    end
+  end
+
+  describe 'POST #create' do
+    context 'with existing unverified user' do
+      let!(:user) { User.create!(email: 'test@example.com', password: 'password123') }
+
+      it 'sends verification email and redirects' do
+        expect(EmailVerificationJob).to receive(:perform_later).with(user)
+        post :create, params: { email: 'test@example.com' }
+        
+        expect(response).to redirect_to(new_session_path)
+        expect(flash[:notice]).to eq('Verification email sent! Please check your inbox.')
+      end
+
+      it 'handles case insensitive email' do
+        expect(EmailVerificationJob).to receive(:perform_later).with(user)
+        post :create, params: { email: 'TEST@EXAMPLE.COM' }
+        
+        expect(response).to redirect_to(new_session_path)
+        expect(flash[:notice]).to eq('Verification email sent! Please check your inbox.')
+      end
+
+      it 'handles email with whitespace' do
+        expect(EmailVerificationJob).to receive(:perform_later).with(user)
+        post :create, params: { email: '  test@example.com  ' }
+        
+        expect(response).to redirect_to(new_session_path)
+        expect(flash[:notice]).to eq('Verification email sent! Please check your inbox.')
+      end
+    end
+
+    context 'with existing verified user' do
+      let!(:user) { User.create!(email: 'test@example.com', password: 'password123', email_verified_at: Time.current) }
+
+      it 'redirects with notice about already verified' do
+        post :create, params: { email: 'test@example.com' }
+        
+        expect(response).to redirect_to(new_session_path)
+        expect(flash[:notice]).to eq('Your email is already verified. You can sign in.')
+      end
+    end
+
+    context 'with non-existing user' do
+      it 'shows error message' do
+        post :create, params: { email: 'nonexistent@example.com' }
+        
+        expect(response).to render_template(:new)
+        expect(response.status).to eq(422)
+        expect(flash.now[:alert]).to eq('No account found with that email address.')
+      end
+    end
+  end
+end
