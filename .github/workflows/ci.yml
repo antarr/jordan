@@ -16,7 +16,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: ragged_test
+          POSTGRES_DB: postgres
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -90,6 +90,11 @@ jobs:
     
     - name: Precompile assets for development
       run: RAILS_ENV=development bin/rails assets:precompile
+      env:
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
     
     - name: Run security checks
       run: |
@@ -103,6 +108,11 @@ jobs:
       run: |
         ENABLE_JS_COVERAGE=true RAILS_ENV=development bin/rails server -d -p 3000 -e development
         sleep 10
+      env:
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
     
     - name: Wait for server to be ready
       run: |
