@@ -67,3 +67,4 @@ storage/test.sqlite3
 /node_modules
 config/database.yml
 app/assets/builds
+/public/assets

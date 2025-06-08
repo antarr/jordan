@@ -7,6 +7,9 @@ Rails.application.routes.draw do
   resource :session, only: %i[new create destroy]
   resource :registration, only: %i[new create]
   
+  # Wicked wizard routes for multi-step registration
+  resources :registration_steps, only: %i[show update], controller: 'registrations', path: 'registration'
+  
   # Email verification routes
   get 'email_verification/:token', to: 'email_verifications#show', as: :email_verification
   resource :email_verification, only: [:create], path: 'email_verification'
