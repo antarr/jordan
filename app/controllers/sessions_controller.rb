@@ -8,7 +8,7 @@ class SessionsController < ApplicationController
     user = User.find_by(email: params[:email].to_s.strip.downcase)
     if user&.authenticate(params[:password])
       sign_in(user)
-      redirect_to root_path
+      redirect_to dashboard_path
     else
       flash.now[:alert] = "Invalid email or password."
       render :new, status: :unprocessable_entity
@@ -17,6 +17,6 @@ class SessionsController < ApplicationController
 
   def destroy
     sign_out
-    redirect_to root_path
+    redirect_to new_session_path
   end
 end

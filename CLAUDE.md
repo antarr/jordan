@@ -30,6 +30,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `bin/rubocop` - Run Ruby linting with Rails Omakase style guide
 - `bin/brakeman` - Run security vulnerability scanning
 
+### Coverage Reporting
+- `bundle exec rake coverage:all` - Run all tests and generate combined Ruby/JavaScript coverage report
+- `bundle exec rake coverage:merge` - Merge existing Ruby and JavaScript coverage reports
+- `bundle exec rake coverage:js` - Generate JavaScript coverage report from NYC data
+- Coverage reports:
+  - Combined: `coverage-merged/index.html`
+  - Ruby only: `coverage/index.html` 
+  - JavaScript only: `coverage-js/lcov-report/index.html`
+
 ### Asset Management
 - Tailwind CSS compilation happens automatically with `bin/dev`
 - JavaScript uses Import Maps (no build step required)

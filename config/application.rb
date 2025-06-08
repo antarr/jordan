@@ -38,5 +38,11 @@ module AssetPipelinePropshaft
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+    
+    # Add JavaScript coverage middleware in development
+    if Rails.env.development?
+      require_relative '../lib/javascript_coverage_middleware'
+      config.middleware.insert_before ActionDispatch::Static, JavascriptCoverageMiddleware
+    end
   end
 end
