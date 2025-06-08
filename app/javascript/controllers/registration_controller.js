@@ -5,10 +5,12 @@ export default class extends Controller {
 
   connect() {
     this.updateSubmitButton()
-  }
-
-  selectContactMethod(event) {
-    this.updateSubmitButton()
+    
+    // Listen for changes on all radio buttons
+    this.element.querySelectorAll('input[name="contact_method"]').forEach(radio => {
+      radio.addEventListener('change', this.updateSubmitButton.bind(this))
+      radio.addEventListener('click', this.updateSubmitButton.bind(this))
+    })
   }
 
   updateSubmitButton() {
