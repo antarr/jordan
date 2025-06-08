@@ -10,7 +10,7 @@ RSpec.describe EmailVerificationRequestsController, type: :controller do
 
   describe 'POST #create' do
     context 'with existing unverified user' do
-      let!(:user) { User.create!(email: 'test@example.com', password: 'password123') }
+      let!(:user) { User.create!(email: 'test@example.com', password: 'password123', password_confirmation: 'password123', contact_method: 'email', registration_step: 1, username: 'testuser', bio: 'This is a test bio that meets the minimum length requirement for the user model.') }
 
       it 'sends verification email and redirects' do
         expect(EmailVerificationJob).to receive(:perform_later).with(user)
@@ -38,7 +38,7 @@ RSpec.describe EmailVerificationRequestsController, type: :controller do
     end
 
     context 'with existing verified user' do
-      let!(:user) { User.create!(email: 'test@example.com', password: 'password123', email_verified_at: Time.current) }
+      let!(:user) { User.create!(email: 'test@example.com', password: 'password123', password_confirmation: 'password123', contact_method: 'email', registration_step: 1, username: 'testuser', bio: 'This is a test bio that meets the minimum length requirement for the user model.', email_verified_at: Time.current) }
 
       it 'redirects with notice about already verified' do
         post :create, params: { email: 'test@example.com' }

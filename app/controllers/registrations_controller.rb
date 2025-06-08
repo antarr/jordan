@@ -41,35 +41,35 @@ class RegistrationsController < ApplicationController
     case step
     when :contact_details
       @user.assign_attributes(contact_details_params)
-      if @user.valid?
+      @user.registration_step = 2
+      if @user.save
         if @user.contact_method == 'email' && @user.email_verification_token.blank?
           @user.generate_email_verification_token! 
         end
-        @user.save!
         redirect_to next_wizard_path
       else
         render_wizard
       end
     when :username
       @user.assign_attributes(username_params)
-      if @user.valid?
-        @user.save!
+      @user.registration_step = 3
+      if @user.save
         redirect_to next_wizard_path
       else
         render_wizard
       end
     when :bio
       @user.assign_attributes(bio_params)
-      if @user.valid?
-        @user.save!
+      @user.registration_step = 4
+      if @user.save
         redirect_to next_wizard_path
       else
         render_wizard
       end
     when :profile_photo
       @user.assign_attributes(profile_photo_params)
-      if @user.valid?
-        @user.update!(registration_step: 5)
+      @user.registration_step = 5
+      if @user.save
         complete_registration
       else
         render_wizard

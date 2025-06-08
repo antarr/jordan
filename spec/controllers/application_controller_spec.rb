@@ -21,7 +21,7 @@ RSpec.describe ApplicationController, type: :controller do
     end
   end
 
-  let(:user) { User.create!(email: 'test@example.com', password: 'password123') }
+  let(:user) { User.create!(email: 'test@example.com', password: 'password123', password_confirmation: 'password123', contact_method: 'email', registration_step: 5, username: 'appuser', bio: 'This is an app controller user bio that meets the minimum length requirement') }
 
   describe '#current_user' do
     context 'when user is signed in' do

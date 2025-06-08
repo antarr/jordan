@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe EmailVerificationsController, type: :controller do
   describe 'GET #show' do
-    let(:user) { User.create!(email: 'test@example.com', password: 'password123') }
+    let(:user) { User.create!(email: 'test@example.com', password: 'password123', password_confirmation: 'password123', contact_method: 'email', registration_step: 1, username: 'testuser', bio: 'This is a test bio that meets the minimum length requirement for the user model.') }
 
     context 'with valid token' do
       it 'verifies the user email and signs them in' do
@@ -48,7 +48,7 @@ RSpec.describe EmailVerificationsController, type: :controller do
   end
 
   describe 'POST #create' do
-    let(:user) { User.create!(email: 'test@example.com', password: 'password123') }
+    let(:user) { User.create!(email: 'test@example.com', password: 'password123', password_confirmation: 'password123', contact_method: 'email', registration_step: 1, username: 'testuser2', bio: 'This is a test bio that meets the minimum length requirement for the user model.') }
 
     context 'when user is signed in' do
       before { session[:user_id] = user.id }

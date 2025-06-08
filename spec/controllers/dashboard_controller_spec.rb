@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe DashboardController, type: :controller do
-  let(:user) { User.create!(email: 'test@example.com', password: 'password123') }
+  let(:user) { User.create!(email: 'test@example.com', password: 'password123', password_confirmation: 'password123', contact_method: 'email', registration_step: 5, username: 'dashuser', bio: 'This is a dashboard user bio that meets the minimum length requirement') }
 
   describe 'GET #index' do
     context 'when user is signed in and verified' do

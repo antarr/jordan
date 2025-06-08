@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe EmailVerificationJob, type: :job do
-  let(:user) { User.create!(email: 'test@example.com', password: 'password123') }
+  let(:user) { create(:user, :email_user, :step_two) }
 
   it 'sends email verification email' do
     expect(UserMailer).to receive(:email_verification).with(user).and_call_original

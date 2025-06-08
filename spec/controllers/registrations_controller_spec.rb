@@ -25,11 +25,7 @@ RSpec.describe RegistrationsController, type: :controller do
     end
 
     describe 'Step 2: Contact details' do
-      let!(:user) { 
-        user = User.new(contact_method: 'email', registration_step: 1)
-        user.save!(validate: false)
-        user
-      }
+      let!(:user) { create(:user, :step_one, contact_method: 'email') }
       
       before do
         session[:registration_user_id] = user.id
@@ -42,23 +38,26 @@ RSpec.describe RegistrationsController, type: :controller do
       end
 
       it 'updates user with email and password' do
+        email = Faker::Internet.email
+        password = Faker::Internet.password(min_length: 6)
+        
         patch :update, params: { 
           id: 'contact_details',
           user: { 
-            email: 'test@example.com', 
-            password: 'password123', 
-            password_confirmation: 'password123' 
+            email: email, 
+            password: password, 
+            password_confirmation: password 
           } 
         }
 
         user.reload
-        expect(user.email).to eq('test@example.com')
+        expect(user.email).to eq(email.downcase)
         expect(response).to redirect_to(registration_step_path(id: 'username'))
       end
     end
 
     describe 'Step 3: Username' do
-      let!(:user) { User.create!(contact_method: 'email', email: 'test@example.com', password: 'password123', password_confirmation: 'password123', registration_step: 2) }
+      let!(:user) { create(:user, :email_user, :step_two) }
       
       before do
         session[:registration_user_id] = user.id
@@ -70,19 +69,21 @@ RSpec.describe RegistrationsController, type: :controller do
       end
 
       it 'updates user with username' do
+        username = Faker::Internet.username(specifier: 5..12, separators: %w[_])
+        
         patch :update, params: { 
           id: 'username',
-          user: { username: 'testuser' } 
+          user: { username: username } 
         }
 
         user.reload
-        expect(user.username).to eq('testuser')
+        expect(user.username).to eq(username)
         expect(response).to redirect_to(registration_step_path(id: 'bio'))
       end
     end
 
     describe 'Step 4: Bio' do
-      let!(:user) { User.create!(contact_method: 'email', email: 'test@example.com', password: 'password123', password_confirmation: 'password123', username: 'testuser', registration_step: 3) }
+      let!(:user) { create(:user, :email_user, :step_three, username: Faker::Internet.username) }
       
       before do
         session[:registration_user_id] = user.id
@@ -94,7 +95,7 @@ RSpec.describe RegistrationsController, type: :controller do
       end
 
       it 'updates user with bio' do
-        bio_text = "This is my bio which is definitely more than twenty five words long because that is the minimum requirement for a valid bio in this application."
+        bio_text = Faker::Lorem.paragraph(sentence_count: 3, supplemental: true, random_sentences_to_add: 2)
         
         patch :update, params: { 
           id: 'bio',
@@ -108,7 +109,7 @@ RSpec.describe RegistrationsController, type: :controller do
     end
 
     describe 'Step 5: Profile photo' do
-      let!(:user) { User.create!(contact_method: 'email', email: 'test@example.com', password: 'password123', password_confirmation: 'password123', username: 'testuser', bio: 'This is my bio which is definitely more than twenty five words long because that is the minimum requirement for a valid bio in this application.', registration_step: 4) }
+      let!(:user) { create(:user, :email_user, :step_four, username: Faker::Internet.username, bio: Faker::Lorem.paragraph(sentence_count: 3)) }
       
       before do
         session[:registration_user_id] = user.id
@@ -121,14 +122,15 @@ RSpec.describe RegistrationsController, type: :controller do
 
       it 'completes registration with profile photo' do
         expect(EmailVerificationJob).to receive(:perform_later).with(user)
+        photo_url = Faker::Internet.url(host: 'example.com', path: '/photo.jpg')
         
         patch :update, params: { 
           id: 'profile_photo',
-          user: { profile_photo: 'https://example.com/photo.jpg' } 
+          user: { profile_photo: photo_url } 
         }
 
         user.reload
-        expect(user.profile_photo).to eq('https://example.com/photo.jpg')
+        expect(user.profile_photo).to eq(photo_url)
         expect(user.registration_step).to eq(5)
         expect(session[:registration_user_id]).to be_nil
         expect(response).to redirect_to(new_session_path)
@@ -150,33 +152,37 @@ RSpec.describe RegistrationsController, type: :controller do
     end
 
     describe 'Phone registration flow' do
-      let!(:user) { 
-        user = User.new(contact_method: 'phone', registration_step: 1)
-        user.save!(validate: false)
-        user
-      }
+      let!(:user) { create(:user, :step_one, contact_method: 'phone') }
       
       before do
         session[:registration_user_id] = user.id
       end
 
       it 'updates user with phone and password in step 2' do
+        phone = Faker::PhoneNumber.cell_phone_in_e164
+        password = Faker::Internet.password(min_length: 6)
+        
         patch :update, params: { 
           id: 'contact_details',
           user: { 
-            phone: '+1234567890', 
-            password: 'password123', 
-            password_confirmation: 'password123' 
+            phone: phone, 
+            password: password, 
+            password_confirmation: password 
           } 
         }
 
         user.reload
-        expect(user.phone).to eq('+1234567890')
+        expect(user.phone).to eq(phone)
         expect(response).to redirect_to(registration_step_path(id: 'username'))
       end
 
       it 'completes registration without email verification for phone users' do
-        user.update!(phone: '+1234567890', password: 'password123', password_confirmation: 'password123', username: 'phoneuser', bio: 'This is my bio which is definitely more than twenty five words long because that is the minimum requirement for a valid bio in this application.', registration_step: 4)
+        phone = Faker::PhoneNumber.cell_phone_in_e164
+        password = Faker::Internet.password(min_length: 6)
+        username = Faker::Internet.username
+        bio = Faker::Lorem.paragraph(sentence_count: 3)
+        
+        user.update!(phone: phone, password: password, password_confirmation: password, username: username, bio: bio, registration_step: 4)
         
         expect(EmailVerificationJob).not_to receive(:perform_later)
         

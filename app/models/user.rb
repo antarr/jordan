@@ -8,7 +8,7 @@ class User < ApplicationRecord
   validates :phone, presence: true, uniqueness: { case_sensitive: false }, if: -> { 
     contact_method == 'phone' && registration_step && registration_step >= 2 
   }
-  validates :phone, format: { with: /\A\+?[1-9]\d{1,14}\z/ }, if: -> { phone.present? }
+  validates :phone, format: { with: /\A\+?[1-9]\d{3,14}\z/ }, if: -> { phone.present? }
   validates :username, presence: true, uniqueness: { case_sensitive: false }, if: -> { 
     registration_step && registration_step >= 3
   }
@@ -16,8 +16,8 @@ class User < ApplicationRecord
   validates :bio, presence: true, length: { minimum: 25 }, if: -> { 
     registration_step && registration_step >= 4
   }
-  validates :password, presence: true, length: { minimum: 6 }, if: -> { 
-    password_digest_changed? || (new_record? && registration_step && registration_step >= 2)
+  validates :password, presence: true, length: { minimum: 6, maximum: 72 }, if: -> { 
+    new_record? ? (registration_step && registration_step >= 2) : password.present?
   }
   validates :password_confirmation, presence: true, if: -> { password.present? }
   validate :password_confirmation_matches, if: -> { password.present? && password_confirmation.present? }
