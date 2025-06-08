@@ -67,8 +67,13 @@ The GitHub Actions workflow automatically:
 
 ## Coverage Thresholds
 
-- **Ruby**: 70% line coverage minimum
+- **Ruby**: 60% line coverage minimum (excludes lib/ infrastructure code)
 - **JavaScript**: Collected but no enforced minimum (add to .nycrc.json if needed)
+
+## Coverage Scope
+
+- **Included**: All files in `app/` directory (controllers, models, helpers, jobs, views)
+- **Excluded**: `lib/`, `bin/`, `db/`, `spec/`, `test/`, `config/`, `vendor/`, `cypress_test_helpers_controller.rb`
 
 ## How It Works
 
