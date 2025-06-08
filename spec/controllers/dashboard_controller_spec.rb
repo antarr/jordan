@@ -38,9 +38,9 @@ RSpec.describe DashboardController, type: :controller do
         expect(response).to redirect_to(new_session_path)
       end
 
-      it 'sets an alert message' do
+      it 'does not set an alert message (handled by require_authentication)' do
         get :index
-        expect(flash[:alert]).to eq('Please log in to access the dashboard.')
+        expect(flash[:alert]).to be_nil
       end
 
       it 'does not render the index template' do
