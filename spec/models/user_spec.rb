@@ -144,24 +144,31 @@ RSpec.describe User, type: :model do
 
   describe 'associations' do
     it 'responds to expected associations' do
-      user = User.new
-      # Add association tests here when associations are added
+      pending 'Add association tests here when associations are added'
     end
   end
 
   describe 'callbacks' do
-    # Add callback tests here when callbacks are added
+    it 'has expected callbacks' do
+      pending 'Add callback tests here when callbacks are added'
+    end
   end
 
   describe 'scopes' do
-    # Add scope tests here when scopes are added
+    it 'has expected scopes' do
+      pending 'Add scope tests here when scopes are added'
+    end
   end
 
   describe 'instance methods' do
-    # Add instance method tests here when custom methods are added
+    it 'has expected instance methods' do
+      pending 'Add instance method tests here when custom methods are added'
+    end
   end
 
   describe 'class methods' do
-    # Add class method tests here when custom methods are added
+    it 'has expected class methods' do
+      pending 'Add class method tests here when custom methods are added'
+    end
   end
 end
