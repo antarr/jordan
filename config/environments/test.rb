@@ -13,10 +13,10 @@ Rails.application.configure do
   # this is usually not necessary, and can slow down your test suite. However, it's
   # recommended that you enable it in continuous integration systems to ensure eager
   # loading is working properly before deploying your code.
-  config.eager_load = ENV["CI"].present?
+  config.eager_load = ENV['CI'].present?
 
   # Configure public file server for tests with cache-control for performance.
-  config.public_file_server.headers = { "cache-control" => "public, max-age=3600" }
+  config.public_file_server.headers = { 'cache-control' => 'public, max-age=3600' }
 
   # Show full error reports.
   config.consider_all_requests_local = true
@@ -31,6 +31,9 @@ Rails.application.configure do
   # Configure default URL options for tests
   config.action_controller.default_url_options = { host: 'localhost', port: 3000 }
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
+  # Use test delivery method for emails (stores in ActionMailer::Base.deliveries)
+  config.action_mailer.delivery_method = :test
 
   # Store uploaded files on the local file system in a temporary directory.
   config.active_storage.service = :test
