@@ -20,13 +20,6 @@ Rails.application.routes.draw do
     mount LetterOpenerWeb::Engine, at: "/letter_opener"
   end
 
-  # Cypress test helpers (test and development environment only)
-  if Rails.env.test? || Rails.env.development?
-    namespace :cypress_test_helpers do
-      delete 'clear_users'
-      post 'create_user'
-    end
-  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

@@ -28,7 +28,6 @@ jobs:
     strategy:
       matrix:
         ruby-version: ['3.2']
-        node-version: ['20']
     
     env:
       RAILS_ENV: test
@@ -52,17 +51,10 @@ jobs:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true
     
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
+    - name: Set up Chrome
+      uses: browser-actions/setup-chrome@v1
       with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    
-    - name: Install Node.js dependencies
-      run: npm install
-    
-    - name: Verify Cypress installation
-      run: npx cypress verify
+        chrome-version: stable
     
     - name: Set up test database
       run: |
@@ -72,103 +64,20 @@ jobs:
       env:
         RAILS_ENV: test
     
-    - name: Set up development database for Cypress
-      run: |
-        RAILS_ENV=development bin/rails db:drop || true
-        RAILS_ENV=development bin/rails db:create
-        RAILS_ENV=development bin/rails db:migrate
-      env:
-        POSTGRES_HOST: localhost
-        POSTGRES_PORT: 5432
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
-    
     - name: Precompile assets for test
       run: bin/rails assets:precompile
       env:
         RAILS_ENV: test
     
-    - name: Precompile assets for development
-      run: RAILS_ENV=development bin/rails assets:precompile
-      env:
-        POSTGRES_HOST: localhost
-        POSTGRES_PORT: 5432
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
-    
     - name: Run security checks
       run: |
         bin/brakeman --quiet --format plain
     
-    - name: Run RSpec tests
+    - name: Run RSpec tests (including Capybara)
       run: |
         bundle exec rspec --format progress --format RspecJunitFormatter --out tmp/rspec_results.xml
-    
-    - name: Start Rails server for Cypress
-      run: |
-        ENABLE_JS_COVERAGE=true RAILS_ENV=development bin/rails server -d -p 3000 -e development
-        sleep 10
       env:
-        POSTGRES_HOST: localhost
-        POSTGRES_PORT: 5432
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
-    
-    - name: Wait for server to be ready
-      run: |
-        timeout 90 bash -c 'until curl -f http://localhost:3000/up; do echo "Waiting for server..."; sleep 3; done'
-        echo "Server is ready!"
-    
-    - name: Create Cypress directories
-      run: |
-        mkdir -p cypress/videos
-        mkdir -p cypress/screenshots
-    
-    - name: List Cypress test files
-      run: |
-        echo "Found Cypress test files:"
-        find cypress/e2e -name "*.cy.js" -type f || echo "No test files found"
-    
-    - name: Run Cypress tests
-      run: |
-        npx cypress run --record false --spec "cypress/e2e/**/*.cy.js" --reporter junit --reporter-options "mochaFile=tmp/cypress_results.xml"
-      env:
-        CYPRESS_baseUrl: http://localhost:3000
-        ENABLE_JS_COVERAGE: true
-        # Disable Cypress cloud recording to avoid authentication issues
-        CYPRESS_RECORD_KEY: ""
-    
-    - name: Upload Cypress screenshots
-      uses: actions/upload-artifact@v4
-      if: failure()
-      with:
-        name: cypress-screenshots
-        path: cypress/screenshots
-        if-no-files-found: ignore
-    
-    - name: Upload Cypress videos
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: cypress-videos
-        path: cypress/videos
-        if-no-files-found: ignore
-    
-    - name: Upload Cypress test results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: cypress-results
-        path: tmp/cypress_results.xml
-    
-    - name: Stop Rails server
-      if: always()
-      run: |
-        pkill -f "rails server" || true
-    
-    - name: Generate JavaScript coverage report
-      run: |
-        npx nyc report --reporter=html --reporter=lcov --reporter=json --report-dir=coverage-js
+        CHROME_BIN: /usr/bin/google-chrome
     
     - name: Merge coverage reports
       run: |
