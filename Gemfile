@@ -58,6 +58,10 @@ end
 group :test do
   # Code coverage analysis tool
   gem "simplecov", require: false
+  gem "simplecov-cobertura", require: false
+  
+  # JUnit formatter for RSpec
+  gem "rspec_junit_formatter"
 end
 
 group :development do

@@ -247,6 +247,7 @@ GEM
     regexp_parser (2.10.0)
     reline (0.6.1)
       io-console (~> 0.5)
+    rexml (3.4.1)
     rspec-core (3.13.4)
       rspec-support (~> 3.13.0)
     rspec-expectations (3.13.5)
@@ -264,6 +265,8 @@ GEM
       rspec-mocks (~> 3.13)
       rspec-support (~> 3.13)
     rspec-support (3.13.4)
+    rspec_junit_formatter (0.6.0)
+      rspec-core (>= 2, < 4, != 2.12.0)
     rubocop (1.76.0)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
@@ -298,6 +301,9 @@ GEM
       docile (~> 1.1)
       simplecov-html (~> 0.11)
       simplecov_json_formatter (~> 0.1)
+    simplecov-cobertura (2.1.0)
+      rexml
+      simplecov (~> 0.19)
     simplecov-html (0.13.1)
     simplecov_json_formatter (0.1.4)
     solid_cable (3.0.8)
@@ -396,8 +402,10 @@ DEPENDENCIES
   puma (>= 5.0)
   rails (~> 8.0.2)
   rspec-rails
+  rspec_junit_formatter
   rubocop-rails-omakase
   simplecov
+  simplecov-cobertura
   solid_cable
   solid_cache
   solid_queue

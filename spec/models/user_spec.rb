@@ -142,33 +142,10 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe 'associations' do
-    it 'responds to expected associations' do
-      pending 'Add association tests here when associations are added'
-    end
-  end
-
   describe 'callbacks' do
-    it 'has expected callbacks' do
-      pending 'Add callback tests here when callbacks are added'
-    end
-  end
-
-  describe 'scopes' do
-    it 'has expected scopes' do
-      pending 'Add scope tests here when scopes are added'
-    end
-  end
-
-  describe 'instance methods' do
-    it 'has expected instance methods' do
-      pending 'Add instance method tests here when custom methods are added'
-    end
-  end
-
-  describe 'class methods' do
-    it 'has expected class methods' do
-      pending 'Add class method tests here when custom methods are added'
+    it 'normalizes email before validation' do
+      user = User.create!(email: '  Test@Example.com  ', password: 'password123')
+      expect(user.email).to eq('test@example.com')
     end
   end
 end

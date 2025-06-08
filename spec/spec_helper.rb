@@ -1,4 +1,10 @@
 require 'simplecov'
+
+if ENV['CI']
+  require 'simplecov-cobertura'
+  SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
+end
+
 SimpleCov.start 'rails' do
   add_filter '/bin/'
   add_filter '/db/'
@@ -16,6 +22,10 @@ SimpleCov.start 'rails' do
   track_files '{app,lib}/**/*.rb'
 
   enable_coverage :branch
+  
+  # Minimum coverage thresholds
+  minimum_coverage 70
+  minimum_coverage_by_file 30
 end
 
 RSpec.configure do |config|
