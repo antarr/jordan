@@ -15,6 +15,11 @@ Rails.application.routes.draw do
   # Dashboard routes
   get 'dashboard' => 'dashboard#index', as: :dashboard
 
+  # Development tools
+  if Rails.env.development?
+    mount LetterOpenerWeb::Engine, at: "/letter_opener"
+  end
+
   # Cypress test helpers (test and development environment only)
   if Rails.env.test? || Rails.env.development?
     namespace :cypress_test_helpers do
