@@ -7,9 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -26,9 +24,7 @@
   "devDependencies": {
     "@babel/core": "^7.27.4",
     "@babel/preset-env": "^7.27.2",
-    "@cypress/code-coverage": "^3.14.4",
     "babel-plugin-istanbul": "^7.0.0",
-    "cypress": "^14.4.1",
     "nyc": "^17.1.0"
   }
 }

@@ -26,10 +26,14 @@
       </div>
     <% end %>
 
-    <div class="mt-6 text-center">
+    <div class="mt-6 text-center space-y-2">
       <p class="text-sm text-gray-600">
         Don't have an account? 
         <%= link_to "Sign up", new_registration_path, class: "text-blue-600 hover:text-blue-500 font-medium" %>
+      </p>
+      <p class="text-sm text-gray-600">
+        Need to verify your email? 
+        <%= link_to "Resend verification email", new_email_verification_request_path, class: "text-blue-600 hover:text-blue-500 font-medium" %>
       </p>
     </div>
   </div>

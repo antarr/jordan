@@ -13,11 +13,25 @@ RSpec.describe SessionsController, type: :controller do
 
   describe 'POST #create' do
     context 'with valid credentials' do
-      it 'signs in the user and redirects to dashboard' do
-        post :create, params: { email: user.email, password: 'password123' }
-        
-        expect(session[:user_id]).to eq(user.id)
-        expect(response).to redirect_to(dashboard_path)
+      context 'for verified user' do
+        before { user.verify_email! }
+
+        it 'signs in the user and redirects to dashboard' do
+          post :create, params: { email: user.email, password: 'password123' }
+          
+          expect(session[:user_id]).to eq(user.id)
+          expect(response).to redirect_to(dashboard_path)
+        end
+      end
+
+      context 'for unverified user' do
+        it 'redirects to login with verification message' do
+          post :create, params: { email: user.email, password: 'password123' }
+          
+          expect(session[:user_id]).to be_nil
+          expect(response).to redirect_to(new_session_path)
+          expect(flash[:alert]).to eq("Please verify your email address before signing in. Check your inbox for the verification link.")
+        end
       end
     end
 
