@@ -1,0 +1,24 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 80%
+        threshold: 1%
+    patch:
+      default:
+        target: 60%
+        threshold: 1%
+
+comment:
+  layout: "header, diff, files"
+  behavior: default
+  require_changes: false
+
+ignore:
+  - "spec/**/*"
+  - "config/**/*"
+  - "db/**/*"
+  - "bin/**/*"
+  - "vendor/**/*"
+  - "app/channels/**/*"
+  - "app/mailers/**/*"
