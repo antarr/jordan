@@ -5,16 +5,13 @@ class EmailVerificationRequestsController < ApplicationController
 
   def create
     user = User.find_by(email: params[:email].to_s.strip.downcase)
-    
-    if user&.email_verified?
-      redirect_to new_session_path, notice: "Your email is already verified. You can sign in."
-    elsif user
+
+    if user && !user.email_verified?
       user.generate_email_verification_token!
       EmailVerificationJob.perform_later(user)
-      redirect_to new_session_path, notice: "Verification email sent! Please check your inbox."
-    else
-      flash.now[:alert] = "No account found with that email address."
-      render :new, status: :unprocessable_entity
     end
+
+    # Always show the same message for security
+    redirect_to new_session_path, notice: I18n.t('controllers.email_verification_requests.create.sent')
   end
 end

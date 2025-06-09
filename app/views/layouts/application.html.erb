@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Asset Pipeline Propshaft" %></title>
+    <title><%= content_for(:title) || t('titles.default') %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -26,17 +26,22 @@
     <nav class="bg-white shadow-sm border-b">
       <div class="container mx-auto px-5 py-4">
         <div class="flex justify-between items-center">
-          <%= link_to "Ragged", root_path, class: "text-xl font-bold text-gray-800" %>
+          <%= link_to t('navigation.brand'), root_path, class: "text-xl font-bold text-gray-800" %>
           
           <div class="flex items-center space-x-4">
+            <!-- Language Switcher -->
+            <div class="text-sm">
+              <%= language_switcher %>
+            </div>
+            
             <% if user_signed_in? %>
-              <span class="text-gray-600">Hello, <%= current_user.email %></span>
-              <%= button_to "Sign Out", session_path, method: :delete, 
+              <span class="text-gray-600"><%= t('navigation.hello', name: current_user.email) %></span>
+              <%= button_to t('navigation.sign_out'), session_path, method: :delete, 
                   class: "bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition duration-200" %>
             <% else %>
-              <%= link_to "Sign In", new_session_path, 
+              <%= link_to t('navigation.sign_in'), new_session_path, 
                   class: "text-blue-600 hover:text-blue-500 font-medium" %>
-              <%= link_to "Sign Up", new_registration_path, 
+              <%= link_to t('navigation.sign_up'), new_registration_path, 
                   class: "bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-200" %>
             <% end %>
           </div>

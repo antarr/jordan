@@ -5,7 +5,7 @@ class UserMailer < ApplicationMailer
 
     mail(
       to: @user.email,
-      subject: 'Please verify your email address'
+      subject: I18n.t('user_mailer.email_verification.subject')
     )
   end
 end

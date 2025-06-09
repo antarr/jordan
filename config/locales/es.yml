@@ -1,0 +1,185 @@
+# Spanish translations
+es:
+  controllers:
+    dashboard:
+      require_email_verification:
+        alert: "Por favor verifica tu dirección de correo electrónico para acceder al panel de control."
+    
+    email_verifications:
+      show:
+        success: "¡Tu correo electrónico ha sido verificado exitosamente!"
+        invalid_or_expired: "Enlace de verificación inválido o expirado."
+      create:
+        already_verified: "Tu correo electrónico ya está verificado."
+        sent: "¡Correo de verificación enviado! Por favor revisa tu bandeja de entrada."
+    
+    email_verification_requests:
+      create:
+        sent: "Si existe una cuenta con ese correo electrónico, hemos enviado un nuevo enlace de verificación."
+    
+    registrations:
+      create:
+        contact_method_required: "Por favor selecciona un método de contacto"
+      complete_registration:
+        email_success: "¡Cuenta creada exitosamente! Por favor revisa tu correo electrónico para verificar tu cuenta."
+        phone_success: "¡Cuenta creada exitosamente! Ya puedes iniciar sesión."
+    
+    sessions:
+      create:
+        unverified_email: "Por favor verifica tu dirección de correo electrónico antes de iniciar sesión."
+        invalid_credentials: "Correo electrónico o contraseña inválidos."
+  
+  activerecord:
+    attributes:
+      user:
+        email: "Correo electrónico"
+        password: "Contraseña"
+        password_confirmation: "Confirmación de contraseña"
+        phone: "Número de teléfono"
+        username: "Nombre de usuario"
+        bio: "Biografía"
+        contact_method: "Método de contacto"
+        profile_photo: "Foto de perfil"
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              blank: "no puede estar en blanco"
+              taken: "ya ha sido tomado"
+              invalid: "no es una dirección de correo electrónico válida"
+            password:
+              blank: "no puede estar en blanco"
+              too_short: "es demasiado corta (mínimo %{count} caracteres)"
+              too_long: "es demasiado larga (máximo %{count} caracteres)"
+            password_confirmation:
+              blank: "no puede estar en blanco"
+              confirmation: "no coincide con la contraseña"
+            phone:
+              blank: "no puede estar en blanco"
+              taken: "ya ha sido tomado"
+              invalid: "no es un número de teléfono válido"
+            username:
+              blank: "no puede estar en blanco"
+              taken: "ya ha sido tomado"
+              invalid: "solo puede contener letras, números y guiones bajos"
+            bio:
+              blank: "no puede estar en blanco"
+              too_short: "es demasiado corta (mínimo %{count} caracteres)"
+            contact_method:
+              inclusion: "no está incluido en la lista"
+  
+  user_mailer:
+    email_verification:
+      subject: "Por favor verifica tu dirección de correo electrónico"
+  
+  navigation:
+    brand: "Ragged"
+    sign_in: "Iniciar Sesión"
+    sign_up: "Registrarse"
+    sign_out: "Cerrar Sesión"
+    hello: "Hola, %{name}"
+  
+  buttons:
+    continue: "Continuar"
+    back: "Atrás"
+    complete_registration: "Completar Registro"
+    send_verification_email: "Enviar Correo de Verificación"
+    resend_verification_email: "Reenviar correo de verificación"
+    notify_me: "Notificarme"
+    skip_for_now: "Omitir por ahora"
+    verify_email_address: "Verificar Dirección de Correo"
+  
+  titles:
+    default: "Ragged"
+    coming_soon: "Ragged - Próximamente"
+    sign_in: "Iniciar Sesión"
+    sign_up: "Registrarse"
+    resend_verification: "Reenviar Correo de Verificación"
+    dashboard: "Panel de Control"
+  
+  pages:
+    coming_soon:
+      meta_description: "Algo increíble se acerca. Sé el primero en saber cuándo lance Ragged."
+      tagline: "Algo increíble se acerca"
+      heading: "Estamos construyendo algo extraordinario"
+      description: "Prepárate para una experiencia que transformará la forma en que piensas sobre las aplicaciones web. Sé el primero en saber cuándo lancemos."
+      email_placeholder: "Ingresa tu correo electrónico"
+      copyright: "© 2025 Ragged. Todos los derechos reservados."
+      social_labels:
+        twitter: "Twitter"
+        github: "GitHub"
+        linkedin: "LinkedIn"
+  
+  dashboard:
+    welcome: "Bienvenido a tu panel de control"
+    email_verification:
+      warning_title: "Tu dirección de correo electrónico no está verificada"
+      warning_text: "Por favor revisa tu correo electrónico para verificar tu cuenta."
+      resend_link: "Reenviar correo de verificación"
+  
+  registration:
+    progress: "Paso %{current} de %{total}"
+    new:
+      heading: "Registrarse"
+      instruction: "¿Cómo te gustaría registrarte?"
+      email_option_title: "Correo Electrónico"
+      email_option_description: "Regístrate usando tu dirección de correo electrónico"
+      phone_option_title: "Número de Teléfono"
+      phone_option_description: "Regístrate usando tu número de teléfono"
+      already_have_account: "¿Ya tienes una cuenta?"
+    contact_details:
+      heading_email: "Correo y Contraseña"
+      heading_phone: "Teléfono y Contraseña"
+      phone_help: "Incluye el código de país (ej., +1 para EE.UU.)"
+      password_help: "Mínimo 6 caracteres"
+    username:
+      heading: "Elige tu Nombre de Usuario"
+      instruction: "Este será tu identificador único en la plataforma"
+      help: "Solo se permiten letras, números y guiones bajos"
+    bio:
+      heading: "Cuéntanos Sobre Ti"
+      instruction: "Escribe una breve biografía para ayudar a otros a conocerte"
+      help: "Mínimo 25 palabras requeridas"
+      counter: "%{count} palabras"
+    profile_photo:
+      heading: "Agrega tu Foto de Perfil"
+      instruction: "Sube una foto o proporciona una URL para completar tu perfil"
+      help: "Ingresa una URL de imagen, o omite este paso por ahora"
+  
+  forms:
+    errors:
+      count_template: "%{count} error impidió que este usuario fuera guardado:"
+    labels:
+      email: "Correo Electrónico"
+      password: "Contraseña"
+      password_confirmation: "Confirmar Contraseña"
+      phone: "Número de Teléfono"
+      username: "Nombre de Usuario"
+      bio: "Biografía"
+      profile_photo_url: "URL de Foto de Perfil"
+    placeholders:
+      email: "Ingresa tu correo electrónico"
+      password: "Ingresa tu contraseña"
+      password_confirmation: "Confirma tu contraseña"
+      phone: "+1234567890"
+      username: "Ingresa tu nombre de usuario"
+      bio: "Cuéntanos sobre ti, tus intereses, pasatiempos, o qué te hace único..."
+      profile_photo_url: "https://ejemplo.com/tu-foto.jpg"
+  
+  auth:
+    dont_have_account: "¿No tienes una cuenta?"
+    need_to_verify: "¿Necesitas verificar tu correo?"
+    remember_password: "¿Recuerdas tu contraseña?"
+    resend_instruction: "Ingresa tu dirección de correo electrónico y te enviaremos un nuevo enlace de verificación."
+  
+  emails:
+    verification:
+      heading: "Verifica tu Dirección de Correo Electrónico"
+      greeting: "Hola,"
+      instruction: "¡Bienvenido! Por favor verifica tu dirección de correo electrónico haciendo clic en el enlace de abajo:"
+      fallback_instruction: "Si el botón de arriba no funciona, puedes copiar y pegar este enlace en tu navegador:"
+      expiration_notice: "Este enlace expirará en 24 horas."
+      disclaimer: "Si no creaste una cuenta, puedes ignorar este correo de manera segura."
+      closing: "¡Gracias!"
+      text_instruction: "¡Bienvenido! Por favor verifica tu dirección de correo electrónico visitando este enlace:"

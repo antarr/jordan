@@ -1,0 +1,185 @@
+# Brazilian Portuguese translations
+pt-BR:
+  controllers:
+    dashboard:
+      require_email_verification:
+        alert: "Por favor, verifique seu endereço de e-mail para acessar o painel de controle."
+    
+    email_verifications:
+      show:
+        success: "Seu e-mail foi verificado com sucesso!"
+        invalid_or_expired: "Link de verificação inválido ou expirado."
+      create:
+        already_verified: "Seu e-mail já está verificado."
+        sent: "E-mail de verificação enviado! Por favor, verifique sua caixa de entrada."
+    
+    email_verification_requests:
+      create:
+        sent: "Se existe uma conta com esse e-mail, enviamos um novo link de verificação."
+    
+    registrations:
+      create:
+        contact_method_required: "Por favor, selecione um método de contato"
+      complete_registration:
+        email_success: "Conta criada com sucesso! Por favor, verifique seu e-mail para verificar sua conta."
+        phone_success: "Conta criada com sucesso! Você já pode fazer login."
+    
+    sessions:
+      create:
+        unverified_email: "Por favor, verifique seu endereço de e-mail antes de fazer login."
+        invalid_credentials: "E-mail ou senha inválidos."
+  
+  activerecord:
+    attributes:
+      user:
+        email: "E-mail"
+        password: "Senha"
+        password_confirmation: "Confirmação de senha"
+        phone: "Número de telefone"
+        username: "Nome de usuário"
+        bio: "Biografia"
+        contact_method: "Método de contato"
+        profile_photo: "Foto de perfil"
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              blank: "não pode ficar em branco"
+              taken: "já está em uso"
+              invalid: "não é um endereço de e-mail válido"
+            password:
+              blank: "não pode ficar em branco"
+              too_short: "é muito curta (mínimo de %{count} caracteres)"
+              too_long: "é muito longa (máximo de %{count} caracteres)"
+            password_confirmation:
+              blank: "não pode ficar em branco"
+              confirmation: "não é igual à senha"
+            phone:
+              blank: "não pode ficar em branco"
+              taken: "já está em uso"
+              invalid: "não é um número de telefone válido"
+            username:
+              blank: "não pode ficar em branco"
+              taken: "já está em uso"
+              invalid: "pode conter apenas letras, números e sublinhados"
+            bio:
+              blank: "não pode ficar em branco"
+              too_short: "é muito curta (mínimo de %{count} caracteres)"
+            contact_method:
+              inclusion: "não está incluído na lista"
+  
+  user_mailer:
+    email_verification:
+      subject: "Por favor, verifique seu endereço de e-mail"
+  
+  navigation:
+    brand: "Ragged"
+    sign_in: "Entrar"
+    sign_up: "Cadastrar"
+    sign_out: "Sair"
+    hello: "Olá, %{name}"
+  
+  buttons:
+    continue: "Continuar"
+    back: "Voltar"
+    complete_registration: "Finalizar Cadastro"
+    send_verification_email: "Enviar E-mail de Verificação"
+    resend_verification_email: "Reenviar e-mail de verificação"
+    notify_me: "Me Notifique"
+    skip_for_now: "Pular por agora"
+    verify_email_address: "Verificar Endereço de E-mail"
+  
+  titles:
+    default: "Ragged"
+    coming_soon: "Ragged - Em Breve"
+    sign_in: "Entrar"
+    sign_up: "Cadastrar"
+    resend_verification: "Reenviar E-mail de Verificação"
+    dashboard: "Painel de Controle"
+  
+  pages:
+    coming_soon:
+      meta_description: "Algo incrível está chegando. Seja o primeiro a saber quando o Ragged for lançado."
+      tagline: "Algo incrível está chegando"
+      heading: "Estamos construindo algo extraordinário"
+      description: "Prepare-se para uma experiência que transformará a forma como você pensa sobre aplicações web. Seja o primeiro a saber quando lançarmos."
+      email_placeholder: "Digite seu e-mail"
+      copyright: "© 2025 Ragged. Todos os direitos reservados."
+      social_labels:
+        twitter: "Twitter"
+        github: "GitHub"
+        linkedin: "LinkedIn"
+  
+  dashboard:
+    welcome: "Bem-vindo ao seu painel de controle"
+    email_verification:
+      warning_title: "Seu endereço de e-mail não está verificado"
+      warning_text: "Por favor, verifique seu e-mail para verificar sua conta."
+      resend_link: "Reenviar e-mail de verificação"
+  
+  registration:
+    progress: "Passo %{current} de %{total}"
+    new:
+      heading: "Cadastrar"
+      instruction: "Como você gostaria de se cadastrar?"
+      email_option_title: "Endereço de E-mail"
+      email_option_description: "Cadastre-se usando seu endereço de e-mail"
+      phone_option_title: "Número de Telefone"
+      phone_option_description: "Cadastre-se usando seu número de telefone"
+      already_have_account: "Já tem uma conta?"
+    contact_details:
+      heading_email: "E-mail e Senha"
+      heading_phone: "Telefone e Senha"
+      phone_help: "Inclua o código do país (ex., +55 para Brasil)"
+      password_help: "Mínimo de 6 caracteres"
+    username:
+      heading: "Escolha seu Nome de Usuário"
+      instruction: "Este será seu identificador único na plataforma"
+      help: "Apenas letras, números e sublinhados são permitidos"
+    bio:
+      heading: "Conte-nos Sobre Você"
+      instruction: "Escreva uma breve biografia para ajudar outros a conhecê-lo"
+      help: "Mínimo de 25 palavras necessárias"
+      counter: "%{count} palavras"
+    profile_photo:
+      heading: "Adicione sua Foto de Perfil"
+      instruction: "Faça upload de uma foto ou forneça uma URL para completar seu perfil"
+      help: "Digite uma URL de imagem, ou pule esta etapa por agora"
+  
+  forms:
+    errors:
+      count_template: "%{count} erro impediu que este usuário fosse salvo:"
+    labels:
+      email: "E-mail"
+      password: "Senha"
+      password_confirmation: "Confirmar Senha"
+      phone: "Número de Telefone"
+      username: "Nome de Usuário"
+      bio: "Biografia"
+      profile_photo_url: "URL da Foto de Perfil"
+    placeholders:
+      email: "Digite seu e-mail"
+      password: "Digite sua senha"
+      password_confirmation: "Confirme sua senha"
+      phone: "+5511999999999"
+      username: "Digite seu nome de usuário"
+      bio: "Conte-nos sobre você, seus interesses, hobbies, ou o que o torna único..."
+      profile_photo_url: "https://exemplo.com/sua-foto.jpg"
+  
+  auth:
+    dont_have_account: "Não tem uma conta?"
+    need_to_verify: "Precisa verificar seu e-mail?"
+    remember_password: "Lembra sua senha?"
+    resend_instruction: "Digite seu endereço de e-mail e enviaremos um novo link de verificação."
+  
+  emails:
+    verification:
+      heading: "Verifique seu Endereço de E-mail"
+      greeting: "Olá,"
+      instruction: "Bem-vindo! Por favor, verifique seu endereço de e-mail clicando no link abaixo:"
+      fallback_instruction: "Se o botão acima não funcionar, você pode copiar e colar este link em seu navegador:"
+      expiration_notice: "Este link expirará em 24 horas."
+      disclaimer: "Se você não criou uma conta, pode ignorar este e-mail com segurança."
+      closing: "Obrigado!"
+      text_instruction: "Bem-vindo! Por favor, verifique seu endereço de e-mail visitando este link:"

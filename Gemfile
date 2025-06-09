@@ -20,6 +20,9 @@ gem 'tailwindcss-rails'
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem 'bcrypt', '~> 3.1.7'
 
+# Multi-step form wizard [https://github.com/zombocom/wicked]
+gem 'wicked'
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[windows jruby]
 
@@ -32,7 +35,7 @@ gem 'solid_queue'
 gem 'bootsnap', require: false
 
 # Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
-gem 'kamal', require: false
+gem 'kamal', '~> 2.5.3', require: false
 
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem 'thruster', require: false
@@ -52,6 +55,7 @@ group :development, :test do
 
   # Testing framework
   gem 'factory_bot_rails'
+  gem 'faker'
   gem 'rails-controller-testing'
   gem 'rspec-rails'
 
@@ -70,6 +74,9 @@ group :test do
   # Integration testing
   gem 'capybara'
   gem 'selenium-webdriver'
+
+  # Shoulda matchers for cleaner model tests
+  gem 'shoulda-matchers'
 end
 
 group :development do

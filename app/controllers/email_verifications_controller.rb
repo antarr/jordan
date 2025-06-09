@@ -6,19 +6,19 @@ class EmailVerificationsController < ApplicationController
     if @user&.email_verification_token_valid?(params[:token])
       @user.verify_email!
       sign_in(@user)
-      redirect_to dashboard_path, notice: "Your email has been verified successfully!"
+      redirect_to dashboard_path, notice: I18n.t('controllers.email_verifications.show.success')
     else
-      redirect_to new_session_path, alert: "Invalid or expired verification link."
+      redirect_to new_session_path, alert: I18n.t('controllers.email_verifications.show.invalid_or_expired')
     end
   end
 
   def create
     if current_user.email_verified?
-      redirect_to dashboard_path, notice: "Your email is already verified."
+      redirect_to dashboard_path, notice: I18n.t('controllers.email_verifications.create.already_verified')
     else
       current_user.generate_email_verification_token!
       EmailVerificationJob.perform_later(current_user)
-      redirect_to dashboard_path, notice: "Verification email sent! Please check your inbox."
+      redirect_to dashboard_path, notice: I18n.t('controllers.email_verifications.create.sent')
     end
   end
 

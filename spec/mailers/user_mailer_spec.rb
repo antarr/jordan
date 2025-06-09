@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe UserMailer, type: :mailer do
   describe '#email_verification' do
-    let(:user) { User.create!(email: 'test@example.com', password: 'password123') }
+    let(:user) { create(:user, :email_user, :step_two, :unverified) }
     let(:mail) { UserMailer.email_verification(user) }
 
     it 'renders the headers' do

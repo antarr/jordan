@@ -28,4 +28,187 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  controllers:
+    dashboard:
+      require_email_verification:
+        alert: "Please verify your email address to access the dashboard."
+    
+    email_verifications:
+      show:
+        success: "Your email has been verified successfully!"
+        invalid_or_expired: "Invalid or expired verification link."
+      create:
+        already_verified: "Your email is already verified."
+        sent: "Verification email sent! Please check your inbox."
+    
+    email_verification_requests:
+      create:
+        sent: "If an account exists with that email, we have sent a new verification link."
+    
+    registrations:
+      create:
+        contact_method_required: "Please select a contact method"
+      complete_registration:
+        email_success: "Account created successfully! Please check your email to verify your account."
+        phone_success: "Account created successfully! You can now sign in."
+      phone_registration_disabled: "Phone registration is currently unavailable. Please use email registration instead."
+    
+    sessions:
+      create:
+        unverified_email: "Please verify your email address before signing in."
+        invalid_credentials: "Invalid email or password."
+  
+  activerecord:
+    attributes:
+      user:
+        email: "Email"
+        password: "Password"
+        password_confirmation: "Password confirmation"
+        phone: "Phone number"
+        username: "Username"
+        bio: "Bio"
+        contact_method: "Contact method"
+        profile_photo: "Profile photo"
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              blank: "can't be blank"
+              taken: "has already been taken"
+              invalid: "is not a valid email address"
+            password:
+              blank: "can't be blank"
+              too_short: "is too short (minimum is %{count} characters)"
+              too_long: "is too long (maximum is %{count} characters)"
+            password_confirmation:
+              blank: "can't be blank"
+              confirmation: "doesn't match Password"
+            phone:
+              blank: "can't be blank"
+              taken: "has already been taken"
+              invalid: "is not a valid phone number"
+            username:
+              blank: "can't be blank"
+              taken: "has already been taken"
+              invalid: "can only contain letters, numbers, and underscores"
+            bio:
+              blank: "can't be blank"
+              too_short: "is too short (minimum is %{count} characters)"
+            contact_method:
+              inclusion: "is not included in the list"
+  
+  user_mailer:
+    email_verification:
+      subject: "Please verify your email address"
+  
+  navigation:
+    brand: "Ragged"
+    sign_in: "Sign In"
+    sign_up: "Sign Up"
+    sign_out: "Sign Out"
+    hello: "Hello, %{name}"
+  
+  buttons:
+    continue: "Continue"
+    back: "Back"
+    complete_registration: "Complete Registration"
+    send_verification_email: "Send Verification Email"
+    resend_verification_email: "Resend verification email"
+    notify_me: "Notify Me"
+    skip_for_now: "Skip for now"
+    verify_email_address: "Verify Email Address"
+  
+  titles:
+    default: "Ragged"
+    coming_soon: "Ragged - Coming Soon"
+    sign_in: "Sign In"
+    sign_up: "Sign Up"
+    resend_verification: "Resend Verification Email"
+    dashboard: "Dashboard"
+  
+  pages:
+    coming_soon:
+      meta_description: "Something amazing is coming. Be the first to know when Ragged launches."
+      tagline: "Something amazing is coming"
+      heading: "We're building something extraordinary"
+      description: "Get ready for an experience that will transform the way you think about web applications. Be the first to know when we launch."
+      email_placeholder: "Enter your email"
+      copyright: "© 2025 Ragged. All rights reserved."
+      social_labels:
+        twitter: "Twitter"
+        github: "GitHub"
+        linkedin: "LinkedIn"
+  
+  dashboard:
+    welcome: "Welcome to your dashboard"
+    email_verification:
+      warning_title: "Your email address is not verified"
+      warning_text: "Please check your email to verify your account."
+      resend_link: "Resend verification email"
+  
+  registration:
+    progress: "Step %{current} of %{total}"
+    new:
+      heading: "Sign Up"
+      instruction: "How would you like to sign up?"
+      email_option_title: "Email Address"
+      email_option_description: "Sign up using your email address"
+      phone_option_title: "Phone Number"
+      phone_option_description: "Sign up using your phone number"
+      already_have_account: "Already have an account?"
+    contact_details:
+      heading_email: "Email & Password"
+      heading_phone: "Phone & Password"
+      phone_help: "Include country code (e.g., +1 for US)"
+      password_help: "Minimum 6 characters"
+    username:
+      heading: "Choose Your Username"
+      instruction: "This will be your unique identifier on the platform"
+      help: "Only letters, numbers, and underscores allowed"
+    bio:
+      heading: "Tell Us About Yourself"
+      instruction: "Write a brief bio to help others get to know you"
+      help: "Minimum 25 words required"
+      counter: "%{count} words"
+    profile_photo:
+      heading: "Add Your Profile Photo"
+      instruction: "Upload a photo or provide a URL to complete your profile"
+      help: "Enter a URL to an image, or skip this step for now"
+  
+  forms:
+    errors:
+      count_template: "%{count} error prohibited this user from being saved:"
+    labels:
+      email: "Email"
+      password: "Password"
+      password_confirmation: "Confirm Password"
+      phone: "Phone Number"
+      username: "Username"
+      bio: "Bio"
+      profile_photo_url: "Profile Photo URL"
+    placeholders:
+      email: "Enter your email"
+      password: "Enter your password"
+      password_confirmation: "Confirm your password"
+      phone: "+1234567890"
+      username: "Enter your username"
+      bio: "Tell us about yourself, your interests, hobbies, or what makes you unique..."
+      profile_photo_url: "https://example.com/your-photo.jpg"
+  
+  auth:
+    dont_have_account: "Don't have an account?"
+    need_to_verify: "Need to verify your email?"
+    remember_password: "Remember your password?"
+    resend_instruction: "Enter your email address and we'll send you a new verification link."
+  
+  emails:
+    verification:
+      heading: "Verify Your Email Address"
+      greeting: "Hi there,"
+      instruction: "Welcome! Please verify your email address by clicking the link below:"
+      fallback_instruction: "If the button above doesn't work, you can copy and paste this link into your browser:"
+      expiration_notice: "This link will expire in 24 hours."
+      disclaimer: "If you didn't create an account, you can safely ignore this email."
+      closing: "Thanks!"
+      text_instruction: "Welcome! Please verify your email address by visiting this link:"

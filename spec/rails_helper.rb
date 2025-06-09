@@ -19,12 +19,31 @@ RSpec.configure do |config|
   config.infer_spec_type_from_file_location!
   config.filter_rails_from_backtrace!
   
+  # Include FactoryBot methods
+  config.include FactoryBot::Syntax::Methods
+  
   # Include ActiveJob test helpers for testing background jobs
   config.include ActiveJob::TestHelper
 
   # Clear ActionMailer deliveries before each test
   config.before(:each) do
     ActionMailer::Base.deliveries.clear
+    I18n.locale = I18n.default_locale
+  end
+  
+  # Helper methods for internationalized routes
+  config.include Module.new {
+    def localized_path(path)
+      "/#{I18n.locale}#{path}"
+    end
+  }, type: :feature
+end
+
+# Configure shoulda-matchers
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
   end
 end
 

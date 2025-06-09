@@ -21,10 +21,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `bundle exec rspec spec/controllers` - Run controller tests only
 - `bundle exec rspec spec/requests` - Run request specs
 - `bundle exec rspec --format documentation` - Run tests with detailed output
-- `npx cypress open` - Open Cypress test runner for interactive testing
-- `npx cypress run` - Run Cypress tests in headless mode
-- `npm run cypress:open` - Alternative command to open Cypress (if npm script configured)
-- `npm run cypress:run` - Alternative command to run Cypress headless (if npm script configured)
 
 ### Code Quality
 - `bin/rubocop` - Run Ruby linting with Rails Omakase style guide
@@ -32,7 +28,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Coverage Reporting
 - `bundle exec rake coverage:all` - Run all tests and generate combined Ruby/JavaScript coverage report
-- `bundle exec rake coverage:merge` - Merge existing Ruby and JavaScript coverage reports
 - `bundle exec rake coverage:js` - Generate JavaScript coverage report from NYC data
 - Coverage reports:
   - Combined: `coverage-merged/index.html`
@@ -55,15 +50,15 @@ This is a Rails 8.0.2 application using modern Rails defaults:
 - **Background Jobs**: Solid Queue (database-backed)
 - **WebSockets**: Action Cable with Solid Cable adapter
 - **Caching**: Solid Cache (database-backed)
-- **Testing**: RSpec for unit/integration tests, Cypress for end-to-end frontend testing
+- **Testing**: RSpec for unit/integration tests, Capybara for end-to-end frontend testing
 
 ## Key Patterns
 
 1. **Testing Framework**: 
    - **RSpec** for Ruby unit tests, integration tests, and API specs
-   - **Cypress** for end-to-end frontend testing, user flows, and JavaScript interactions
+   - **Capybara** for end-to-end frontend testing, user flows, and JavaScript interactions
    - Test files organized in `spec/` directory with subdirectories for different test types
-   - Cypress tests located in `cypress/e2e/` directory
+   - Mock data using Faker and FactoryBot
 
 2. **Database-Backed Infrastructure**: Uses SQLite for application data and infrastructure (cache, jobs, WebSockets) via Solid adapters.
 
@@ -71,7 +66,7 @@ This is a Rails 8.0.2 application using modern Rails defaults:
    - Stimulus controllers in `app/javascript/controllers/`
    - Tailwind CSS for styling (configured in `config/tailwind.config.js`)
    - Turbo for SPA-like navigation without writing JavaScript
-   - Cypress tests can interact with Stimulus controllers and Turbo frames
+   - Capybara can interact with Stimulus controllers and Turbo frames
 
 4. **Deployment Ready**: Includes Dockerfile and Kamal configuration for containerized deployment.
 
@@ -83,7 +78,7 @@ This is a Rails 8.0.2 application using modern Rails defaults:
 - **Requests**: Test full HTTP request/response cycles
 - **Features**: Test user-facing functionality with Capybara (if needed)
 
-### Cypress (Frontend Testing)
+### Capybara (Frontend Testing)
 - **User Flows**: Test complete user journeys through the application
 - **JavaScript Interactions**: Test Stimulus controllers and dynamic behavior
 - **Turbo Navigation**: Test SPA-like navigation and frame updates
@@ -95,5 +90,4 @@ This is a Rails 8.0.2 application using modern Rails defaults:
 - Action Mailer and Action Mailbox are disabled (commented out in config/application.rb)
 - PWA support is scaffolded but not enabled by default
 - No npm/yarn required for application dependencies - JavaScript dependencies are managed via Import Maps
-- Cypress requires Node.js/npm for installation and running tests
 - Test database should be separate from development database (configured in database.yml)

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe SessionsController, type: :controller do
-  let(:user) { User.create!(email: 'test@example.com', password: 'password123') }
+  let(:user) { create(:user, :email_user, :step_two, :unverified) }
 
   describe 'GET #new' do
     it 'renders the new template' do
@@ -17,7 +17,7 @@ RSpec.describe SessionsController, type: :controller do
         before { user.verify_email! }
 
         it 'signs in the user and redirects to dashboard' do
-          post :create, params: { email: user.email, password: 'password123' }
+          post :create, params: { email: user.email, password: user.password }
           
           expect(session[:user_id]).to eq(user.id)
           expect(response).to redirect_to(dashboard_path)
@@ -26,18 +26,18 @@ RSpec.describe SessionsController, type: :controller do
 
       context 'for unverified user' do
         it 'redirects to login with verification message' do
-          post :create, params: { email: user.email, password: 'password123' }
+          post :create, params: { email: user.email, password: user.password }
           
           expect(session[:user_id]).to be_nil
           expect(response).to redirect_to(new_session_path)
-          expect(flash[:alert]).to eq("Please verify your email address before signing in. Check your inbox for the verification link.")
+          expect(flash[:alert]).to eq(I18n.t('controllers.sessions.create.unverified_email'))
         end
       end
     end
 
     context 'with invalid email' do
       it 'renders new template with error message' do
-        post :create, params: { email: 'wrong@example.com', password: 'password123' }
+        post :create, params: { email: Faker::Internet.email, password: user.password }
         
         expect(session[:user_id]).to be_nil
         expect(response).to render_template(:new)
@@ -48,7 +48,7 @@ RSpec.describe SessionsController, type: :controller do
 
     context 'with invalid password' do
       it 'renders new template with error message' do
-        post :create, params: { email: user.email, password: 'wrongpassword' }
+        post :create, params: { email: user.email, password: Faker::Internet.password }
         
         expect(session[:user_id]).to be_nil
         expect(response).to render_template(:new)
