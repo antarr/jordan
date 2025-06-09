@@ -72,7 +72,10 @@ class RegistrationsController < ApplicationController
         render_wizard
       end
     when :profile_photo
-      @user.assign_attributes(profile_photo_params)
+      # Handle profile_photo upload if present
+      if params[:user] && params[:user][:profile_photo].present?
+        @user.profile_photo.attach(params[:user][:profile_photo])
+      end
       @user.registration_step = 5
       if @user.save
         redirect_to next_wizard_path

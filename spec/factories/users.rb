@@ -15,7 +15,6 @@
 #  longitude                           :decimal(10, 6)
 #  password_digest                     :string
 #  phone                               :string
-#  profile_photo                       :string
 #  registration_step                   :integer          default(1)
 #  username                            :string
 #  created_at                          :datetime         not null
@@ -39,7 +38,7 @@ FactoryBot.define do
     username { Faker::Internet.username(specifier: 5..12, separators: %w[_]).gsub(/[^a-zA-Z0-9_]/, '_') }
     bio { Faker::Lorem.paragraph(sentence_count: 3, supplemental: true, random_sentences_to_add: 2) }
     phone { nil }
-    profile_photo { Faker::Internet.url(host: 'example.com', path: '/photo.jpg') }
+    # profile_photo is an ActiveStorage attachment, not a string field
     latitude { nil }
     longitude { nil }
     location_name { nil }

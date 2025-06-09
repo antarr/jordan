@@ -15,7 +15,6 @@
 #  longitude                           :decimal(10, 6)
 #  password_digest                     :string
 #  phone                               :string
-#  profile_photo                       :string
 #  registration_step                   :integer          default(1)
 #  username                            :string
 #  created_at                          :datetime         not null

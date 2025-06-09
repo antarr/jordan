@@ -126,33 +126,89 @@ RSpec.describe RegistrationsController, type: :controller do
         expect(response).to render_template(:profile_photo)
       end
 
-      it 'completes registration with profile photo' do
-        expect(EmailVerificationJob).to receive(:perform_later).with(user)
-        photo_url = Faker::Internet.url(host: 'example.com', path: '/photo.jpg')
+      it 'advances to location step with profile photo' do
+        # Create a test image file
+        file = fixture_file_upload(Rails.root.join('spec', 'fixtures', 'test_image.jpg'), 'image/jpeg')
 
         patch :update, params: {
           id: 'profile_photo',
-          user: { profile_photo: photo_url }
+          user: { profile_photo: file }
         }
 
         user.reload
-        expect(user.profile_photo).to eq(photo_url)
+        expect(user.profile_photo).to be_attached
         expect(user.registration_step).to eq(5)
-        expect(session[:registration_user_id]).to be_nil
-        expect(response).to redirect_to(new_session_path)
-        expect(flash[:notice]).to eq('Account created successfully! Please check your email to verify your account.')
+        expect(response).to redirect_to(registration_step_path(id: 'location'))
       end
 
-      it 'completes registration without profile photo' do
-        expect(EmailVerificationJob).to receive(:perform_later).with(user)
-
+      it 'advances to location step without profile photo' do
         patch :update, params: {
           id: 'profile_photo',
           user: { profile_photo: '' }
         }
 
         user.reload
+        expect(user.profile_photo).not_to be_attached
         expect(user.registration_step).to eq(5)
+        expect(response).to redirect_to(registration_step_path(id: 'location'))
+      end
+    end
+
+    describe 'Step 6: Location' do
+      let!(:user) do
+        create(:user, :email_user, :step_five,
+               username: Faker::Internet.username(specifier: 5..12, separators: %w[_]).gsub(/[^a-zA-Z0-9_]/, '_'),
+               bio: Faker::Lorem.paragraph(sentence_count: 3))
+      end
+
+      before do
+        session[:registration_user_id] = user.id
+      end
+
+      it 'shows location form' do
+        get :show, params: { id: 'location' }
+        expect(response).to render_template(:location)
+      end
+
+      it 'completes registration with location' do
+        expect(EmailVerificationJob).to receive(:perform_later).with(user)
+
+        patch :update, params: {
+          id: 'location',
+          user: {
+            latitude: 37.7749,
+            longitude: -122.4194,
+            location_name: 'San Francisco, CA',
+            location_private: false
+          }
+        }
+
+        user.reload
+        expect(user.latitude).to eq(37.7749)
+        expect(user.longitude).to eq(-122.4194)
+        expect(user.location_name).to eq('San Francisco, CA')
+        expect(user.location_private).to be false
+        expect(user.registration_step).to eq(6)
+        expect(session[:registration_user_id]).to be_nil
+        expect(response).to redirect_to(new_session_path)
+        expect(flash[:notice]).to eq('Account created successfully! Please check your email to verify your account.')
+      end
+
+      it 'completes registration without location' do
+        expect(EmailVerificationJob).to receive(:perform_later).with(user)
+
+        patch :update, params: {
+          id: 'location',
+          user: {
+            latitude: '',
+            longitude: '',
+            location_name: '',
+            location_private: false
+          }
+        }
+
+        user.reload
+        expect(user.registration_step).to eq(6)
         expect(response).to redirect_to(new_session_path)
       end
     end
@@ -189,13 +245,13 @@ RSpec.describe RegistrationsController, type: :controller do
         bio = Faker::Lorem.paragraph(sentence_count: 3)
 
         user.update!(phone: phone, password: password, password_confirmation: password, username: username, bio: bio,
-                     registration_step: 4)
+                     registration_step: 5)
 
         expect(EmailVerificationJob).not_to receive(:perform_later)
 
         patch :update, params: {
-          id: 'profile_photo',
-          user: { profile_photo: '' }
+          id: 'location',
+          user: { latitude: '', longitude: '', location_name: '', location_private: false }
         }
 
         expect(response).to redirect_to(new_session_path)
@@ -256,7 +312,7 @@ RSpec.describe RegistrationsController, type: :controller do
         get :show, params: { id: 'contact_details' }
 
         expect(assigns(:step_number)).to eq(2)
-        expect(assigns(:total_steps)).to eq(4)
+        expect(assigns(:total_steps)).to eq(5)
       end
     end
 
@@ -314,7 +370,7 @@ RSpec.describe RegistrationsController, type: :controller do
 
           patch :update, params: {
             id: 'profile_photo',
-            user: { profile_photo: 'test.jpg' }
+            user: { profile_photo: '' }
           }
 
           expect(response).to render_template(:profile_photo)
@@ -449,6 +505,9 @@ RSpec.describe RegistrationsController, type: :controller do
 
         allow(controller).to receive(:step).and_return(:profile_photo)
         expect(controller.send(:step_number)).to eq(5)
+
+        allow(controller).to receive(:step).and_return(:location)
+        expect(controller.send(:step_number)).to eq(6)
       end
     end
 
@@ -467,6 +526,9 @@ RSpec.describe RegistrationsController, type: :controller do
 
         allow(controller).to receive(:step).and_return(:profile_photo)
         expect(controller.send(:step_name)).to eq('Profile Photo')
+
+        allow(controller).to receive(:step).and_return(:location)
+        expect(controller.send(:step_name)).to eq('Location')
       end
     end
 

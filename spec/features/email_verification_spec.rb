@@ -36,6 +36,9 @@ RSpec.describe 'Email Verification Flow', type: :feature do
       click_button 'Continue'
 
       # Step 5: Profile photo (skip)
+      click_button 'Continue'
+
+      # Step 6: Location (skip)
       click_button 'Complete Registration'
 
       # Should redirect to login with notice about email verification
@@ -51,7 +54,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
         password_confirmation: test_user[:password],
         email_verified_at: nil,
         contact_method: 'email',
-        registration_step: 5,
+        registration_step: 6,
         username: 'unverified',
         bio: 'This is an unverified user bio that meets the minimum length requirement'
       )
@@ -75,7 +78,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
         password_confirmation: test_user[:password],
         email_verified_at: nil,
         contact_method: 'email',
-        registration_step: 5,
+        registration_step: 6,
         username: 'toverify',
         bio: 'This is a user bio that meets the minimum length requirement to verify'
       )
@@ -109,7 +112,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
         email_verification_token: SecureRandom.urlsafe_base64(32),
         email_verification_token_expires_at: 24.hours.from_now,
         contact_method: 'email',
-        registration_step: 5,
+        registration_step: 6,
         username: 'alreadyverified',
         bio: 'This is an already verified user bio that meets the minimum length requirement'
       )
@@ -131,7 +134,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
         password_confirmation: test_user[:password],
         email_verified_at: nil,
         contact_method: 'email',
-        registration_step: 5,
+        registration_step: 6,
         username: 'resenduser',
         bio: 'This is a resend user bio that meets the minimum length requirement'
       )
@@ -191,7 +194,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
         password_confirmation: 'Password123!',
         email_verified_at: Time.current,
         contact_method: 'email',
-        registration_step: 5,
+        registration_step: 6,
         username: 'verifiedresend',
         bio: 'This is a verified resend user bio that meets the minimum length requirement'
       )
@@ -216,7 +219,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
         password_confirmation: test_user[:password],
         email_verified_at: nil,
         contact_method: 'email',
-        registration_step: 5,
+        registration_step: 6,
         username: 'expiredtoken',
         bio: 'This is an expired token user bio that meets the minimum length requirement'
       )
@@ -253,7 +256,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
         password_confirmation: test_user[:password],
         email_verified_at: nil,
         contact_method: 'email',
-        registration_step: 5,
+        registration_step: 6,
         username: 'casetest',
         bio: 'This is a case test user bio that meets the minimum length requirement'
       )
@@ -275,7 +278,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
         password_confirmation: test_user[:password],
         email_verified_at: Time.current,
         contact_method: 'email',
-        registration_step: 5,
+        registration_step: 6,
         username: 'dashverified',
         bio: 'This is a dashboard verified user bio that meets the minimum length requirement'
       )
@@ -316,6 +319,9 @@ RSpec.describe 'Email Verification Flow', type: :feature do
           click_button 'Continue'
           
           # Step 5: Profile photo (skip)
+          click_button 'Continue'
+          
+          # Step 6: Location (skip)
           click_button 'Complete Registration'
         }.to change { ActionMailer::Base.deliveries.count }.by(1)
       end
@@ -334,7 +340,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
         password_confirmation: test_user[:password],
         email_verified_at: nil,
         contact_method: 'email',
-        registration_step: 5,
+        registration_step: 6,
         username: 'resendemail',
         bio: 'This is a resend email user bio that meets the minimum length requirement'
       )
