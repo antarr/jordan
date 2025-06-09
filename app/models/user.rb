@@ -1,29 +1,41 @@
+# == Schema Information
+#
+# Table name: users
+#
+#  id                                  :bigint           not null, primary key
+#  bio                                 :text
+#  contact_method                      :string
+#  email                               :string
+#  email_verification_token            :string
+#  email_verification_token_expires_at :datetime
+#  email_verified_at                   :datetime
+#  latitude                            :decimal(10, 6)
+#  location_name                       :string
+#  location_private                    :boolean          default(FALSE), not null
+#  longitude                           :decimal(10, 6)
+#  password_digest                     :string
+#  phone                               :string
+#  registration_step                   :integer          default(1)
+#  username                            :string
+#  created_at                          :datetime         not null
+#  updated_at                          :datetime         not null
+#
+# Indexes
+#
+#  index_users_on_email                     (email) UNIQUE
+#  index_users_on_email_verification_token  (email_verification_token) UNIQUE
+#  index_users_on_latitude_and_longitude    (latitude,longitude)
+#  index_users_on_phone                     (phone) UNIQUE
+#  index_users_on_username                  (username) UNIQUE
+#
+
 class User < ApplicationRecord
+  include Locatable
+  include Validatable
+
   has_secure_password validations: false
+  has_one_attached :profile_photo
 
-  validates :email, presence: true, uniqueness: { case_sensitive: false }, if: -> { 
-    contact_method == 'email' && registration_step && registration_step >= 2
-  }
-  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, if: -> { email.present? }
-  validates :phone, presence: true, uniqueness: { case_sensitive: false }, if: -> { 
-    contact_method == 'phone' && registration_step && registration_step >= 2 
-  }
-  validates :phone, format: { with: /\A\+?[1-9]\d{3,14}\z/ }, if: -> { phone.present? }
-  validates :username, presence: true, uniqueness: { case_sensitive: false }, if: -> { 
-    registration_step && registration_step >= 3
-  }
-  validates :username, format: { with: /\A[a-zA-Z0-9_]+\z/ }, if: -> { username.present? }
-  validates :bio, presence: true, length: { minimum: 25 }, if: -> { 
-    registration_step && registration_step >= 4
-  }
-  validates :password, presence: true, length: { minimum: 6, maximum: 72 }, if: -> { 
-    new_record? ? (registration_step && registration_step >= 2) : password.present?
-  }
-  validates :password_confirmation, presence: true, if: -> { password.present? }
-  validate :password_confirmation_matches, if: -> { password.present? && password_confirmation.present? }
-  validates :contact_method, inclusion: { in: %w[email phone] }, if: -> { contact_method.present? }
-
-  before_validation :normalize_email, if: -> { email.present? }
   before_create :generate_email_verification_token, if: -> { email.present? }
 
   scope :verified, -> { where.not(email_verified_at: nil) }
@@ -53,12 +65,12 @@ class User < ApplicationRecord
   def email_verification_token_valid?(token)
     return false if email_verification_token.blank?
     return false if email_verification_token_expired?
-    
+
     email_verification_token == token
   end
 
   def registration_complete?
-    registration_step && registration_step >= 5
+    registration_step && registration_step >= 6
   end
 
   def can_advance_to_step?(step)
@@ -71,6 +83,8 @@ class User < ApplicationRecord
       username.present?
     when 5
       bio.present? && bio.length >= 25
+    when 6
+      true # Location step is optional
     else
       false
     end
@@ -78,19 +92,11 @@ class User < ApplicationRecord
 
   def advance_to_next_step!
     return false unless can_advance_to_step?(registration_step + 1)
+
     update!(registration_step: registration_step + 1)
   end
 
   private
-
-  def password_confirmation_matches
-    return if password == password_confirmation
-    errors.add(:password_confirmation, "doesn't match Password")
-  end
-
-  def normalize_email
-    self.email = email.to_s.downcase.strip
-  end
 
   def generate_email_verification_token
     self.email_verification_token = SecureRandom.urlsafe_base64(32)

@@ -15,7 +15,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
       start_registration_with_email
       
       # Step 2: Contact details
-      expect(page).to have_content('Step 2 of 5')
+      expect(page).to have_content('Step 2 of 6')
       expect(page).to have_field('user[email]')
       expect(page).to have_field('user[password]')
       expect(page).to have_field('user[password_confirmation]')
@@ -26,21 +26,25 @@ RSpec.describe 'Authentication Flow', type: :feature do
       click_button 'Continue'
 
       # Step 3: Username
-      expect(page).to have_content('Step 3 of 5')
+      expect(page).to have_content('Step 3 of 6')
       expect(page).to have_field('user[username]')
       
       fill_in 'user[username]', with: test_user.username
       click_button 'Continue'
 
       # Step 4: Bio
-      expect(page).to have_content('Step 4 of 5')
+      expect(page).to have_content('Step 4 of 6')
       expect(page).to have_field('user[bio]')
       
       fill_in 'user[bio]', with: test_user.bio
       click_button 'Continue'
 
       # Step 5: Profile photo (optional, skip)
-      expect(page).to have_content('Step 5 of 5')
+      expect(page).to have_content('Step 5 of 6')
+      click_button 'Continue'
+
+      # Step 6: Location (optional, skip)
+      expect(page).to have_content('Step 6 of 6')
       click_button 'Complete Registration'
 
       # Should redirect to login with verification notice
@@ -81,7 +85,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
         password_confirmation: test_user.password,
         email_verified_at: Time.current,
         contact_method: 'email',
-        registration_step: 5,
+        registration_step: 6,
         username: 'existinguser',
         bio: 'This is an existing user bio that meets the minimum length requirement'
       )
@@ -106,7 +110,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
         password_confirmation: test_user.password,
         email_verified_at: Time.current,
         contact_method: 'email',
-        registration_step: 5,
+        registration_step: 6,
         username: 'testuser',
         bio: 'This is a test user bio that meets the minimum length requirement'
       )
@@ -157,7 +161,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
           password_confirmation: 'Password123!',
           email_verified_at: nil,
           contact_method: 'email',
-          registration_step: 5,
+          registration_step: 6,
           username: 'unverifieduser',
           bio: 'This is an unverified user bio that meets the minimum length requirement'
         )
@@ -191,7 +195,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
           password_confirmation: test_user.password,
           email_verified_at: Time.current,
           contact_method: 'email',
-          registration_step: 5,
+          registration_step: 6,
           username: 'dashboarduser',
           bio: 'This is a dashboard user bio that meets the minimum length requirement'
         )
@@ -218,7 +222,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
         password_confirmation: test_user.password,
         email_verified_at: Time.current,
         contact_method: 'email',
-        registration_step: 5,
+        registration_step: 6,
         username: 'logoutuser',
         bio: 'This is a logout user bio that meets the minimum length requirement'
       )
@@ -277,7 +281,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
         password_confirmation: test_user.password,
         email_verified_at: Time.current,
         contact_method: 'email',
-        registration_step: 5,
+        registration_step: 6,
         username: 'securityuser',
         bio: 'This is a security user bio that meets the minimum length requirement'
       )

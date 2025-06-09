@@ -1,0 +1,87 @@
+<div class="max-w-md mx-auto">
+  <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
+    <!-- Progress indicator -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between text-sm text-gray-500 mb-2">
+        <span>Step <%= step_number %> of 6</span>
+        <span><%= step_name %></span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-2">
+        <div class="bg-blue-600 h-2 rounded-full" style="width: <%= (step_number / 6.0 * 100).round %>%"></div>
+      </div>
+    </div>
+
+    <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Share Your Location</h2>
+    <p class="text-gray-600 text-center mb-6">Help others find you by sharing your location (optional)</p>
+    
+    <%= form_with model: @user, url: registration_step_path, method: :patch, local: true, 
+                  class: "space-y-4", 
+                  data: { 
+                    controller: "geolocation",
+                    geolocation_latitude_outlet: "#user_latitude",
+                    geolocation_longitude_outlet: "#user_longitude",
+                    geolocation_location_name_outlet: "#user_location_name"
+                  } do |f| %>
+      <% if @user.errors.any? %>
+        <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
+          <div class="flex">
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">
+                <%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:
+              </h3>
+              <div class="mt-2 text-sm text-red-700">
+                <ul class="list-disc list-inside">
+                  <% @user.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Location detection button and status -->
+      <div class="text-center mb-4">
+        <button type="button" 
+                data-geolocation-target="detectButton"
+                data-action="click->geolocation#detect"
+                class="hidden bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium">
+          Use My Location
+        </button>
+        <p data-geolocation-target="status" class="hidden text-sm mt-2"></p>
+      </div>
+
+      <div>
+        <%= f.label :location_name, "Location Name", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.text_field :location_name, 
+            placeholder: "e.g., San Francisco, CA",
+            data: { geolocation_target: "locationName" },
+            class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+        <p class="text-xs text-gray-500 mt-1">Optional: Add a friendly name for your location</p>
+      </div>
+
+      <!-- Hidden latitude and longitude fields -->
+      <%= f.hidden_field :latitude, data: { geolocation_target: "latitude" } %>
+      <%= f.hidden_field :longitude, data: { geolocation_target: "longitude" } %>
+
+      <div class="flex items-center">
+        <%= f.check_box :location_private, class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" %>
+        <%= f.label :location_private, "Keep my location private", class: "ml-2 block text-sm text-gray-700" %>
+      </div>
+      <p class="text-xs text-gray-500">When checked, your location will not be visible to other users</p>
+
+      <div class="flex space-x-3">
+        <%= link_to "Back", previous_wizard_path, 
+            class: "flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition duration-200 font-medium text-center" %>
+        <%= f.submit "Complete Registration", 
+            class: "flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium" %>
+      </div>
+
+      <div class="text-center">
+        <%= link_to "Skip this step", registration_step_path, method: :patch, 
+            class: "text-sm text-gray-500 hover:text-gray-700 underline" %>
+      </div>
+    <% end %>
+  </div>
+</div>

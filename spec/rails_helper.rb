@@ -24,6 +24,9 @@ RSpec.configure do |config|
   
   # Include ActiveJob test helpers for testing background jobs
   config.include ActiveJob::TestHelper
+  
+  # Include fixture file upload helpers for controller specs
+  config.include ActionDispatch::TestProcess::FixtureFile, type: :controller
 
   # Clear ActionMailer deliveries before each test
   config.before(:each) do
