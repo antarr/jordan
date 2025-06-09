@@ -3,11 +3,11 @@
     <!-- Progress indicator -->
     <div class="mb-8">
       <div class="flex items-center justify-between text-sm text-gray-500 mb-2">
-        <span>Step <%= step_number %> of 5</span>
+        <span>Step <%= step_number %> of 6</span>
         <span><%= step_name %></span>
       </div>
       <div class="w-full bg-gray-200 rounded-full h-2">
-        <div class="bg-blue-600 h-2 rounded-full" style="width: <%= (step_number / 5.0 * 100).round %>%"></div>
+        <div class="bg-blue-600 h-2 rounded-full" style="width: <%= (step_number / 6.0 * 100).round %>%"></div>
       </div>
     </div>
 
@@ -56,8 +56,8 @@
       <div class="flex space-x-3">
         <%= link_to "Back", previous_wizard_path, 
             class: "flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition duration-200 font-medium text-center" %>
-        <%= f.submit "Complete Registration", 
-            class: "flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200 font-medium" %>
+        <%= f.submit "Continue", 
+            class: "flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium" %>
       </div>
     <% end %>
 

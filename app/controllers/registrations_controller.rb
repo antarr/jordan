@@ -2,7 +2,7 @@ class RegistrationsController < ApplicationController
   include Wicked::Wizard
   include ApplicationHelper
 
-  steps :contact_details, :username, :bio, :profile_photo
+  steps :contact_details, :username, :bio, :profile_photo, :location
 
   before_action :find_or_create_user, only: %i[show update]
   before_action :check_phone_registration_enabled, only: %i[create show update]
@@ -75,6 +75,14 @@ class RegistrationsController < ApplicationController
       @user.assign_attributes(profile_photo_params)
       @user.registration_step = 5
       if @user.save
+        redirect_to next_wizard_path
+      else
+        render_wizard
+      end
+    when :location
+      @user.assign_attributes(location_params)
+      @user.registration_step = 6
+      if @user.save
         complete_registration
       else
         render_wizard
@@ -123,12 +131,17 @@ class RegistrationsController < ApplicationController
     params.require(:user).permit(:profile_photo)
   end
 
+  def location_params
+    params.require(:user).permit(:latitude, :longitude, :location_name, :location_private)
+  end
+
   def step_number
     case step
     when :contact_details then 2
     when :username then 3
     when :bio then 4
     when :profile_photo then 5
+    when :location then 6
     else 1
     end
   end
@@ -139,6 +152,7 @@ class RegistrationsController < ApplicationController
     when :username then 'Username'
     when :bio then 'Bio'
     when :profile_photo then 'Profile Photo'
+    when :location then 'Location'
     else 'Getting Started'
     end
   end

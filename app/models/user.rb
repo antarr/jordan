@@ -22,6 +22,10 @@ class User < ApplicationRecord
   validates :password_confirmation, presence: true, if: -> { password.present? }
   validate :password_confirmation_matches, if: -> { password.present? && password_confirmation.present? }
   validates :contact_method, inclusion: { in: %w[email phone] }, if: -> { contact_method.present? }
+  validates :latitude, numericality: { greater_than_or_equal_to: -90, less_than_or_equal_to: 90 }, if: -> { latitude.present? }
+  validates :longitude, numericality: { greater_than_or_equal_to: -180, less_than_or_equal_to: 180 }, if: -> { longitude.present? }
+  validates :latitude, presence: true, if: -> { longitude.present? }
+  validates :longitude, presence: true, if: -> { latitude.present? }
 
   before_validation :normalize_email, if: -> { email.present? }
   before_create :generate_email_verification_token, if: -> { email.present? }
@@ -58,7 +62,29 @@ class User < ApplicationRecord
   end
 
   def registration_complete?
-    registration_step && registration_step >= 5
+    registration_step && registration_step >= 6
+  end
+
+  def has_location?
+    latitude.present? && longitude.present?
+  end
+
+  def location_coordinates
+    return nil unless has_location?
+    [latitude.to_f, longitude.to_f]
+  end
+
+  def location_display
+    return "Location not set" unless has_location?
+    if location_name.present?
+      location_name
+    else
+      "#{latitude.round(4)}, #{longitude.round(4)}"
+    end
+  end
+
+  def location_public?
+    has_location? && !location_private?
   end
 
   def can_advance_to_step?(step)
@@ -71,6 +97,8 @@ class User < ApplicationRecord
       username.present?
     when 5
       bio.present? && bio.length >= 25
+    when 6
+      true  # Location step is optional
     else
       false
     end

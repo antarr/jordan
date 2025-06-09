@@ -83,6 +83,37 @@ RSpec.describe User, type: :model do
       it { should allow_value('phone').for(:contact_method) }
       it { should_not allow_value('invalid').for(:contact_method) }
     end
+
+    context 'location validations' do
+      it { should allow_value(37.7749).for(:latitude) }
+      it { should allow_value(-122.4194).for(:longitude) }
+      it { should_not allow_value(91).for(:latitude) }
+      it { should_not allow_value(-91).for(:latitude) }
+      it { should_not allow_value(181).for(:longitude) }
+      it { should_not allow_value(-181).for(:longitude) }
+
+      it 'requires longitude when latitude is present' do
+        user = build(:user, latitude: 37.7749, longitude: nil)
+        expect(user).not_to be_valid
+        expect(user.errors[:longitude]).to include("can't be blank")
+      end
+
+      it 'requires latitude when longitude is present' do
+        user = build(:user, latitude: nil, longitude: -122.4194)
+        expect(user).not_to be_valid
+        expect(user.errors[:latitude]).to include("can't be blank")
+      end
+
+      it 'allows both latitude and longitude to be nil' do
+        user = build(:user, latitude: nil, longitude: nil)
+        expect(user).to be_valid
+      end
+
+      it 'allows both latitude and longitude to be present' do
+        user = build(:user, latitude: 37.7749, longitude: -122.4194)
+        expect(user).to be_valid
+      end
+    end
   end
 
   describe 'password authentication' do
@@ -237,14 +268,84 @@ RSpec.describe User, type: :model do
   end
 
   describe '#registration_complete?' do
-    it 'returns true when registration_step is 5 or higher' do
-      user = create(:user, :complete_registration)
+    it 'returns true when registration_step is 6 or higher' do
+      user = create(:user, registration_step: 6)
       expect(user.registration_complete?).to be true
     end
 
-    it 'returns false when registration_step is less than 5' do
-      user = create(:user, :incomplete_registration)
+    it 'returns false when registration_step is less than 6' do
+      user = create(:user, registration_step: 5)
       expect(user.registration_complete?).to be false
+    end
+  end
+
+  describe 'location methods' do
+    describe '#has_location?' do
+      it 'returns true when both latitude and longitude are present' do
+        user = build(:user, latitude: 37.7749, longitude: -122.4194)
+        expect(user.has_location?).to be true
+      end
+
+      it 'returns false when latitude is missing' do
+        user = build(:user, latitude: nil, longitude: -122.4194)
+        expect(user.has_location?).to be false
+      end
+
+      it 'returns false when longitude is missing' do
+        user = build(:user, latitude: 37.7749, longitude: nil)
+        expect(user.has_location?).to be false
+      end
+
+      it 'returns false when both are missing' do
+        user = build(:user, latitude: nil, longitude: nil)
+        expect(user.has_location?).to be false
+      end
+    end
+
+    describe '#location_coordinates' do
+      it 'returns array of latitude and longitude when location is present' do
+        user = build(:user, latitude: 37.7749, longitude: -122.4194)
+        expect(user.location_coordinates).to eq([37.7749, -122.4194])
+      end
+
+      it 'returns nil when location is not present' do
+        user = build(:user, latitude: nil, longitude: nil)
+        expect(user.location_coordinates).to be_nil
+      end
+    end
+
+    describe '#location_display' do
+      it 'returns location_name when present' do
+        user = build(:user, latitude: 37.7749, longitude: -122.4194, location_name: 'San Francisco')
+        expect(user.location_display).to eq('San Francisco')
+      end
+
+      it 'returns coordinates when location_name is not present' do
+        user = build(:user, latitude: 37.7749, longitude: -122.4194, location_name: nil)
+        expect(user.location_display).to eq('37.7749, -122.4194')
+      end
+
+      it 'returns "Location not set" when location is not present' do
+        user = build(:user, latitude: nil, longitude: nil)
+        expect(user.location_display).to eq('Location not set')
+      end
+    end
+
+    describe '#location_public?' do
+      it 'returns true when location is present and not private' do
+        user = build(:user, latitude: 37.7749, longitude: -122.4194, location_private: false)
+        expect(user.location_public?).to be true
+      end
+
+      it 'returns false when location is present but private' do
+        user = build(:user, latitude: 37.7749, longitude: -122.4194, location_private: true)
+        expect(user.location_public?).to be false
+      end
+
+      it 'returns false when location is not present' do
+        user = build(:user, latitude: nil, longitude: nil, location_private: false)
+        expect(user.location_public?).to be false
+      end
     end
   end
 
@@ -275,6 +376,11 @@ RSpec.describe User, type: :model do
       expect(user.can_advance_to_step?(5)).to be true
     end
 
+    it 'returns true for step 6 (location step is optional)' do
+      user = create(:user, :step_one)
+      expect(user.can_advance_to_step?(6)).to be true
+    end
+
     it 'returns false for step 3 when email is missing for email users' do
       user = build_stubbed(:user, contact_method: 'email', email: nil, registration_step: 2)
       expect(user.can_advance_to_step?(3)).to be false
@@ -302,7 +408,7 @@ RSpec.describe User, type: :model do
 
     it 'returns false for invalid step numbers' do
       expect(user.can_advance_to_step?(1)).to be false
-      expect(user.can_advance_to_step?(6)).to be false
+      expect(user.can_advance_to_step?(7)).to be false
       expect(user.can_advance_to_step?(0)).to be false
       expect(user.can_advance_to_step?(-1)).to be false
     end
