@@ -36,3 +36,25 @@
 .animation-delay-4000 {
   animation-delay: 4s;
 }
+
+/* Language Switcher Styles */
+.language-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.language-switcher .current-language {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.language-switcher .language-link {
+  color: #6b7280;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.language-switcher .language-link:hover {
+  color: #2563eb;
+}

@@ -44,7 +44,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
       click_button 'Complete Registration'
 
       # Should redirect to login with verification notice
-      expect(current_path).to eq(new_session_path)
+      expect(current_path).to eq("/#{I18n.locale}/session/new")
       expect(page).to have_content('Account created successfully! Please check your email to verify your account.')
     end
 
@@ -69,7 +69,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
       click_button 'Continue'
 
       # Should stay on same page with error
-      expect(current_path).to eq(registration_step_path(:contact_details))
+      expect(current_path).to eq("/#{I18n.locale}/registration/contact_details")
       expect(page).to have_content("Password confirmation doesn't match Password")
     end
 
@@ -123,7 +123,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
       fill_in 'password', with: test_user.password
       click_button 'Sign In'
 
-      expect(current_path).to eq(dashboard_path)
+      expect(current_path).to eq("/#{I18n.locale}/dashboard")
       expect(page).to have_content('Welcome to your dashboard')
     end
 
@@ -135,7 +135,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
       click_button 'Sign In'
 
       expect(page).to have_content('Invalid email or password')
-      expect(current_path).to eq(session_path)
+      expect(current_path).to eq("/#{I18n.locale}/session")
     end
 
     it 'shows error for non-existent user' do
@@ -146,7 +146,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
       click_button 'Sign In'
 
       expect(page).to have_content('Invalid email or password')
-      expect(current_path).to eq(session_path)
+      expect(current_path).to eq("/#{I18n.locale}/session")
     end
 
     context 'with unverified email' do
@@ -172,7 +172,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
 
         expect(page).to have_content('Please verify your email address before signing in')
         expect(page).to have_link('Resend verification email')
-        expect(current_path).to eq(new_session_path)
+        expect(current_path).to eq("/#{I18n.locale}/session/new")
       end
     end
   end
@@ -180,7 +180,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
   describe 'Dashboard Access' do
     it 'redirects to login when not authenticated' do
       visit dashboard_path
-      expect(current_path).to eq(new_session_path)
+      expect(current_path).to eq("/#{I18n.locale}/session/new")
     end
 
     context 'Protection' do
@@ -203,8 +203,8 @@ RSpec.describe 'Authentication Flow', type: :feature do
         click_button 'Sign In'
 
         # Should be able to access dashboard
-        visit dashboard_path
-        expect(current_path).to eq(dashboard_path)
+        visit "/en/dashboard"
+        expect(current_path).to eq("/en/dashboard")
         expect(page).to have_content('Welcome to your dashboard')
       end
     end
@@ -230,17 +230,17 @@ RSpec.describe 'Authentication Flow', type: :feature do
       click_button 'Sign In'
 
       # Verify logged in
-      expect(current_path).to eq(dashboard_path)
+      expect(current_path).to eq("/#{I18n.locale}/dashboard")
 
       # Logout
       click_button 'Sign Out'
 
       # Should redirect to login
-      expect(current_path).to eq(new_session_path)
+      expect(current_path).to eq("/#{I18n.locale}/session/new")
 
       # Should not be able to access protected pages
       visit dashboard_path
-      expect(current_path).to eq(new_session_path)
+      expect(current_path).to eq("/#{I18n.locale}/session/new")
     end
   end
 

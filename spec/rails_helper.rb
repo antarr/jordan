@@ -28,7 +28,15 @@ RSpec.configure do |config|
   # Clear ActionMailer deliveries before each test
   config.before(:each) do
     ActionMailer::Base.deliveries.clear
+    I18n.locale = I18n.default_locale
   end
+  
+  # Helper methods for internationalized routes
+  config.include Module.new {
+    def localized_path(path)
+      "/#{I18n.locale}#{path}"
+    end
+  }, type: :feature
 end
 
 # Configure shoulda-matchers

@@ -39,7 +39,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
       click_button 'Complete Registration'
 
       # Should redirect to login with notice about email verification
-      expect(current_path).to eq(new_session_path)
+      expect(current_path).to eq("/#{I18n.locale}/session/new")
       expect(page).to have_content('Account created successfully! Please check your email to verify your account.')
     end
 
@@ -64,7 +64,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Should show unverified email error
       expect(page).to have_content('Please verify your email address before signing in')
-      expect(current_path).to eq(new_session_path)
+      expect(current_path).to eq("/#{I18n.locale}/session/new")
     end
 
     it 'allows login after email verification' do
@@ -85,7 +85,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Should show success message and redirect to dashboard (auto-signed in)
       expect(page).to have_content('Your email has been verified successfully!')
-      expect(current_path).to eq(dashboard_path)
+      expect(current_path).to eq("/#{I18n.locale}/dashboard")
       
       # Should already be logged in
       expect(page).to have_content('Welcome to your dashboard')
@@ -96,7 +96,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Should show error message
       expect(page).to have_content('Invalid or expired verification link')
-      expect(current_path).to eq(new_session_path)
+      expect(current_path).to eq("/#{I18n.locale}/session/new")
     end
 
     it 'handles already verified email' do
@@ -119,7 +119,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Should show success message (verifies again and signs in)
       expect(page).to have_content('Your email has been verified successfully!')
-      expect(current_path).to eq(dashboard_path)
+      expect(current_path).to eq("/#{I18n.locale}/dashboard")
     end
   end
 
@@ -160,7 +160,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
       click_link 'Resend verification email'
 
       # Should be on resend page
-      expect(current_path).to eq(new_email_verification_request_path)
+      expect(current_path).to eq("/#{I18n.locale}/resend_verification/new")
       expect(page).to have_field('email')
 
       # Submit resend request
@@ -169,7 +169,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Should show success message
       expect(page).to have_content('If an account exists with that email, we have sent a new verification link')
-      expect(current_path).to eq(new_session_path)
+      expect(current_path).to eq("/#{I18n.locale}/session/new")
     end
 
     it 'handles resend for non-existent email' do
@@ -180,7 +180,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Should show same success message for security (don't expose if email exists)
       expect(page).to have_content('If an account exists with that email, we have sent a new verification link')
-      expect(current_path).to eq(new_session_path)
+      expect(current_path).to eq("/#{I18n.locale}/session/new")
     end
 
     it 'handles resend for already verified email' do
@@ -203,7 +203,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Should show same success message for security
       expect(page).to have_content('If an account exists with that email, we have sent a new verification link')
-      expect(current_path).to eq(new_session_path)
+      expect(current_path).to eq("/#{I18n.locale}/session/new")
     end
   end
 
@@ -229,7 +229,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Should show error message
       expect(page).to have_content('Invalid or expired verification link')
-      expect(current_path).to eq(new_session_path)
+      expect(current_path).to eq("/#{I18n.locale}/session/new")
     end
   end
 
@@ -243,7 +243,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
       visit email_verification_path(token: 'invalid-empty-token')
 
       expect(page).to have_content('Invalid or expired verification link')
-      expect(current_path).to eq(new_session_path)
+      expect(current_path).to eq("/#{I18n.locale}/session/new")
     end
 
     it 'is case-sensitive for tokens' do
@@ -262,7 +262,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
       visit email_verification_path(token: user.email_verification_token.upcase)
 
       expect(page).to have_content('Invalid or expired verification link')
-      expect(current_path).to eq(new_session_path)
+      expect(current_path).to eq("/#{I18n.locale}/session/new")
     end
   end
 

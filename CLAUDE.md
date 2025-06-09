@@ -51,7 +51,7 @@ This is a Rails 8.0.2 application using modern Rails defaults:
 - **Background Jobs**: Solid Queue (database-backed)
 - **WebSockets**: Action Cable with Solid Cable adapter
 - **Caching**: Solid Cache (database-backed)
-- **Testing**: RSpec for unit/integration tests, Cypress for end-to-end frontend testing
+- **Testing**: RSpec for unit/integration tests, Capybara for end-to-end frontend testing
 
 ## Key Patterns
 

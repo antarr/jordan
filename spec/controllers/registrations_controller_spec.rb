@@ -83,7 +83,7 @@ RSpec.describe RegistrationsController, type: :controller do
     end
 
     describe 'Step 4: Bio' do
-      let!(:user) { create(:user, :email_user, :step_three, username: Faker::Internet.username) }
+      let!(:user) { create(:user, :email_user, :step_three, username: Faker::Internet.username(specifier: 5..12, separators: %w[_]).gsub(/[^a-zA-Z0-9_]/, '_')) }
       
       before do
         session[:registration_user_id] = user.id
