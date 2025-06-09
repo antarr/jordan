@@ -31,4 +31,8 @@ module ApplicationHelper
       I18n.locale.to_s.humanize
     end
   end
+
+  def feature_enabled?(feature_name)
+    Rails.application.config.features[feature_name] || false
+  end
 end

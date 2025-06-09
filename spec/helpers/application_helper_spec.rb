@@ -110,4 +110,36 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
   end
+
+  describe '#feature_enabled?' do
+    context 'when feature is enabled' do
+      before do
+        allow(Rails.application.config).to receive(:features).and_return({ phone_registration_enabled: true })
+      end
+
+      it 'returns true for enabled feature' do
+        expect(helper.feature_enabled?(:phone_registration_enabled)).to be true
+      end
+    end
+
+    context 'when feature is disabled' do
+      before do
+        allow(Rails.application.config).to receive(:features).and_return({ phone_registration_enabled: false })
+      end
+
+      it 'returns false for disabled feature' do
+        expect(helper.feature_enabled?(:phone_registration_enabled)).to be false
+      end
+    end
+
+    context 'when feature is not configured' do
+      before do
+        allow(Rails.application.config).to receive(:features).and_return({})
+      end
+
+      it 'returns false for unconfigured feature' do
+        expect(helper.feature_enabled?(:unknown_feature)).to be false
+      end
+    end
+  end
 end

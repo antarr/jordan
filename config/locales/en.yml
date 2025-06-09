@@ -51,6 +51,7 @@ en:
       complete_registration:
         email_success: "Account created successfully! Please check your email to verify your account."
         phone_success: "Account created successfully! You can now sign in."
+      phone_registration_disabled: "Phone registration is currently unavailable. Please use email registration instead."
     
     sessions:
       create:

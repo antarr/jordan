@@ -357,6 +357,80 @@ RSpec.describe RegistrationsController, type: :controller do
     end
   end
 
+  describe 'Feature flags' do
+    describe 'Phone registration feature flag' do
+      context 'when phone registration is enabled' do
+        before do
+          allow(Rails.application.config).to receive(:features).and_return({ phone_registration_enabled: true })
+        end
+
+        it 'allows phone registration' do
+          post :create, params: { contact_method: 'phone' }
+          
+          user = User.last
+          expect(user.contact_method).to eq('phone')
+          expect(response).to redirect_to(registration_step_path(id: 'contact_details'))
+        end
+
+        it 'allows access to phone registration steps' do
+          user = create(:user, :step_one, contact_method: 'phone')
+          session[:registration_user_id] = user.id
+
+          get :show, params: { id: 'contact_details' }
+          expect(response).to render_template(:contact_details)
+        end
+      end
+
+      context 'when phone registration is disabled' do
+        before do
+          allow(Rails.application.config).to receive(:features).and_return({ phone_registration_enabled: false })
+        end
+
+        it 'redirects phone registration creation to new registration path' do
+          post :create, params: { contact_method: 'phone' }
+          
+          expect(response).to redirect_to(new_registration_path)
+          expect(flash[:alert]).to eq('Phone registration is currently unavailable. Please use email registration instead.')
+          expect(User.count).to eq(0)
+        end
+
+        it 'redirects existing phone registration steps to new registration path' do
+          user = create(:user, :step_one, contact_method: 'phone')
+          session[:registration_user_id] = user.id
+
+          get :show, params: { id: 'contact_details' }
+          expect(response).to redirect_to(new_registration_path)
+          expect(flash[:alert]).to eq('Phone registration is currently unavailable. Please use email registration instead.')
+        end
+
+        it 'redirects phone registration updates to new registration path' do
+          user = create(:user, :step_one, contact_method: 'phone')
+          session[:registration_user_id] = user.id
+
+          patch :update, params: {
+            id: 'contact_details',
+            user: {
+              phone: '+1234567890',
+              password: 'password123',
+              password_confirmation: 'password123'
+            }
+          }
+
+          expect(response).to redirect_to(new_registration_path)
+          expect(flash[:alert]).to eq('Phone registration is currently unavailable. Please use email registration instead.')
+        end
+
+        it 'allows email registration when phone registration is disabled' do
+          post :create, params: { contact_method: 'email' }
+          
+          user = User.last
+          expect(user.contact_method).to eq('email')
+          expect(response).to redirect_to(registration_step_path(id: 'contact_details'))
+        end
+      end
+    end
+  end
+
   describe 'Helper methods' do
     let(:controller) { described_class.new }
 

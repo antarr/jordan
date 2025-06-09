@@ -1,9 +1,11 @@
 class RegistrationsController < ApplicationController
   include Wicked::Wizard
+  include ApplicationHelper
 
   steps :contact_details, :username, :bio, :profile_photo
 
   before_action :find_or_create_user, only: %i[show update]
+  before_action :check_phone_registration_enabled, only: %i[create show update]
 
   def new
     @user = User.new
@@ -135,6 +137,13 @@ class RegistrationsController < ApplicationController
     when :bio then 'Bio'
     when :profile_photo then 'Profile Photo'
     else 'Getting Started'
+    end
+  end
+
+  def check_phone_registration_enabled
+    if (params[:contact_method] == 'phone' || current_user_registration&.contact_method == 'phone') && 
+       !feature_enabled?(:phone_registration_enabled)
+      redirect_to new_registration_path, alert: I18n.t('controllers.registrations.phone_registration_disabled')
     end
   end
 

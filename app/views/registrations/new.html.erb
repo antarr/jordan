@@ -43,13 +43,15 @@
           </div>
         </label>
         
-        <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-          <%= radio_button_tag :contact_method, 'phone', false, class: "mr-3" %>
-          <div>
-            <div class="font-medium text-gray-900">Phone Number</div>
-            <div class="text-sm text-gray-500">Sign up using your phone number</div>
-          </div>
-        </label>
+        <% if feature_enabled?(:phone_registration_enabled) %>
+          <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+            <%= radio_button_tag :contact_method, 'phone', false, class: "mr-3" %>
+            <div>
+              <div class="font-medium text-gray-900">Phone Number</div>
+              <div class="text-sm text-gray-500">Sign up using your phone number</div>
+            </div>
+          </label>
+        <% end %>
       </div>
 
       <div>
