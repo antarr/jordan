@@ -4,9 +4,9 @@ RSpec.describe RegistrationsController, type: :controller do
   describe 'Multi-step registration flow' do
     describe 'Step 1: Contact method selection' do
       it 'creates user with contact method and redirects to step 2' do
-        expect {
+        expect do
           post :create, params: { contact_method: 'email' }
-        }.to change(User, :count).by(1)
+        end.to change(User, :count).by(1)
 
         user = User.last
         expect(user.contact_method).to eq('email')
@@ -17,7 +17,7 @@ RSpec.describe RegistrationsController, type: :controller do
 
       it 'works with phone contact method' do
         post :create, params: { contact_method: 'phone' }
-        
+
         user = User.last
         expect(user.contact_method).to eq('phone')
         expect(response).to redirect_to(registration_step_path(id: 'contact_details'))
@@ -26,7 +26,7 @@ RSpec.describe RegistrationsController, type: :controller do
 
     describe 'Step 2: Contact details' do
       let!(:user) { create(:user, :step_one, contact_method: 'email') }
-      
+
       before do
         session[:registration_user_id] = user.id
       end
@@ -40,14 +40,14 @@ RSpec.describe RegistrationsController, type: :controller do
       it 'updates user with email and password' do
         email = Faker::Internet.email
         password = Faker::Internet.password(min_length: 6)
-        
-        patch :update, params: { 
+
+        patch :update, params: {
           id: 'contact_details',
-          user: { 
-            email: email, 
-            password: password, 
-            password_confirmation: password 
-          } 
+          user: {
+            email: email,
+            password: password,
+            password_confirmation: password
+          }
         }
 
         user.reload
@@ -58,7 +58,7 @@ RSpec.describe RegistrationsController, type: :controller do
 
     describe 'Step 3: Username' do
       let!(:user) { create(:user, :email_user, :step_two) }
-      
+
       before do
         session[:registration_user_id] = user.id
       end
@@ -69,11 +69,11 @@ RSpec.describe RegistrationsController, type: :controller do
       end
 
       it 'updates user with username' do
-        username = Faker::Internet.username(specifier: 5..12, separators: %w[_])
-        
-        patch :update, params: { 
+        username = Faker::Internet.username(specifier: 5..12, separators: %w[_]).gsub(/[^a-zA-Z0-9_]/, '_')
+
+        patch :update, params: {
           id: 'username',
-          user: { username: username } 
+          user: { username: username }
         }
 
         user.reload
@@ -83,8 +83,11 @@ RSpec.describe RegistrationsController, type: :controller do
     end
 
     describe 'Step 4: Bio' do
-      let!(:user) { create(:user, :email_user, :step_three, username: Faker::Internet.username(specifier: 5..12, separators: %w[_]).gsub(/[^a-zA-Z0-9_]/, '_')) }
-      
+      let!(:user) do
+        create(:user, :email_user, :step_three,
+               username: Faker::Internet.username(specifier: 5..12, separators: %w[_]).gsub(/[^a-zA-Z0-9_]/, '_'))
+      end
+
       before do
         session[:registration_user_id] = user.id
       end
@@ -96,10 +99,10 @@ RSpec.describe RegistrationsController, type: :controller do
 
       it 'updates user with bio' do
         bio_text = Faker::Lorem.paragraph(sentence_count: 3, supplemental: true, random_sentences_to_add: 2)
-        
-        patch :update, params: { 
+
+        patch :update, params: {
           id: 'bio',
-          user: { bio: bio_text } 
+          user: { bio: bio_text }
         }
 
         user.reload
@@ -109,8 +112,11 @@ RSpec.describe RegistrationsController, type: :controller do
     end
 
     describe 'Step 5: Profile photo' do
-      let!(:user) { create(:user, :email_user, :step_four, username: Faker::Internet.username(specifier: 5..12, separators: %w[_]).gsub(/[^a-zA-Z0-9_]/, '_'), bio: Faker::Lorem.paragraph(sentence_count: 3)) }
-      
+      let!(:user) do
+        create(:user, :email_user, :step_four,
+               username: Faker::Internet.username(specifier: 5..12, separators: %w[_]).gsub(/[^a-zA-Z0-9_]/, '_'), bio: Faker::Lorem.paragraph(sentence_count: 3))
+      end
+
       before do
         session[:registration_user_id] = user.id
       end
@@ -123,10 +129,10 @@ RSpec.describe RegistrationsController, type: :controller do
       it 'completes registration with profile photo' do
         expect(EmailVerificationJob).to receive(:perform_later).with(user)
         photo_url = Faker::Internet.url(host: 'example.com', path: '/photo.jpg')
-        
-        patch :update, params: { 
+
+        patch :update, params: {
           id: 'profile_photo',
-          user: { profile_photo: photo_url } 
+          user: { profile_photo: photo_url }
         }
 
         user.reload
@@ -134,15 +140,15 @@ RSpec.describe RegistrationsController, type: :controller do
         expect(user.registration_step).to eq(5)
         expect(session[:registration_user_id]).to be_nil
         expect(response).to redirect_to(new_session_path)
-        expect(flash[:notice]).to eq("Account created successfully! Please check your email to verify your account.")
+        expect(flash[:notice]).to eq('Account created successfully! Please check your email to verify your account.')
       end
 
       it 'completes registration without profile photo' do
         expect(EmailVerificationJob).to receive(:perform_later).with(user)
-        
-        patch :update, params: { 
+
+        patch :update, params: {
           id: 'profile_photo',
-          user: { profile_photo: '' } 
+          user: { profile_photo: '' }
         }
 
         user.reload
@@ -153,7 +159,7 @@ RSpec.describe RegistrationsController, type: :controller do
 
     describe 'Phone registration flow' do
       let!(:user) { create(:user, :step_one, contact_method: 'phone') }
-      
+
       before do
         session[:registration_user_id] = user.id
       end
@@ -161,14 +167,14 @@ RSpec.describe RegistrationsController, type: :controller do
       it 'updates user with phone and password in step 2' do
         phone = Faker::PhoneNumber.cell_phone_in_e164
         password = Faker::Internet.password(min_length: 6)
-        
-        patch :update, params: { 
+
+        patch :update, params: {
           id: 'contact_details',
-          user: { 
-            phone: phone, 
-            password: password, 
-            password_confirmation: password 
-          } 
+          user: {
+            phone: phone,
+            password: password,
+            password_confirmation: password
+          }
         }
 
         user.reload
@@ -179,20 +185,21 @@ RSpec.describe RegistrationsController, type: :controller do
       it 'completes registration without email verification for phone users' do
         phone = Faker::PhoneNumber.cell_phone_in_e164
         password = Faker::Internet.password(min_length: 6)
-        username = Faker::Internet.username
+        username = Faker::Internet.username(specifier: 5..12, separators: %w[_]).gsub(/[^a-zA-Z0-9_]/, '_')
         bio = Faker::Lorem.paragraph(sentence_count: 3)
-        
-        user.update!(phone: phone, password: password, password_confirmation: password, username: username, bio: bio, registration_step: 4)
-        
+
+        user.update!(phone: phone, password: password, password_confirmation: password, username: username, bio: bio,
+                     registration_step: 4)
+
         expect(EmailVerificationJob).not_to receive(:perform_later)
-        
-        patch :update, params: { 
+
+        patch :update, params: {
           id: 'profile_photo',
-          user: { profile_photo: '' } 
+          user: { profile_photo: '' }
         }
 
         expect(response).to redirect_to(new_session_path)
-        expect(flash[:notice]).to eq("Account created successfully! You can now sign in.")
+        expect(flash[:notice]).to eq('Account created successfully! You can now sign in.')
       end
     end
   end
