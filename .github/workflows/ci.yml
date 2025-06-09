@@ -79,9 +79,6 @@ jobs:
       env:
         CHROME_BIN: /usr/bin/google-chrome
     
-    - name: Merge coverage reports
-      run: |
-        bundle exec rake coverage:merge
     
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4

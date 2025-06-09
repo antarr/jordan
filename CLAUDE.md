@@ -28,7 +28,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Coverage Reporting
 - `bundle exec rake coverage:all` - Run all tests and generate combined Ruby/JavaScript coverage report
-- `bundle exec rake coverage:merge` - Merge existing Ruby and JavaScript coverage reports
 - `bundle exec rake coverage:js` - Generate JavaScript coverage report from NYC data
 - Coverage reports:
   - Combined: `coverage-merged/index.html`
