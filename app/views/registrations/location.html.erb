@@ -14,7 +14,14 @@
     <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Share Your Location</h2>
     <p class="text-gray-600 text-center mb-6">Help others find you by sharing your location (optional)</p>
     
-    <%= form_with model: @user, url: registration_step_path, method: :patch, local: true, class: "space-y-4" do |f| %>
+    <%= form_with model: @user, url: registration_step_path, method: :patch, local: true, 
+                  class: "space-y-4", 
+                  data: { 
+                    controller: "geolocation",
+                    geolocation_latitude_outlet: "#user_latitude",
+                    geolocation_longitude_outlet: "#user_longitude",
+                    geolocation_location_name_outlet: "#user_location_name"
+                  } do |f| %>
       <% if @user.errors.any? %>
         <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
           <div class="flex">
@@ -34,30 +41,29 @@
         </div>
       <% end %>
 
+      <!-- Location detection button and status -->
+      <div class="text-center mb-4">
+        <button type="button" 
+                data-geolocation-target="detectButton"
+                data-action="click->geolocation#detect"
+                class="hidden bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium">
+          Use My Location
+        </button>
+        <p data-geolocation-target="status" class="hidden text-sm mt-2"></p>
+      </div>
+
       <div>
         <%= f.label :location_name, "Location Name", class: "block text-sm font-medium text-gray-700 mb-1" %>
         <%= f.text_field :location_name, 
             placeholder: "e.g., San Francisco, CA",
+            data: { geolocation_target: "locationName" },
             class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
         <p class="text-xs text-gray-500 mt-1">Optional: Add a friendly name for your location</p>
       </div>
 
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <%= f.label :latitude, class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.number_field :latitude, 
-              step: :any,
-              placeholder: "37.7749",
-              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
-        </div>
-        <div>
-          <%= f.label :longitude, class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.number_field :longitude, 
-              step: :any,
-              placeholder: "-122.4194",
-              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
-        </div>
-      </div>
+      <!-- Hidden latitude and longitude fields -->
+      <%= f.hidden_field :latitude, data: { geolocation_target: "latitude" } %>
+      <%= f.hidden_field :longitude, data: { geolocation_target: "longitude" } %>
 
       <div class="flex items-center">
         <%= f.check_box :location_private, class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" %>

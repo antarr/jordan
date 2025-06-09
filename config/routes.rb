@@ -27,6 +27,9 @@ Rails.application.routes.draw do
     # Dashboard routes
     get 'dashboard' => 'dashboard#index', as: :dashboard
 
+    # Profile routes
+    resource :profile, only: %i[edit update]
+
     # Coming soon page
     get 'coming-soon' => 'pages#coming_soon', as: :coming_soon
 

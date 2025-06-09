@@ -28,8 +28,8 @@
             
             <!-- Profile Photo -->
             <div class="flex justify-center mb-4">
-              <% if current_user.profile_photo.present? %>
-                <img src="<%= current_user.profile_photo %>" alt="Profile" class="w-20 h-20 rounded-full object-cover">
+              <% if current_user.profile_photo.attached? %>
+                <%= image_tag current_user.profile_photo, alt: "Profile", class: "w-20 h-20 rounded-full object-cover" %>
               <% else %>
                 <div class="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
                   <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

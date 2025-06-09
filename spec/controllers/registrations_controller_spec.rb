@@ -208,7 +208,7 @@ RSpec.describe RegistrationsController, type: :controller do
     describe 'POST #create' do
       it 'renders new template with error when contact_method is missing' do
         post :create, params: {}
-        
+
         expect(response).to render_template(:new)
         expect(response).to have_http_status(:unprocessable_entity)
         expect(flash.now[:alert]).to be_present
@@ -217,7 +217,7 @@ RSpec.describe RegistrationsController, type: :controller do
 
       it 'renders new template with error when contact_method is blank' do
         post :create, params: { contact_method: '' }
-        
+
         expect(response).to render_template(:new)
         expect(response).to have_http_status(:unprocessable_entity)
         expect(flash.now[:alert]).to be_present
@@ -226,9 +226,9 @@ RSpec.describe RegistrationsController, type: :controller do
 
       it 'handles user save failure gracefully' do
         allow_any_instance_of(User).to receive(:save).and_return(false)
-        
+
         post :create, params: { contact_method: 'email' }
-        
+
         expect(response).to render_template(:new)
         expect(response).to have_http_status(:unprocessable_entity)
       end
@@ -237,15 +237,15 @@ RSpec.describe RegistrationsController, type: :controller do
     describe 'GET #show' do
       it 'redirects to new registration when no user in session' do
         get :show, params: { id: 'contact_details' }
-        
+
         expect(response).to redirect_to(new_registration_path)
       end
 
       it 'redirects when session user does not exist' do
-        session[:registration_user_id] = 999999
-        
+        session[:registration_user_id] = 999_999
+
         get :show, params: { id: 'contact_details' }
-        
+
         expect(response).to redirect_to(new_registration_path)
       end
 
@@ -254,7 +254,7 @@ RSpec.describe RegistrationsController, type: :controller do
         session[:registration_user_id] = user.id
 
         get :show, params: { id: 'contact_details' }
-        
+
         expect(assigns(:step_number)).to eq(2)
         expect(assigns(:total_steps)).to eq(4)
       end
@@ -284,7 +284,7 @@ RSpec.describe RegistrationsController, type: :controller do
 
         it 'renders wizard template for username step with invalid data' do
           user.update!(registration_step: 2, email: 'test@example.com')
-          
+
           patch :update, params: {
             id: 'username',
             user: { username: 'invalid@username!' }
@@ -298,7 +298,7 @@ RSpec.describe RegistrationsController, type: :controller do
           user.update_columns(registration_step: 3)
           allow(user).to receive(:save).and_return(false)
           allow(User).to receive(:find_by).and_return(user)
-          
+
           patch :update, params: {
             id: 'bio',
             user: { bio: 'too short' }
@@ -311,7 +311,7 @@ RSpec.describe RegistrationsController, type: :controller do
           user.update_columns(registration_step: 4)
           allow(user).to receive(:save).and_return(false)
           allow(User).to receive(:find_by).and_return(user)
-          
+
           patch :update, params: {
             id: 'profile_photo',
             user: { profile_photo: 'test.jpg' }
@@ -324,7 +324,7 @@ RSpec.describe RegistrationsController, type: :controller do
       context 'email verification token generation' do
         it 'generates email verification token for email users without existing token' do
           user.update!(registration_step: 1, email_verification_token: nil)
-          
+
           patch :update, params: {
             id: 'contact_details',
             user: {
@@ -340,7 +340,7 @@ RSpec.describe RegistrationsController, type: :controller do
 
         it 'does not generate new token if one already exists' do
           user.update!(registration_step: 1, email_verification_token: 'existing_token')
-          
+
           patch :update, params: {
             id: 'contact_details',
             user: {
@@ -366,7 +366,7 @@ RSpec.describe RegistrationsController, type: :controller do
 
         it 'allows phone registration' do
           post :create, params: { contact_method: 'phone' }
-          
+
           user = User.last
           expect(user.contact_method).to eq('phone')
           expect(response).to redirect_to(registration_step_path(id: 'contact_details'))
@@ -388,7 +388,7 @@ RSpec.describe RegistrationsController, type: :controller do
 
         it 'redirects phone registration creation to new registration path' do
           post :create, params: { contact_method: 'phone' }
-          
+
           expect(response).to redirect_to(new_registration_path)
           expect(flash[:alert]).to eq('Phone registration is currently unavailable. Please use email registration instead.')
           expect(User.count).to eq(0)
@@ -422,7 +422,7 @@ RSpec.describe RegistrationsController, type: :controller do
 
         it 'allows email registration when phone registration is disabled' do
           post :create, params: { contact_method: 'email' }
-          
+
           user = User.last
           expect(user.contact_method).to eq('email')
           expect(response).to redirect_to(registration_step_path(id: 'contact_details'))
@@ -437,16 +437,16 @@ RSpec.describe RegistrationsController, type: :controller do
     describe '#step_number' do
       it 'returns correct step numbers for each step' do
         expect(controller.send(:step_number)).to eq(1) # default
-        
+
         allow(controller).to receive(:step).and_return(:contact_details)
         expect(controller.send(:step_number)).to eq(2)
-        
+
         allow(controller).to receive(:step).and_return(:username)
         expect(controller.send(:step_number)).to eq(3)
-        
+
         allow(controller).to receive(:step).and_return(:bio)
         expect(controller.send(:step_number)).to eq(4)
-        
+
         allow(controller).to receive(:step).and_return(:profile_photo)
         expect(controller.send(:step_number)).to eq(5)
       end
@@ -455,16 +455,16 @@ RSpec.describe RegistrationsController, type: :controller do
     describe '#step_name' do
       it 'returns correct step names for each step' do
         expect(controller.send(:step_name)).to eq('Getting Started') # default
-        
+
         allow(controller).to receive(:step).and_return(:contact_details)
         expect(controller.send(:step_name)).to eq('Contact Details')
-        
+
         allow(controller).to receive(:step).and_return(:username)
         expect(controller.send(:step_name)).to eq('Username')
-        
+
         allow(controller).to receive(:step).and_return(:bio)
         expect(controller.send(:step_name)).to eq('Bio')
-        
+
         allow(controller).to receive(:step).and_return(:profile_photo)
         expect(controller.send(:step_name)).to eq('Profile Photo')
       end
@@ -472,7 +472,7 @@ RSpec.describe RegistrationsController, type: :controller do
 
     describe '#contact_details_params' do
       let(:user) { create(:user, :step_one) }
-      
+
       before do
         allow(controller).to receive(:current_user_registration).and_return(user)
       end
@@ -481,10 +481,11 @@ RSpec.describe RegistrationsController, type: :controller do
         user.update!(contact_method: 'email')
         allow(controller).to receive(:params).and_return(
           ActionController::Parameters.new(
-            user: { email: 'test@example.com', password: 'password', password_confirmation: 'password', phone: 'should_not_be_permitted' }
+            user: { email: 'test@example.com', password: 'password', password_confirmation: 'password',
+                    phone: 'should_not_be_permitted' }
           )
         )
-        
+
         result = controller.send(:contact_details_params)
         expect(result.keys).to include('email', 'password', 'password_confirmation')
         expect(result.keys).not_to include('phone')
@@ -494,10 +495,11 @@ RSpec.describe RegistrationsController, type: :controller do
         user.update!(contact_method: 'phone')
         allow(controller).to receive(:params).and_return(
           ActionController::Parameters.new(
-            user: { phone: '+1234567890', password: 'password', password_confirmation: 'password', email: 'should_not_be_permitted' }
+            user: { phone: '+1234567890', password: 'password', password_confirmation: 'password',
+                    email: 'should_not_be_permitted' }
           )
         )
-        
+
         result = controller.send(:contact_details_params)
         expect(result.keys).to include('phone', 'password', 'password_confirmation')
         expect(result.keys).not_to include('email')

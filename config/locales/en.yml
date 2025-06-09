@@ -108,6 +108,11 @@ en:
     sign_up: "Sign Up"
     sign_out: "Sign Out"
     hello: "Hello, %{name}"
+    settings: "Settings"
+  
+  profiles:
+    update:
+      success: "Profile updated successfully"
   
   buttons:
     continue: "Continue"

@@ -1,3 +1,34 @@
+# == Schema Information
+#
+# Table name: users
+#
+#  id                                  :bigint           not null, primary key
+#  bio                                 :text
+#  contact_method                      :string
+#  email                               :string
+#  email_verification_token            :string
+#  email_verification_token_expires_at :datetime
+#  email_verified_at                   :datetime
+#  latitude                            :decimal(10, 6)
+#  location_name                       :string
+#  location_private                    :boolean          default(FALSE), not null
+#  longitude                           :decimal(10, 6)
+#  password_digest                     :string
+#  phone                               :string
+#  profile_photo                       :string
+#  registration_step                   :integer          default(1)
+#  username                            :string
+#  created_at                          :datetime         not null
+#  updated_at                          :datetime         not null
+#
+# Indexes
+#
+#  index_users_on_email                     (email) UNIQUE
+#  index_users_on_email_verification_token  (email_verification_token) UNIQUE
+#  index_users_on_latitude_and_longitude    (latitude,longitude)
+#  index_users_on_phone                     (phone) UNIQUE
+#  index_users_on_username                  (username) UNIQUE
+#
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
