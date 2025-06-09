@@ -266,13 +266,234 @@ RSpec.describe User, type: :model do
     end
 
     it 'returns true for step 4 when username is present' do
-      user = create(:user, :step_three, username: Faker::Internet.username)
+      user = create(:user, :step_three, username: Faker::Internet.username(specifier: 5..12, separators: %w[_]).gsub(/[^a-zA-Z0-9_]/, '_'))
       expect(user.can_advance_to_step?(4)).to be true
     end
 
     it 'returns true for step 5 when bio is present and long enough' do
       user = create(:user, :step_four, bio: Faker::Lorem.paragraph(sentence_count: 3))
       expect(user.can_advance_to_step?(5)).to be true
+    end
+
+    it 'returns false for step 3 when email is missing for email users' do
+      user = build_stubbed(:user, contact_method: 'email', email: nil, registration_step: 2)
+      expect(user.can_advance_to_step?(3)).to be false
+    end
+
+    it 'returns false for step 3 when phone is missing for phone users' do
+      user = build_stubbed(:user, contact_method: 'phone', phone: nil, registration_step: 2)
+      expect(user.can_advance_to_step?(3)).to be false
+    end
+
+    it 'returns false for step 4 when username is missing' do
+      user = build_stubbed(:user, contact_method: 'email', email: 'test@example.com', username: nil, registration_step: 3)
+      expect(user.can_advance_to_step?(4)).to be false
+    end
+
+    it 'returns false for step 5 when bio is missing' do
+      user = build_stubbed(:user, contact_method: 'email', email: 'test@example.com', username: 'testuser', bio: nil, registration_step: 4)
+      expect(user.can_advance_to_step?(5)).to be false
+    end
+
+    it 'returns false for step 5 when bio is too short' do
+      user = build_stubbed(:user, contact_method: 'email', email: 'test@example.com', username: 'testuser', bio: 'too short', registration_step: 4)
+      expect(user.can_advance_to_step?(5)).to be false
+    end
+
+    it 'returns false for invalid step numbers' do
+      expect(user.can_advance_to_step?(1)).to be false
+      expect(user.can_advance_to_step?(6)).to be false
+      expect(user.can_advance_to_step?(0)).to be false
+      expect(user.can_advance_to_step?(-1)).to be false
+    end
+  end
+
+  describe '#advance_to_next_step!' do
+    it 'advances to next step when conditions are met' do
+      user = build_stubbed(:user, contact_method: 'email', registration_step: 1)
+      allow(user).to receive(:can_advance_to_step?).with(2).and_return(true)
+      allow(user).to receive(:update!).with(registration_step: 2).and_return(true)
+      
+      expect(user.advance_to_next_step!).to be true
+    end
+
+    it 'returns false when conditions are not met' do
+      user = build_stubbed(:user, contact_method: nil, registration_step: 1)
+      allow(user).to receive(:can_advance_to_step?).with(2).and_return(false)
+      
+      expect(user.advance_to_next_step!).to be false
+    end
+
+    it 'updates the registration_step in database' do
+      user = create(:user, :step_one, contact_method: 'email', email: 'test@example.com')
+      user.advance_to_next_step!
+      user_from_db = User.find(user.id)
+      expect(user_from_db.registration_step).to eq(2)
+    end
+
+    it 'works for multiple consecutive advances' do
+      user = create(:user, :step_one, contact_method: 'email', email: 'test@example.com')
+      expect(user.advance_to_next_step!).to be true
+      expect(user.registration_step).to eq(2)
+
+      user.update_columns(username: 'testuser')
+      expect(user.advance_to_next_step!).to be true
+      expect(user.registration_step).to eq(3)
+    end
+  end
+
+  describe 'private methods' do
+    describe '#normalize_email' do
+      it 'is called before validation when email is present' do
+        user = build(:user, email: '  TEST@EXAMPLE.COM  ')
+        user.valid?
+        expect(user.email).to eq('test@example.com')
+      end
+
+      it 'is not called when email is blank' do
+        user = build(:user, email: nil)
+        expect(user).not_to receive(:normalize_email)
+        user.valid?
+      end
+
+      it 'handles empty string email' do
+        user = build(:user, email: '')
+        user.valid?
+        expect(user.email).to eq('')
+      end
+    end
+
+    describe '#generate_email_verification_token' do
+      it 'is called before creation when email is present' do
+        user = build(:user, email: 'test@example.com')
+        expect(user.email_verification_token).to be_nil
+        user.save!
+        expect(user.email_verification_token).to be_present
+        expect(user.email_verification_token_expires_at).to be_present
+      end
+
+      it 'is not called when email is blank' do
+        user = build(:user, email: nil, contact_method: 'phone', phone: '+1234567890')
+        user.save!
+        expect(user.email_verification_token).to be_nil
+        expect(user.email_verification_token_expires_at).to be_nil
+      end
+
+      it 'sets expiration time to 24 hours from now' do
+        user = build(:user, email: 'test@example.com')
+        user.save!
+        expect(user.email_verification_token_expires_at).to be_within(1.minute).of(24.hours.from_now)
+      end
+
+      it 'generates a unique token each time' do
+        user1 = create(:user, email: 'test1@example.com')
+        user2 = create(:user, email: 'test2@example.com')
+        expect(user1.email_verification_token).not_to eq(user2.email_verification_token)
+      end
+    end
+
+    describe '#password_confirmation_matches' do
+      it 'adds error when passwords do not match' do
+        user = build(:user, password: 'password123', password_confirmation: 'different')
+        user.valid?
+        expect(user.errors[:password_confirmation]).to include("doesn't match Password")
+      end
+
+      it 'does not add error when passwords match' do
+        user = build(:user, password: 'password123', password_confirmation: 'password123')
+        user.valid?
+        expect(user.errors[:password_confirmation]).to be_empty
+      end
+
+      it 'does not add error when password_confirmation is nil and password is nil' do
+        user = build(:user, password: nil, password_confirmation: nil)
+        user.valid?
+        expect(user.errors[:password_confirmation]).not_to include("doesn't match Password")
+      end
+    end
+  end
+
+  describe 'edge cases and validations' do
+    describe 'email format validation' do
+      it 'allows emails with plus signs' do
+        user = build(:user, :email_user, :step_two, email: 'user+tag@example.com')
+        expect(user).to be_valid
+      end
+
+      it 'allows emails with dots in username' do
+        user = build(:user, :email_user, :step_two, email: 'first.last@example.com')
+        expect(user).to be_valid
+      end
+
+      it 'rejects emails with spaces' do
+        user = build(:user, :email_user, :step_two, email: 'user @example.com')
+        expect(user).not_to be_valid
+      end
+    end
+
+    describe 'phone format validation' do
+      it 'allows phone with country code' do
+        user = build(:user, :phone_user, :step_two, phone: '+1234567890')
+        expect(user).to be_valid
+      end
+
+      it 'allows phone without plus but starting with digit' do
+        user = build(:user, :phone_user, :step_two, phone: '1234567890')
+        expect(user).to be_valid
+      end
+
+      it 'rejects phone starting with zero' do
+        user = build(:user, :phone_user, :step_two, phone: '+0123456789')
+        expect(user).not_to be_valid
+      end
+
+      it 'rejects phone with letters' do
+        user = build(:user, :phone_user, :step_two, phone: '+123abc7890')
+        expect(user).not_to be_valid
+      end
+    end
+
+    describe 'username format validation' do
+      it 'allows usernames with underscores' do
+        user = build(:user, :step_three, username: 'user_name')
+        expect(user).to be_valid
+      end
+
+      it 'allows usernames with numbers' do
+        user = build(:user, :step_three, username: 'user123')
+        expect(user).to be_valid
+      end
+
+      it 'rejects usernames with special characters' do
+        user = build(:user, :step_three, username: 'user@name')
+        expect(user).not_to be_valid
+      end
+
+      it 'rejects usernames with spaces' do
+        user = build(:user, :step_three, username: 'user name')
+        expect(user).not_to be_valid
+      end
+    end
+
+    describe 'password validations with has_secure_password' do
+      it 'validates password length on new records' do
+        user = build(:user, :step_two, password: 'short')
+        expect(user).not_to be_valid
+        expect(user.errors[:password]).to include('is too short (minimum is 6 characters)')
+      end
+
+      it 'validates password length on existing records when password is present' do
+        user = create(:user, :step_two)
+        user.password = 'short'
+        expect(user).not_to be_valid
+        expect(user.errors[:password]).to include('is too short (minimum is 6 characters)')
+      end
+
+      it 'allows nil password on existing records when not being changed' do
+        user = create(:user, :step_two)
+        user.email = 'newemail@example.com'
+        expect(user).to be_valid
+      end
     end
   end
 end

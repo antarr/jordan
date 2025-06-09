@@ -203,4 +203,231 @@ RSpec.describe RegistrationsController, type: :controller do
       end
     end
   end
+
+  describe 'Error handling and edge cases' do
+    describe 'POST #create' do
+      it 'renders new template with error when contact_method is missing' do
+        post :create, params: {}
+        
+        expect(response).to render_template(:new)
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(flash.now[:alert]).to be_present
+        expect(User.count).to eq(0)
+      end
+
+      it 'renders new template with error when contact_method is blank' do
+        post :create, params: { contact_method: '' }
+        
+        expect(response).to render_template(:new)
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(flash.now[:alert]).to be_present
+        expect(User.count).to eq(0)
+      end
+
+      it 'handles user save failure gracefully' do
+        allow_any_instance_of(User).to receive(:save).and_return(false)
+        
+        post :create, params: { contact_method: 'email' }
+        
+        expect(response).to render_template(:new)
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    describe 'GET #show' do
+      it 'redirects to new registration when no user in session' do
+        get :show, params: { id: 'contact_details' }
+        
+        expect(response).to redirect_to(new_registration_path)
+      end
+
+      it 'redirects when session user does not exist' do
+        session[:registration_user_id] = 999999
+        
+        get :show, params: { id: 'contact_details' }
+        
+        expect(response).to redirect_to(new_registration_path)
+      end
+
+      it 'assigns step_number and total_steps' do
+        user = create(:user, :step_one)
+        session[:registration_user_id] = user.id
+
+        get :show, params: { id: 'contact_details' }
+        
+        expect(assigns(:step_number)).to eq(2)
+        expect(assigns(:total_steps)).to eq(4)
+      end
+    end
+
+    describe 'PATCH #update' do
+      let(:user) { create(:user, :step_one, contact_method: 'email') }
+
+      before do
+        session[:registration_user_id] = user.id
+      end
+
+      context 'when validation fails' do
+        it 'renders wizard template for contact_details step with invalid data' do
+          patch :update, params: {
+            id: 'contact_details',
+            user: {
+              email: 'invalid-email',
+              password: 'short',
+              password_confirmation: 'different'
+            }
+          }
+
+          expect(response).to render_template(:contact_details)
+          expect(user.reload.registration_step).to eq(1)
+        end
+
+        it 'renders wizard template for username step with invalid data' do
+          user.update!(registration_step: 2, email: 'test@example.com')
+          
+          patch :update, params: {
+            id: 'username',
+            user: { username: 'invalid@username!' }
+          }
+
+          expect(response).to render_template(:username)
+          expect(user.reload.registration_step).to eq(2)
+        end
+
+        it 'renders wizard template for bio step with invalid data' do
+          user.update_columns(registration_step: 3)
+          allow(user).to receive(:save).and_return(false)
+          allow(User).to receive(:find_by).and_return(user)
+          
+          patch :update, params: {
+            id: 'bio',
+            user: { bio: 'too short' }
+          }
+
+          expect(response).to render_template(:bio)
+        end
+
+        it 'renders wizard template for profile_photo step with invalid data' do
+          user.update_columns(registration_step: 4)
+          allow(user).to receive(:save).and_return(false)
+          allow(User).to receive(:find_by).and_return(user)
+          
+          patch :update, params: {
+            id: 'profile_photo',
+            user: { profile_photo: 'test.jpg' }
+          }
+
+          expect(response).to render_template(:profile_photo)
+        end
+      end
+
+      context 'email verification token generation' do
+        it 'generates email verification token for email users without existing token' do
+          user.update!(registration_step: 1, email_verification_token: nil)
+          
+          patch :update, params: {
+            id: 'contact_details',
+            user: {
+              email: 'test@example.com',
+              password: 'password123',
+              password_confirmation: 'password123'
+            }
+          }
+
+          user.reload
+          expect(user.email_verification_token).to be_present
+        end
+
+        it 'does not generate new token if one already exists' do
+          user.update!(registration_step: 1, email_verification_token: 'existing_token')
+          
+          patch :update, params: {
+            id: 'contact_details',
+            user: {
+              email: 'test@example.com',
+              password: 'password123',
+              password_confirmation: 'password123'
+            }
+          }
+
+          user.reload
+          expect(user.email_verification_token).to eq('existing_token')
+        end
+      end
+    end
+  end
+
+  describe 'Helper methods' do
+    let(:controller) { described_class.new }
+
+    describe '#step_number' do
+      it 'returns correct step numbers for each step' do
+        expect(controller.send(:step_number)).to eq(1) # default
+        
+        allow(controller).to receive(:step).and_return(:contact_details)
+        expect(controller.send(:step_number)).to eq(2)
+        
+        allow(controller).to receive(:step).and_return(:username)
+        expect(controller.send(:step_number)).to eq(3)
+        
+        allow(controller).to receive(:step).and_return(:bio)
+        expect(controller.send(:step_number)).to eq(4)
+        
+        allow(controller).to receive(:step).and_return(:profile_photo)
+        expect(controller.send(:step_number)).to eq(5)
+      end
+    end
+
+    describe '#step_name' do
+      it 'returns correct step names for each step' do
+        expect(controller.send(:step_name)).to eq('Getting Started') # default
+        
+        allow(controller).to receive(:step).and_return(:contact_details)
+        expect(controller.send(:step_name)).to eq('Contact Details')
+        
+        allow(controller).to receive(:step).and_return(:username)
+        expect(controller.send(:step_name)).to eq('Username')
+        
+        allow(controller).to receive(:step).and_return(:bio)
+        expect(controller.send(:step_name)).to eq('Bio')
+        
+        allow(controller).to receive(:step).and_return(:profile_photo)
+        expect(controller.send(:step_name)).to eq('Profile Photo')
+      end
+    end
+
+    describe '#contact_details_params' do
+      let(:user) { create(:user, :step_one) }
+      
+      before do
+        allow(controller).to receive(:current_user_registration).and_return(user)
+      end
+
+      it 'permits email params for email users' do
+        user.update!(contact_method: 'email')
+        allow(controller).to receive(:params).and_return(
+          ActionController::Parameters.new(
+            user: { email: 'test@example.com', password: 'password', password_confirmation: 'password', phone: 'should_not_be_permitted' }
+          )
+        )
+        
+        result = controller.send(:contact_details_params)
+        expect(result.keys).to include('email', 'password', 'password_confirmation')
+        expect(result.keys).not_to include('phone')
+      end
+
+      it 'permits phone params for phone users' do
+        user.update!(contact_method: 'phone')
+        allow(controller).to receive(:params).and_return(
+          ActionController::Parameters.new(
+            user: { phone: '+1234567890', password: 'password', password_confirmation: 'password', email: 'should_not_be_permitted' }
+          )
+        )
+        
+        result = controller.send(:contact_details_params)
+        expect(result.keys).to include('phone', 'password', 'password_confirmation')
+        expect(result.keys).not_to include('email')
+      end
+    end
+  end
 end
