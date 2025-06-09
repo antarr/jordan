@@ -22,6 +22,9 @@ class RegistrationsController < ApplicationController
     @user = User.new(contact_method: params[:contact_method])
     @user.registration_step = 1
 
+    # Bypassing validations here is intentional because this is the first step
+    # in a multi-step registration process. Validations will be applied in
+    # subsequent steps as the user completes the registration flow.
     if @user.save(validate: false)
       session[:registration_user_id] = @user.id
       redirect_to registration_step_path(:contact_details)
