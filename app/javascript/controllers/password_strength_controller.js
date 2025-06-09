@@ -138,7 +138,7 @@ export default class extends Controller {
     
     // Check if password meets minimum requirements
     const requirements = this.checkRequirements(password)
-    const meetsMinimumReqs = requirements.length && password.length >= 6
+    const meetsMinimumReqs = requirements.length
     
     const shouldEnable = isPasswordStrong && passwordsMatch && meetsMinimumReqs
     
