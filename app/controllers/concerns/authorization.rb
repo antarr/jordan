@@ -3,6 +3,9 @@ module Authorization
 
   included do
     before_action :ensure_user_has_role
+    
+    helper_method :current_user_can?, :current_user_can_access?,
+                  :current_user_admin?, :current_user_moderator?
   end
 
   private
@@ -85,7 +88,4 @@ module Authorization
   def current_user_moderator?
     moderator?
   end
-
-  helper_method :current_user_can?, :current_user_can_access?,
-                :current_user_admin?, :current_user_moderator?
 end
