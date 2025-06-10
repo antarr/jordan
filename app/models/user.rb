@@ -32,6 +32,7 @@
 class User < ApplicationRecord
   include Locatable
   include Validatable
+  include Authorizable
 
   has_secure_password validations: false
   has_one_attached :profile_photo

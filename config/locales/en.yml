@@ -123,6 +123,9 @@ en:
     remove_photo:
       success: "Profile photo removed successfully"
       no_photo: "No profile photo to remove"
+
+  authorization:
+    access_denied: "You don't have permission to access this resource"
   
   buttons:
     continue: "Continue"

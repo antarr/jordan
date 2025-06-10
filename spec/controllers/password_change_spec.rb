@@ -32,7 +32,7 @@ RSpec.describe ProfilesController, type: :controller do
 
       it 'successfully changes the password' do
         patch :change_password, params: valid_params
-        
+
         user.reload
         expect(user.authenticate('NewPassword123!')).to be_truthy
         expect(user.authenticate('CurrentPassword123!')).to be_falsey
@@ -40,7 +40,7 @@ RSpec.describe ProfilesController, type: :controller do
 
       it 'redirects to edit profile path with success message' do
         patch :change_password, params: valid_params
-        
+
         expect(response).to redirect_to(edit_profile_path)
         expect(flash[:notice]).to eq('Password changed successfully')
       end
@@ -59,7 +59,7 @@ RSpec.describe ProfilesController, type: :controller do
 
       it 'does not change the password' do
         patch :change_password, params: invalid_current_password_params
-        
+
         user.reload
         expect(user.authenticate('CurrentPassword123!')).to be_truthy
         expect(user.authenticate('NewPassword123!')).to be_falsey
@@ -67,7 +67,7 @@ RSpec.describe ProfilesController, type: :controller do
 
       it 'renders edit template with error' do
         patch :change_password, params: invalid_current_password_params
-        
+
         expect(response).to render_template(:edit)
         expect(response.status).to eq(422)
         expect(assigns(:user).errors[:current_password]).to include('is incorrect')
@@ -87,7 +87,7 @@ RSpec.describe ProfilesController, type: :controller do
 
       it 'does not change the password' do
         patch :change_password, params: mismatched_confirmation_params
-        
+
         user.reload
         expect(user.authenticate('CurrentPassword123!')).to be_truthy
         expect(user.authenticate('NewPassword123!')).to be_falsey
@@ -95,7 +95,7 @@ RSpec.describe ProfilesController, type: :controller do
 
       it 'renders edit template with validation errors' do
         patch :change_password, params: mismatched_confirmation_params
-        
+
         expect(response).to render_template(:edit)
         expect(response.status).to eq(422)
         expect(assigns(:user).errors[:password_confirmation]).to include("doesn't match Password")
@@ -115,7 +115,7 @@ RSpec.describe ProfilesController, type: :controller do
 
       it 'does not change the password' do
         patch :change_password, params: weak_password_params
-        
+
         user.reload
         expect(user.authenticate('CurrentPassword123!')).to be_truthy
         expect(user.authenticate('weak')).to be_falsey
@@ -123,7 +123,7 @@ RSpec.describe ProfilesController, type: :controller do
 
       it 'renders edit template with validation errors' do
         patch :change_password, params: weak_password_params
-        
+
         expect(response).to render_template(:edit)
         expect(response.status).to eq(422)
         expect(assigns(:user).errors[:password]).to include('is too short (minimum is 6 characters)')
@@ -143,16 +143,16 @@ RSpec.describe ProfilesController, type: :controller do
             new_password_confirmation: 'NewPassword123!'
           }
         }
-        
+
         expect(response).to redirect_to(new_session_path)
       end
     end
 
     context 'with missing parameters' do
       it 'raises parameter missing error' do
-        expect {
+        expect do
           patch :change_password, params: { other_param: 'value' }
-        }.to raise_error(ActionController::ParameterMissing)
+        end.to raise_error(ActionController::ParameterMissing)
       end
     end
   end
@@ -161,7 +161,7 @@ RSpec.describe ProfilesController, type: :controller do
     it 'only permits expected password change parameters' do
       controller_instance = ProfilesController.new
       controller_instance.instance_variable_set(:@user, user)
-      
+
       params = ActionController::Parameters.new(
         password_change: {
           current_password: 'current',
@@ -170,11 +170,11 @@ RSpec.describe ProfilesController, type: :controller do
           malicious_param: 'should_not_be_permitted'
         }
       )
-      
+
       allow(controller_instance).to receive(:params).and_return(params)
-      
+
       filtered_params = controller_instance.send(:password_change_params)
-      
+
       expect(filtered_params.keys).to contain_exactly(
         'current_password', 'new_password', 'new_password_confirmation'
       )

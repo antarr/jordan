@@ -42,13 +42,13 @@ RSpec.describe 'Email Verification Flow', type: :feature do
       click_button 'Complete Registration'
 
       # Should redirect to login with notice about email verification
-      expect(current_path).to end_with("/session/new")
+      expect(current_path).to end_with('/session/new')
       expect(page).to have_content('Account created successfully! Please check your email to verify your account.')
     end
 
     it 'does not allow login before email verification', js: true do
       # Create unverified user
-      unverified_user = User.create!(
+      User.create!(
         email: test_user[:email],
         password: test_user[:password],
         password_confirmation: test_user[:password],
@@ -61,18 +61,18 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Try to login
       visit new_session_path
-      
+
       # Switch to email form
       click_button 'Email'
       expect(page).to have_field('email', visible: true)
-      
+
       fill_in 'email', with: test_user[:email]
       fill_in 'password', with: test_user[:password]
       click_button 'Sign In'
 
       # Should show unverified email error
       expect(page).to have_content('Please verify your email address before signing in')
-      expect(current_path).to end_with("/session/new")
+      expect(current_path).to end_with('/session/new')
     end
 
     it 'allows login after email verification' do
@@ -93,8 +93,8 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Should show success message and redirect to dashboard (auto-signed in)
       expect(page).to have_content('Your email has been verified successfully!')
-      expect(current_path).to end_with("/dashboard")
-      
+      expect(current_path).to end_with('/dashboard')
+
       # Should already be logged in
       expect(page).to have_content('Welcome to your dashboard')
     end
@@ -104,7 +104,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Should show error message
       expect(page).to have_content('Invalid or expired verification link')
-      expect(current_path).to end_with("/session/new")
+      expect(current_path).to end_with('/session/new')
     end
 
     it 'handles already verified email' do
@@ -127,7 +127,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Should show success message (verifies again and signs in)
       expect(page).to have_content('Your email has been verified successfully!')
-      expect(current_path).to end_with("/dashboard")
+      expect(current_path).to end_with('/dashboard')
     end
   end
 
@@ -148,11 +148,11 @@ RSpec.describe 'Email Verification Flow', type: :feature do
     it 'shows resend verification link on login failure', js: true do
       # Try to login with unverified email
       visit new_session_path
-      
+
       # Switch to email form
       click_button 'Email'
       expect(page).to have_field('email', visible: true)
-      
+
       fill_in 'email', with: test_user[:email]
       fill_in 'password', with: test_user[:password]
       click_button 'Sign In'
@@ -162,14 +162,14 @@ RSpec.describe 'Email Verification Flow', type: :feature do
       expect(page).to have_link('Resend verification email')
     end
 
-    it 'allows requesting new verification email', js: true do      
+    it 'allows requesting new verification email', js: true do
       # Visit login page
       visit new_session_path
-      
+
       # Switch to email form
       click_button 'Email'
       expect(page).to have_field('email', visible: true)
-      
+
       fill_in 'email', with: test_user[:email]
       fill_in 'password', with: test_user[:password]
       click_button 'Sign In'
@@ -180,9 +180,9 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Navigate to resend page (direct visit instead of clicking due to JS interference)
       visit new_email_verification_request_path
-      
+
       # Should be on resend page
-      expect(current_path).to end_with("/resend_verification/new")
+      expect(current_path).to end_with('/resend_verification/new')
       expect(page).to have_field('email')
 
       # Submit resend request
@@ -191,7 +191,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Should show success message
       expect(page).to have_content('If an account exists with that email, we have sent a new verification link')
-      expect(current_path).to end_with("/session/new")
+      expect(current_path).to end_with('/session/new')
     end
 
     it 'handles resend for non-existent email' do
@@ -202,7 +202,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Should show same success message for security (don't expose if email exists)
       expect(page).to have_content('If an account exists with that email, we have sent a new verification link')
-      expect(current_path).to end_with("/session/new")
+      expect(current_path).to end_with('/session/new')
     end
 
     it 'handles resend for already verified email' do
@@ -225,7 +225,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Should show same success message for security
       expect(page).to have_content('If an account exists with that email, we have sent a new verification link')
-      expect(current_path).to end_with("/session/new")
+      expect(current_path).to end_with('/session/new')
     end
   end
 
@@ -251,12 +251,12 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Should show error message
       expect(page).to have_content('Invalid or expired verification link')
-      expect(current_path).to end_with("/session/new")
+      expect(current_path).to end_with('/session/new')
     end
   end
 
   describe 'Email Change Verification' do
-    # Note: If email change feature is implemented, tests would go here
+    # NOTE: If email change feature is implemented, tests would go here
     # For now, users can't change email after registration
   end
 
@@ -265,7 +265,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
       visit email_verification_path(token: 'invalid-empty-token')
 
       expect(page).to have_content('Invalid or expired verification link')
-      expect(current_path).to end_with("/session/new")
+      expect(current_path).to end_with('/session/new')
     end
 
     it 'is case-sensitive for tokens' do
@@ -284,14 +284,14 @@ RSpec.describe 'Email Verification Flow', type: :feature do
       visit email_verification_path(token: user.email_verification_token.upcase)
 
       expect(page).to have_content('Invalid or expired verification link')
-      expect(current_path).to end_with("/session/new")
+      expect(current_path).to end_with('/session/new')
     end
   end
 
   describe 'Dashboard Email Verification Status' do
     it 'does not show warning for verified users', js: true do
       # Create verified user
-      user = User.create!(
+      User.create!(
         email: test_user[:email],
         password: test_user[:password],
         password_confirmation: test_user[:password],
@@ -304,11 +304,11 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
       # Login
       visit new_session_path
-      
+
       # Switch to email form
       click_button 'Email'
       expect(page).to have_field('email', visible: true)
-      
+
       fill_in 'email', with: test_user[:email]
       fill_in 'password', with: test_user[:password]
       click_button 'Sign In'
@@ -316,7 +316,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
       # Should be on dashboard, not on login page
       expect(page).to have_content('Welcome to your dashboard')
       expect(current_path).to eq('/en/dashboard')
-      
+
       # Should not show any verification warning on dashboard
       expect(page).not_to have_content('Your email address is not verified')
       expect(page).not_to have_content('Verification required')
@@ -328,30 +328,30 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
     it 'sends verification email on registration' do
       perform_enqueued_jobs do
-        expect {
+        expect do
           # Step 1: Start registration with email
           start_registration_with_email
-          
+
           # Step 2: Contact details
           fill_in 'user[email]', with: test_user[:email]
           fill_in 'user[password]', with: test_user[:password]
           fill_in 'user[password_confirmation]', with: test_user[:password]
           click_button 'Continue'
-          
+
           # Step 3: Username
           fill_in 'user[username]', with: test_user[:username]
           click_button 'Continue'
-          
+
           # Step 4: Bio
           fill_in 'user[bio]', with: test_user[:bio]
           click_button 'Continue'
-          
+
           # Step 5: Profile photo (skip)
           click_button 'Continue'
-          
+
           # Step 6: Location (skip)
           click_button 'Complete Registration'
-        }.to change { ActionMailer::Base.deliveries.count }.by(1)
+        end.to change { ActionMailer::Base.deliveries.count }.by(1)
       end
 
       # Check the email was sent to the right person
@@ -362,7 +362,7 @@ RSpec.describe 'Email Verification Flow', type: :feature do
 
     it 'sends new verification email on resend request' do
       # Create unverified user
-      user = User.create!(
+      User.create!(
         email: test_user[:email],
         password: test_user[:password],
         password_confirmation: test_user[:password],
@@ -374,11 +374,11 @@ RSpec.describe 'Email Verification Flow', type: :feature do
       )
 
       perform_enqueued_jobs do
-        expect {
+        expect do
           visit new_email_verification_request_path
           fill_in 'email', with: test_user[:email]
           click_button 'Send Verification Email'
-        }.to change { ActionMailer::Base.deliveries.count }.by(1)
+        end.to change { ActionMailer::Base.deliveries.count }.by(1)
       end
     end
   end

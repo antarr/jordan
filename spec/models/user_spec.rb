@@ -398,7 +398,8 @@ RSpec.describe User, type: :model do
     end
 
     it 'returns true for step 4 when username is present' do
-      user = create(:user, :step_three, username: Faker::Internet.username(specifier: 5..12, separators: %w[_]).gsub(/[^a-zA-Z0-9_]/, '_'))
+      user = create(:user, :step_three,
+                    username: Faker::Internet.username(specifier: 5..12, separators: %w[_]).gsub(/[^a-zA-Z0-9_]/, '_'))
       expect(user.can_advance_to_step?(4)).to be true
     end
 
@@ -423,17 +424,20 @@ RSpec.describe User, type: :model do
     end
 
     it 'returns false for step 4 when username is missing' do
-      user = build_stubbed(:user, contact_method: 'email', email: 'test@example.com', username: nil, registration_step: 3)
+      user = build_stubbed(:user, contact_method: 'email', email: 'test@example.com', username: nil,
+                                  registration_step: 3)
       expect(user.can_advance_to_step?(4)).to be false
     end
 
     it 'returns false for step 5 when bio is missing' do
-      user = build_stubbed(:user, contact_method: 'email', email: 'test@example.com', username: 'testuser', bio: nil, registration_step: 4)
+      user = build_stubbed(:user, contact_method: 'email', email: 'test@example.com', username: 'testuser', bio: nil,
+                                  registration_step: 4)
       expect(user.can_advance_to_step?(5)).to be false
     end
 
     it 'returns false for step 5 when bio is too short' do
-      user = build_stubbed(:user, contact_method: 'email', email: 'test@example.com', username: 'testuser', bio: 'too short', registration_step: 4)
+      user = build_stubbed(:user, contact_method: 'email', email: 'test@example.com', username: 'testuser',
+                                  bio: 'too short', registration_step: 4)
       expect(user.can_advance_to_step?(5)).to be false
     end
 
@@ -450,14 +454,14 @@ RSpec.describe User, type: :model do
       user = build_stubbed(:user, contact_method: 'email', registration_step: 1)
       allow(user).to receive(:can_advance_to_step?).with(2).and_return(true)
       allow(user).to receive(:update!).with(registration_step: 2).and_return(true)
-      
+
       expect(user.advance_to_next_step!).to be true
     end
 
     it 'returns false when conditions are not met' do
       user = build_stubbed(:user, contact_method: nil, registration_step: 1)
       allow(user).to receive(:can_advance_to_step?).with(2).and_return(false)
-      
+
       expect(user.advance_to_next_step!).to be false
     end
 
@@ -630,6 +634,35 @@ RSpec.describe User, type: :model do
         user = create(:user, :step_two)
         user.email = 'newemail@example.com'
         expect(user).to be_valid
+      end
+    end
+  end
+
+  describe 'role-based authorization' do
+    let(:authorizable_instance) { create(:user, :complete_registration) }
+
+    describe 'associations' do
+      it { should belong_to(:role).optional }
+    end
+
+    describe 'included associations and callbacks' do
+      it 'adds role association' do
+        expect(User.reflect_on_association(:role)).to be_present
+        expect(User.reflect_on_association(:role).options[:optional]).to be true
+      end
+
+      it 'adds after_create callback for assign_default_role' do
+        expect(User._create_callbacks.map(&:filter)).to include(:assign_default_role)
+      end
+    end
+
+    it_behaves_like 'authorizable'
+
+    describe 'callbacks' do
+      it 'assigns default role after user creation' do
+        default_role = create(:role, name: 'user')
+        new_user = create(:user, :complete_registration)
+        expect(new_user.reload.role).to eq(default_role)
       end
     end
   end

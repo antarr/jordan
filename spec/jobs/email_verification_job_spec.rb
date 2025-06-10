@@ -9,8 +9,8 @@ RSpec.describe EmailVerificationJob, type: :job do
   end
 
   it 'queues the job' do
-    expect {
+    expect do
       EmailVerificationJob.perform_later(user)
-    }.to have_enqueued_job(EmailVerificationJob).with(user)
+    end.to have_enqueued_job(EmailVerificationJob).with(user)
   end
 end

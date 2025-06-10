@@ -13,18 +13,21 @@ rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
 
+# Load shared examples and support files
+Dir[Rails.root.join('spec/support/**/*.rb')].sort.each { |f| require f }
+
 RSpec.configure do |config|
   config.fixture_paths = [Rails.root.join('spec/fixtures')]
   config.use_transactional_fixtures = true
   config.infer_spec_type_from_file_location!
   config.filter_rails_from_backtrace!
-  
+
   # Include FactoryBot methods
   config.include FactoryBot::Syntax::Methods
-  
+
   # Include ActiveJob test helpers for testing background jobs
   config.include ActiveJob::TestHelper
-  
+
   # Include fixture file upload helpers for controller specs
   config.include ActionDispatch::TestProcess::FixtureFile, type: :controller
 
@@ -33,7 +36,7 @@ RSpec.configure do |config|
     ActionMailer::Base.deliveries.clear
     I18n.locale = I18n.default_locale
   end
-  
+
   # Helper methods for internationalized routes
   config.include Module.new {
     def localized_path(path)
@@ -65,7 +68,6 @@ Capybara.register_driver :selenium_chrome_headless do |app|
   options.add_argument('--window-size=1920,1080')
 
   Capybara::Selenium::Driver.new(app,
-    browser: :chrome,
-    options: options
-  )
+                                 browser: :chrome,
+                                 options: options)
 end

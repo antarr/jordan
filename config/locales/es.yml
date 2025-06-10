@@ -88,6 +88,9 @@ es:
     remove_photo:
       success: "Foto de perfil eliminada exitosamente"
       no_photo: "No hay foto de perfil para eliminar"
+
+  authorization:
+    access_denied: "No tienes permisos para acceder a este recurso"
   
   buttons:
     continue: "Continuar"
