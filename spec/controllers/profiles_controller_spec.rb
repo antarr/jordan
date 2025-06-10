@@ -348,6 +348,65 @@ RSpec.describe ProfilesController, type: :controller do
     end
   end
 
+  describe 'DELETE #remove_photo' do
+    before do
+      session[:user_id] = user.id
+    end
+
+    context 'when user has a profile photo' do
+      before do
+        # Create a mock file and attach it
+        file = fixture_file_upload(Rails.root.join('spec', 'fixtures', 'test_image.jpg'), 'image/jpeg')
+        user.profile_photo.attach(file)
+      end
+
+      it 'removes the profile photo' do
+        expect {
+          delete :remove_photo
+        }.to change { user.reload.profile_photo.attached? }.from(true).to(false)
+      end
+
+      it 'redirects to edit profile page' do
+        delete :remove_photo
+        expect(response).to redirect_to(edit_profile_path)
+      end
+
+      it 'sets a success notice' do
+        delete :remove_photo
+        expect(flash[:notice]).to eq(I18n.t('profiles.remove_photo.success'))
+      end
+    end
+
+    context 'when user has no profile photo' do
+      it 'does not change anything' do
+        expect {
+          delete :remove_photo
+        }.not_to change { user.reload.profile_photo.attached? }
+      end
+
+      it 'redirects to edit profile page' do
+        delete :remove_photo
+        expect(response).to redirect_to(edit_profile_path)
+      end
+
+      it 'sets an alert message' do
+        delete :remove_photo
+        expect(flash[:alert]).to eq(I18n.t('profiles.remove_photo.no_photo'))
+      end
+    end
+
+    context 'when not authenticated' do
+      before do
+        session[:user_id] = nil
+      end
+
+      it 'redirects to login page' do
+        delete :remove_photo
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
+
   describe 'internationalization' do
     before do
       session[:user_id] = user.id

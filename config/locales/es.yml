@@ -79,6 +79,15 @@ es:
     sign_up: "Registrarse"
     sign_out: "Cerrar Sesión"
     hello: "Hola, %{name}"
+
+  profiles:
+    update:
+      success: "Perfil actualizado exitosamente"
+    change_password:
+      success: "Contraseña cambiada exitosamente"
+    remove_photo:
+      success: "Foto de perfil eliminada exitosamente"
+      no_photo: "No hay foto de perfil para eliminar"
   
   buttons:
     continue: "Continuar"

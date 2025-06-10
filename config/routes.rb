@@ -39,6 +39,7 @@ Rails.application.routes.draw do
     # Profile routes
     resource :profile, only: %i[edit update] do
       patch :change_password
+      delete :remove_photo
     end
 
     # Coming soon page

@@ -120,6 +120,9 @@ en:
       success: "Profile updated successfully"
     change_password:
       success: "Password changed successfully"
+    remove_photo:
+      success: "Profile photo removed successfully"
+      no_photo: "No profile photo to remove"
   
   buttons:
     continue: "Continue"

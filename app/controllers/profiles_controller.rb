@@ -33,6 +33,17 @@ class ProfilesController < ApplicationController
     end
   end
 
+  def remove_photo
+    @user = current_user
+
+    if @user.profile_photo.attached?
+      @user.profile_photo.purge
+      redirect_to edit_profile_path, notice: t('profiles.remove_photo.success')
+    else
+      redirect_to edit_profile_path, alert: t('profiles.remove_photo.no_photo')
+    end
+  end
+
   private
 
   def profile_params
