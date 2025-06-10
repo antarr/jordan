@@ -18,27 +18,31 @@ module Authorization
   end
 
   def authorize!(permission_name)
-    return if current_user&.can?(permission_name)
+    return true if current_user&.can?(permission_name)
 
     handle_authorization_failure(permission_name)
+    false
   end
 
   def authorize_resource!(resource, action)
-    return if current_user&.can_access?(resource, action)
+    return true if current_user&.can_access?(resource, action)
 
     handle_authorization_failure("#{resource}.#{action}")
+    false
   end
 
   def require_admin!
-    return if current_user&.admin?
+    return true if current_user&.admin?
 
     handle_authorization_failure('admin access')
+    false
   end
 
   def require_moderator_or_admin!
-    return if current_user&.admin? || current_user&.moderator?
+    return true if current_user&.admin? || current_user&.moderator?
 
     handle_authorization_failure('moderator or admin access')
+    false
   end
 
   def can?(permission_name)
