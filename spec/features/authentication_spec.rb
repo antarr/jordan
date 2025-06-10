@@ -297,16 +297,20 @@ RSpec.describe 'Authentication Flow', type: :feature do
       fill_in 'password', with: 'WrongPassword'
       click_button 'Sign In'
 
-      # After error, ensure we're still on email form (might need to switch back)
-      if !page.has_field?('email', visible: true)
+      # The form should show an error message
+      expect(page).to have_content(I18n.t('controllers.sessions.create.invalid_credentials'))
+      
+      # After error, the form may have switched back to phone tab, so switch to email
+      unless page.has_field?('email', visible: true)
         click_button 'Email'
+        # Wait for email form to become visible
         expect(page).to have_field('email', visible: true)
       end
       
       # Email should still be filled in
-      expect(find_field('email').value).to eq(test_user.email)
+      expect(page.find_field('email').value).to eq(test_user.email)
       # Password should be cleared for security
-      expect(find_field('password').value).to be_blank
+      expect(page.find_field('password').value).to be_blank
     end
   end
 

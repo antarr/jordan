@@ -69,6 +69,8 @@ class SessionsController < ApplicationController
       end
     else
       flash.now[:alert] = I18n.t('controllers.sessions.create.invalid_credentials')
+      # Clear password for security when authentication fails
+      params[:password] = nil
       render :new, status: :unprocessable_entity
     end
   end
@@ -86,6 +88,8 @@ class SessionsController < ApplicationController
       redirect_to dashboard_path
     else
       flash.now[:alert] = auth_service.error_message
+      # Clear password for security when authentication fails
+      params[:password] = nil
       render :new, status: :unprocessable_entity
     end
   end

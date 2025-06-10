@@ -89,6 +89,64 @@ RSpec.describe Admin::RolePermissionsController, type: :controller do
       end
     end
 
+    describe 'PATCH #update' do
+      let(:permission1) { create(:permission, name: 'permission1', resource: 'posts', action: 'create') }
+      let(:permission2) { create(:permission, name: 'permission2', resource: 'posts', action: 'read') }
+      let(:permission3) { create(:permission, name: 'permission3', resource: 'posts', action: 'update') }
+
+      before do
+        # Start with permission1 and permission2 assigned
+        role.permissions = [permission1, permission2]
+      end
+
+      context 'with valid parameters' do
+        it 'updates role permissions successfully' do
+          patch :update, params: { role_id: role.id, permission_ids: [permission1.id, permission3.id] }
+          expect(response).to redirect_to(admin_role_path(role))
+          expect(flash[:notice]).to eq('Permissions updated successfully.')
+        end
+
+        it 'replaces existing permissions with new ones' do
+          patch :update, params: { role_id: role.id, permission_ids: [permission1.id, permission3.id] }
+          role.reload
+          expect(role.permissions).to include(permission1, permission3)
+          expect(role.permissions).not_to include(permission2)
+        end
+
+        it 'removes all permissions when empty array is provided' do
+          patch :update, params: { role_id: role.id, permission_ids: [] }
+          role.reload
+          expect(role.permissions).to be_empty
+        end
+
+        it 'removes all permissions when no permission_ids parameter is provided' do
+          patch :update, params: { role_id: role.id }
+          role.reload
+          expect(role.permissions).to be_empty
+        end
+      end
+
+      context 'with invalid role' do
+        it 'raises RecordNotFound' do
+          expect {
+            patch :update, params: { role_id: 99999, permission_ids: [permission1.id] }
+          }.to raise_error(ActiveRecord::RecordNotFound)
+        end
+      end
+
+      context 'when update fails' do
+        before do
+          allow_any_instance_of(Role).to receive(:permission_ids=).and_raise(ActiveRecord::RecordInvalid.new(role))
+        end
+
+        it 'redirects with error message' do
+          patch :update, params: { role_id: role.id, permission_ids: [permission1.id] }
+          expect(response).to redirect_to(admin_role_path(role))
+          expect(flash[:alert]).to match(/Failed to update permissions/)
+        end
+      end
+    end
+
     describe 'DELETE #destroy' do
       let!(:role_permission) { create(:role_permission, role: role, permission: permission) }
 

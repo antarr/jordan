@@ -28,6 +28,9 @@ RSpec.configure do |config|
   # Include ActiveJob test helpers for testing background jobs
   config.include ActiveJob::TestHelper
   
+  # Include ActiveSupport test helpers for time manipulation
+  config.include ActiveSupport::Testing::TimeHelpers
+  
   # Include fixture file upload helpers for controller specs
   config.include ActionDispatch::TestProcess::FixtureFile, type: :controller
 
