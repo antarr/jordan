@@ -57,7 +57,10 @@ class SessionsController < ApplicationController
     user = User.find_by(email: params[:email].to_s.strip.downcase)
 
     if user&.authenticate(params[:password])
-      if user.email_verified?
+      if user.locked?
+        flash[:alert] = I18n.t('controllers.sessions.create.account_locked')
+        redirect_to new_session_path
+      elsif user.email_verified?
         sign_in(user)
         redirect_to dashboard_path
       else

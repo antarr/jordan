@@ -157,6 +157,88 @@ RSpec.describe Admin::UsersController, type: :controller do
     end
   end
 
+  describe 'account locking' do
+    let(:target_user) { create(:user, :complete_registration, role: user_role) }
+
+    context 'when signed in as admin' do
+      before { sign_in(admin_user) }
+
+      describe 'PATCH #lock' do
+        it 'locks the user account' do
+          patch :lock, params: { id: target_user.id }
+          target_user.reload
+          expect(target_user.locked?).to be true
+        end
+
+        it 'redirects with success message' do
+          patch :lock, params: { id: target_user.id }
+          expect(response).to redirect_to(admin_users_path)
+          expect(flash[:notice]).to eq("#{target_user.email} has been locked.")
+        end
+
+        context 'when trying to lock an admin user' do
+          let(:target_admin) { create(:user, :complete_registration, role: admin_role) }
+
+          it 'prevents locking admin accounts' do
+            patch :lock, params: { id: target_admin.id }
+            target_admin.reload
+            expect(target_admin.locked?).to be false
+          end
+
+          it 'redirects with error message' do
+            patch :lock, params: { id: target_admin.id }
+            expect(response).to redirect_to(admin_users_path)
+            expect(flash[:alert]).to eq('Cannot lock admin accounts.')
+          end
+        end
+
+        context 'when trying to lock own account' do
+          it 'prevents locking own account' do
+            patch :lock, params: { id: admin_user.id }
+            admin_user.reload
+            expect(admin_user.locked?).to be false
+          end
+
+          it 'redirects with error message' do
+            patch :lock, params: { id: admin_user.id }
+            expect(response).to redirect_to(admin_users_path)
+            expect(flash[:alert]).to eq('Cannot lock your own account.')
+          end
+        end
+      end
+
+      describe 'PATCH #unlock' do
+        before { target_user.lock_account! }
+
+        it 'unlocks the user account' do
+          patch :unlock, params: { id: target_user.id }
+          target_user.reload
+          expect(target_user.locked?).to be false
+        end
+
+        it 'redirects with success message' do
+          patch :unlock, params: { id: target_user.id }
+          expect(response).to redirect_to(admin_users_path)
+          expect(flash[:notice]).to eq("#{target_user.email} has been unlocked.")
+        end
+      end
+    end
+
+    context 'when not signed in as admin' do
+      before { sign_in(regular_user) }
+
+      it 'prevents access to lock action' do
+        patch :lock, params: { id: target_user.id }
+        expect(response).to redirect_to(dashboard_path)
+      end
+
+      it 'prevents access to unlock action' do
+        patch :unlock, params: { id: target_user.id }
+        expect(response).to redirect_to(dashboard_path)
+      end
+    end
+  end
+
   private
 
   def sign_in(user)

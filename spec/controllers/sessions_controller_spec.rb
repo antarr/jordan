@@ -101,6 +101,21 @@ RSpec.describe SessionsController, type: :controller do
         expect(flash.now[:alert]).to eq(I18n.t('phone_sessions.create.phone_not_verified'))
       end
 
+      it 'rejects login with locked account' do
+        phone_user.lock_account!
+        
+        post :create, params: { 
+          login_type: 'phone',
+          phone: phone_user.phone, 
+          sms_code: phone_user.sms_verification_code 
+        }
+        
+        expect(session[:user_id]).to be_nil
+        expect(response).to render_template(:new)
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(flash.now[:alert]).to eq(I18n.t('phone_sessions.create.account_locked'))
+      end
+
       it 'rejects login with invalid SMS code' do
         post :create, params: { 
           login_type: 'phone',
@@ -177,6 +192,21 @@ RSpec.describe SessionsController, type: :controller do
           expect(session[:user_id]).to be_nil
           expect(response).to redirect_to(new_session_path)
           expect(flash[:alert]).to eq(I18n.t('controllers.sessions.create.unverified_email'))
+        end
+      end
+
+      context 'for locked user' do
+        before do
+          user.verify_email!
+          user.lock_account!
+        end
+
+        it 'redirects to login with account locked message' do
+          post :create, params: { email: user.email, password: user.password }
+          
+          expect(session[:user_id]).to be_nil
+          expect(response).to redirect_to(new_session_path)
+          expect(flash[:alert]).to eq(I18n.t('controllers.sessions.create.account_locked'))
         end
       end
     end

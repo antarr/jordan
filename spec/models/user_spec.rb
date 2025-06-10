@@ -633,4 +633,92 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  describe 'account locking' do
+    let(:user) { create(:user, :complete_registration) }
+
+    describe 'scopes' do
+      it 'includes locked users in locked scope' do
+        locked_user = create(:user, :complete_registration, locked_at: Time.current)
+        unlocked_user = create(:user, :complete_registration, locked_at: nil)
+
+        expect(User.locked).to include(locked_user)
+        expect(User.locked).not_to include(unlocked_user)
+      end
+
+      it 'includes unlocked users in unlocked scope' do
+        locked_user = create(:user, :complete_registration, locked_at: Time.current)
+        unlocked_user = create(:user, :complete_registration, locked_at: nil)
+
+        expect(User.unlocked).to include(unlocked_user)
+        expect(User.unlocked).not_to include(locked_user)
+      end
+    end
+
+    describe '#locked?' do
+      it 'returns true when locked_at is present' do
+        user.update!(locked_at: Time.current)
+        expect(user.locked?).to be true
+      end
+
+      it 'returns false when locked_at is nil' do
+        user.update!(locked_at: nil)
+        expect(user.locked?).to be false
+      end
+    end
+
+    describe '#unlocked?' do
+      it 'returns false when locked_at is present' do
+        user.update!(locked_at: Time.current)
+        expect(user.unlocked?).to be false
+      end
+
+      it 'returns true when locked_at is nil' do
+        user.update!(locked_at: nil)
+        expect(user.unlocked?).to be true
+      end
+    end
+
+    describe '#lock_account!' do
+      it 'sets locked_at timestamp' do
+        travel_to Time.current do
+          user.lock_account!
+          expect(user.locked_at).to eq(Time.current)
+        end
+      end
+
+      it 'saves the user' do
+        user.lock_account!
+        user.reload
+        expect(user.locked_at).to be_present
+      end
+    end
+
+    describe '#unlock_account!' do
+      it 'clears locked_at timestamp' do
+        user.update!(locked_at: Time.current)
+        user.unlock_account!
+        expect(user.locked_at).to be_nil
+      end
+
+      it 'saves the user' do
+        user.update!(locked_at: Time.current)
+        user.unlock_account!
+        user.reload
+        expect(user.locked_at).to be_nil
+      end
+    end
+
+    describe '#active_for_authentication?' do
+      it 'returns false when account is locked' do
+        user.update!(locked_at: Time.current)
+        expect(user.active_for_authentication?).to be false
+      end
+
+      it 'returns true when account is not locked' do
+        user.update!(locked_at: nil)
+        expect(user.active_for_authentication?).to be true
+      end
+    end
+  end
 end

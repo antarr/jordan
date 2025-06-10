@@ -14,6 +14,7 @@ class PhoneAuthenticationService
   def authenticate
     return false unless find_user
     return false unless verify_phone_status
+    return false unless verify_account_status
 
     authenticate_with_credentials
   end
@@ -42,6 +43,15 @@ class PhoneAuthenticationService
   def verify_phone_status
     unless @user.phone_verified?
       @errors << I18n.t('phone_sessions.create.phone_not_verified')
+      return false
+    end
+
+    true
+  end
+
+  def verify_account_status
+    if @user.locked?
+      @errors << I18n.t('phone_sessions.create.account_locked')
       return false
     end
 

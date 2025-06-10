@@ -43,6 +43,8 @@ class User < ApplicationRecord
   scope :unverified, -> { where(email_verified_at: nil) }
   scope :phone_verified, -> { where.not(phone_verified_at: nil) }
   scope :phone_unverified, -> { where(phone_verified_at: nil) }
+  scope :locked, -> { where.not(locked_at: nil) }
+  scope :unlocked, -> { where(locked_at: nil) }
 
   def email_verified?
     email_verified_at.present?
@@ -102,6 +104,26 @@ class User < ApplicationRecord
 
   def registration_complete?
     registration_step && registration_step >= 6
+  end
+
+  def locked?
+    locked_at.present?
+  end
+
+  def unlocked?
+    !locked?
+  end
+
+  def lock_account!
+    update!(locked_at: Time.current)
+  end
+
+  def unlock_account!
+    update!(locked_at: nil)
+  end
+
+  def active_for_authentication?
+    !locked?
   end
 
   def can_advance_to_step?(step)

@@ -29,6 +29,7 @@
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Email</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Role</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Account</th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                   <span class="sr-only">Actions</span>
                 </th>
@@ -89,8 +90,41 @@
                       </span>
                     <% end %>
                   </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm">
+                    <% if user.locked? %>
+                      <span class="inline-flex items-center text-red-700">
+                        <svg class="mr-1.5 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a5 5 0 0110 0z" clip-rule="evenodd" />
+                        </svg>
+                        Locked
+                      </span>
+                    <% else %>
+                      <span class="inline-flex items-center text-green-700">
+                        <svg class="mr-1.5 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 015.905-.75 1 1 0 001.937-.5A5.002 5.002 0 0010 2z" clip-rule="evenodd" />
+                        </svg>
+                        Active
+                      </span>
+                    <% end %>
+                  </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <%= link_to "Change Role", edit_admin_user_role_path(user), class: "text-blue-600 hover:text-blue-900" %>
+                    <div class="flex items-center justify-end space-x-2">
+                      <%= link_to "Change Role", edit_admin_user_role_path(user), class: "text-blue-600 hover:text-blue-900" %>
+                      
+                      <% unless user.admin? || user == current_user %>
+                        <% if user.locked? %>
+                          <%= link_to "Unlock", unlock_admin_user_path(user), 
+                              method: :patch,
+                              data: { confirm: "Are you sure you want to unlock #{user.email}?" },
+                              class: "text-green-600 hover:text-green-900" %>
+                        <% else %>
+                          <%= link_to "Lock", lock_admin_user_path(user), 
+                              method: :patch,
+                              data: { confirm: "Are you sure you want to lock #{user.email}?" },
+                              class: "text-red-600 hover:text-red-900" %>
+                        <% end %>
+                      <% end %>
+                    </div>
                   </td>
                 </tr>
               <% end %>

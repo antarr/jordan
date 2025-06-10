@@ -57,6 +57,7 @@ en:
       create:
         unverified_email: "Please verify your email address before signing in."
         invalid_credentials: "Invalid email or password."
+        account_locked: "This account has been locked. Please contact an administrator."
       request_sms:
         sent: "SMS login code sent to your phone"
         phone_not_found: "Phone number not found"
@@ -247,6 +248,7 @@ en:
     create:
       phone_not_found: "Phone number not found"
       phone_not_verified: "Phone number is not verified"
+      account_locked: "This account has been locked. Please contact an administrator."
       invalid_sms_code: "Invalid or expired SMS code"
       invalid_password: "Invalid password"
       missing_credentials: "Please provide either SMS code or password"

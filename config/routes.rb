@@ -44,8 +44,13 @@ Rails.application.routes.draw do
     namespace :admin do
       resources :roles do
         resources :role_permissions, only: [:create, :destroy], path: 'permissions'
+        resource :permissions, only: [:update], controller: 'role_permissions'
       end
       resources :users, only: [:index] do
+        member do
+          patch :lock
+          patch :unlock
+        end
         resource :role, only: [:edit, :update], controller: 'user_roles'
       end
     end

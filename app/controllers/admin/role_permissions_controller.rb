@@ -5,6 +5,19 @@ class Admin::RolePermissionsController < ApplicationController
   before_action :set_role
   before_action :set_permission, only: [:create, :destroy]
   
+  def update
+    permission_ids = params[:permission_ids] || []
+    
+    # Use a transaction to ensure atomic updates
+    ActiveRecord::Base.transaction do
+      @role.permission_ids = permission_ids
+    end
+    
+    redirect_to admin_role_path(@role), notice: 'Permissions updated successfully.'
+  rescue ActiveRecord::RecordInvalid => e
+    redirect_to admin_role_path(@role), alert: "Failed to update permissions: #{e.message}"
+  end
+  
   def create
     if @role.permissions.include?(@permission)
       redirect_to admin_role_path(@role), alert: 'Permission is already assigned to this role.'
