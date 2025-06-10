@@ -84,7 +84,8 @@ RSpec.describe SmsService, type: :service do
 
       it 'handles production errors gracefully' do
         allow(Rails.logger).to receive(:info).and_raise(StandardError.new('Production error'))
-        expect(Rails.logger).to receive(:error).with("Failed to send login SMS to #{phone_user.phone}: Production error")
+        expect(Rails.logger).to receive(:error)
+          .with("Failed to send login SMS to #{phone_user.phone}: Production error")
 
         result = SmsService.send_login_code(phone_user.phone, '123456')
 

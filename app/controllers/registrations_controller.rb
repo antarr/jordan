@@ -165,7 +165,7 @@ class RegistrationsController < ApplicationController
   end
 
   def check_phone_registration_enabled
-    if (params[:contact_method] == 'phone' || current_user_registration&.contact_method == 'phone') && 
+    if (params[:contact_method] == 'phone' || current_user_registration&.contact_method == 'phone') &&
        !feature_enabled?(:phone_registration_enabled)
       redirect_to new_registration_path, alert: I18n.t('controllers.registrations.phone_registration_disabled')
     end
@@ -173,4 +173,3 @@ class RegistrationsController < ApplicationController
 
   helper_method :step_number, :step_name
 end
-

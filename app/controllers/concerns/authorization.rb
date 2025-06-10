@@ -17,27 +17,27 @@ module Authorization
   end
 
   def authorize!(permission_name)
-    unless current_user&.can?(permission_name)
-      handle_authorization_failure(permission_name)
-    end
+    return if current_user&.can?(permission_name)
+
+    handle_authorization_failure(permission_name)
   end
 
   def authorize_resource!(resource, action)
-    unless current_user&.can_access?(resource, action)
-      handle_authorization_failure("#{resource}.#{action}")
-    end
+    return if current_user&.can_access?(resource, action)
+
+    handle_authorization_failure("#{resource}.#{action}")
   end
 
   def require_admin!
-    unless current_user&.admin?
-      handle_authorization_failure('admin access')
-    end
+    return if current_user&.admin?
+
+    handle_authorization_failure('admin access')
   end
 
   def require_moderator_or_admin!
-    unless current_user&.admin? || current_user&.moderator?
-      handle_authorization_failure('moderator or admin access')
-    end
+    return if current_user&.admin? || current_user&.moderator?
+
+    handle_authorization_failure('moderator or admin access')
   end
 
   def can?(permission_name)
@@ -63,7 +63,7 @@ module Authorization
         redirect_to dashboard_path
       end
       format.json do
-        render json: { 
+        render json: {
           error: I18n.t('authorization.access_denied'),
           required_permission: permission
         }, status: :forbidden
@@ -88,6 +88,6 @@ module Authorization
     moderator?
   end
 
-  helper_method :current_user_can?, :current_user_can_access?, 
+  helper_method :current_user_can?, :current_user_can_access?,
                 :current_user_admin?, :current_user_moderator?
 end
