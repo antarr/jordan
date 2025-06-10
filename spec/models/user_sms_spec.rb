@@ -82,24 +82,24 @@ RSpec.describe User, 'SMS functionality', type: :model do
     describe '#sms_verification_code_valid?' do
       it 'returns true for valid, unexpired code' do
         code = '123456'
-        user = create(:user,
-                      sms_verification_code: code,
-                      sms_verification_code_expires_at: 5.minutes.from_now)
+        user = create(:user, 
+                     sms_verification_code: code, 
+                     sms_verification_code_expires_at: 5.minutes.from_now)
         expect(user.sms_verification_code_valid?(code)).to be true
       end
 
       it 'returns false for invalid code' do
-        user = create(:user,
-                      sms_verification_code: '123456',
-                      sms_verification_code_expires_at: 5.minutes.from_now)
+        user = create(:user, 
+                     sms_verification_code: '123456', 
+                     sms_verification_code_expires_at: 5.minutes.from_now)
         expect(user.sms_verification_code_valid?('wrong')).to be false
       end
 
       it 'returns false for expired code' do
         code = '123456'
-        user = create(:user,
-                      sms_verification_code: code,
-                      sms_verification_code_expires_at: 5.minutes.ago)
+        user = create(:user, 
+                     sms_verification_code: code, 
+                     sms_verification_code_expires_at: 5.minutes.ago)
         expect(user.sms_verification_code_valid?(code)).to be false
       end
 

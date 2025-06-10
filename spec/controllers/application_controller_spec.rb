@@ -21,10 +21,7 @@ RSpec.describe ApplicationController, type: :controller do
     end
   end
 
-  let(:user) do
-    User.create!(email: 'test@example.com', password: 'password123', password_confirmation: 'password123',
-                 contact_method: 'email', registration_step: 5, username: 'appuser', bio: 'This is an app controller user bio that meets the minimum length requirement')
-  end
+  let(:user) { User.create!(email: 'test@example.com', password: 'password123', password_confirmation: 'password123', contact_method: 'email', registration_step: 5, username: 'appuser', bio: 'This is an app controller user bio that meets the minimum length requirement') }
 
   describe '#current_user' do
     context 'when user is signed in' do
@@ -44,7 +41,7 @@ RSpec.describe ApplicationController, type: :controller do
     end
 
     context 'when user_id in session is invalid' do
-      before { session[:user_id] = 999_999 }
+      before { session[:user_id] = 999999 }
 
       it 'returns nil' do
         get :index

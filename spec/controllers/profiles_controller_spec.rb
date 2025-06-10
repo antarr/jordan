@@ -361,9 +361,9 @@ RSpec.describe ProfilesController, type: :controller do
       end
 
       it 'removes the profile photo' do
-        expect do
+        expect {
           delete :remove_photo
-        end.to change { user.reload.profile_photo.attached? }.from(true).to(false)
+        }.to change { user.reload.profile_photo.attached? }.from(true).to(false)
       end
 
       it 'redirects to edit profile page' do
@@ -379,9 +379,9 @@ RSpec.describe ProfilesController, type: :controller do
 
     context 'when user has no profile photo' do
       it 'does not change anything' do
-        expect do
+        expect {
           delete :remove_photo
-        end.not_to(change { user.reload.profile_photo.attached? })
+        }.not_to change { user.reload.profile_photo.attached? }
       end
 
       it 'redirects to edit profile page' do

@@ -4,9 +4,9 @@ RSpec.describe PhoneAuthenticationService, type: :service do
   let(:phone_user) { create(:user, :phone_user, :step_two, phone_verified_at: Time.current) }
   let(:unverified_phone_user) { create(:user, :phone_user, :step_two, phone_verified_at: nil) }
   let(:phone_user_with_password) do
-    create(:user, :phone_user, :step_two,
+    create(:user, :phone_user, :step_two, 
            phone_verified_at: Time.current,
-           password: 'ValidPass123!',
+           password: 'ValidPass123!', 
            password_confirmation: 'ValidPass123!')
   end
 
@@ -51,7 +51,7 @@ RSpec.describe PhoneAuthenticationService, type: :service do
 
       it 'fails with expired SMS code' do
         phone_user.update!(sms_verification_code_expires_at: 1.hour.ago)
-
+        
         service = described_class.new(
           phone: phone_user.phone,
           sms_code: phone_user.sms_verification_code

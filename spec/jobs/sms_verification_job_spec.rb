@@ -14,7 +14,7 @@ RSpec.describe SmsVerificationJob, type: :job do
       expect(SmsService).to receive(:send_verification_code)
         .with(phone_user.phone, phone_user.sms_verification_code)
         .and_return(true)
-
+      
       SmsVerificationJob.new.perform(phone_user)
     end
 
@@ -22,44 +22,44 @@ RSpec.describe SmsVerificationJob, type: :job do
       expect(SmsService).to receive(:send_verification_code)
         .with(phone_user.phone, phone_user.sms_verification_code)
         .and_return(false)
-
+      
       expect(Rails.logger).to receive(:error).with(/Failed to send SMS verification/)
-
+      
       SmsVerificationJob.new.perform(phone_user)
     end
 
     it 'handles user without verification code' do
       phone_user.update!(sms_verification_code: nil)
-
+      
       expect(SmsService).not_to receive(:send_verification_code)
-
+      
       SmsVerificationJob.new.perform(phone_user)
     end
 
     it 'handles user without phone number' do
       phone_user.update_column(:phone, nil) # Use update_column to bypass validations
-
+      
       expect(SmsService).not_to receive(:send_verification_code)
-
+      
       SmsVerificationJob.new.perform(phone_user)
     end
   end
 
   describe 'job queuing' do
     it 'enqueues the job' do
-      expect do
+      expect {
         SmsVerificationJob.perform_later(phone_user)
-      end.to have_enqueued_job(SmsVerificationJob).with(phone_user)
+      }.to have_enqueued_job(SmsVerificationJob).with(phone_user)
     end
 
     it 'performs the job immediately in test' do
       phone_user.generate_sms_verification_code!
-
+      
       perform_enqueued_jobs do
         expect(SmsService).to receive(:send_verification_code)
           .with(phone_user.phone, phone_user.sms_verification_code)
           .and_return(true)
-
+        
         SmsVerificationJob.perform_later(phone_user)
       end
     end

@@ -20,7 +20,7 @@ RSpec.describe 'Internationalization', type: :feature do
       expect(page).to have_content('Português (BR)')
     end
 
-    # NOTE: Root redirect test would require more complex setup
+    # Note: Root redirect test would require more complex setup
     # it 'redirects root path to default locale' do
     #   visit '/'
     #   expect(current_url).to include('/en')
@@ -36,12 +36,12 @@ RSpec.describe 'Internationalization', type: :feature do
     it 'allows switching languages via URL parameters' do
       visit '/en/session/new'
       expect(page).to have_content('Sign In')
-
+      
       # Click on Spanish language link
       click_link '🇪🇸 Español'
       expect(current_path).to eq('/es/session/new')
       expect(page).to have_content('Iniciar Sesión')
-
+      
       # Click on Portuguese language link
       click_link '🇧🇷 Português (BR)'
       expect(current_path).to eq('/pt-BR/session/new')
@@ -54,17 +54,17 @@ RSpec.describe 'Internationalization', type: :feature do
 
     it 'displays flash messages in the selected language', js: true do
       visit '/es/session/new'
-
+      
       # Switch to email mode since phone is the default
       click_button 'Correo Electrónico'
-
+      
       # Wait for email fields to be visible
       expect(page).to have_field('email', visible: true)
-
+      
       fill_in 'email', with: user.email
       fill_in 'password', with: user.password
       click_button 'Iniciar Sesión'
-
+      
       expect(page).to have_content('Por favor verifica tu dirección de correo electrónico antes de iniciar sesión.')
     end
   end
