@@ -50,6 +50,9 @@ class RegistrationsController < ApplicationController
       if @user.save
         if @user.contact_method == 'email' && @user.email_verification_token.blank?
           @user.generate_email_verification_token!
+        elsif @user.contact_method == 'phone' && @user.sms_verification_code.blank?
+          @user.generate_sms_verification_code!
+          SmsVerificationJob.perform_later(@user)
         end
         redirect_to next_wizard_path
       else
@@ -118,6 +121,7 @@ class RegistrationsController < ApplicationController
     if current_user_registration.contact_method == 'email'
       params.require(:user).permit(:email, :password, :password_confirmation)
     else
+      # Phone users can optionally set a password during registration
       params.require(:user).permit(:phone, :password, :password_confirmation)
     end
   end

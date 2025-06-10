@@ -89,6 +89,8 @@ es:
     notify_me: "Notificarme"
     skip_for_now: "Omitir por ahora"
     verify_email_address: "Verificar Dirección de Correo"
+    email: "Correo Electrónico"
+    phone: "Teléfono"
   
   titles:
     default: "Ragged"

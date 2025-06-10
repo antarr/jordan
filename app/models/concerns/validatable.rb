@@ -20,7 +20,13 @@ module Validatable
       registration_step && registration_step >= 4
     }
     validates :password, presence: true, length: { minimum: 6, maximum: 72 }, if: lambda {
-      new_record? ? (registration_step && registration_step >= 2) : password.present?
+      # Email users must have password during registration
+      # Phone users can set password later in profile (optional)
+      if contact_method == 'email'
+        new_record? ? (registration_step && registration_step >= 2) : password.present?
+      else
+        password.present? # Only validate if password is being set
+      end
     }
     validates :password_confirmation, presence: true, if: -> { password.present? }
     validate :password_confirmation_matches, if: -> { password.present? && password_confirmation.present? }

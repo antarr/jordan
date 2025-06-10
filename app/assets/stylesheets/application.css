@@ -58,3 +58,8 @@
 .language-switcher .language-link:hover {
   color: #2563eb;
 }
+
+/* Ensure hidden class works in test environment */
+.hidden {
+  display: none !important;
+}

@@ -52,8 +52,15 @@ RSpec.describe 'Internationalization', type: :feature do
   describe 'Flash messages localization' do
     let(:user) { create(:user, :email_user, email_verified_at: nil) }
 
-    it 'displays flash messages in the selected language' do
+    it 'displays flash messages in the selected language', js: true do
       visit '/es/session/new'
+      
+      # Switch to email mode since phone is the default
+      click_button 'Correo Electrónico'
+      
+      # Wait for email fields to be visible
+      expect(page).to have_field('email', visible: true)
+      
       fill_in 'email', with: user.email
       fill_in 'password', with: user.password
       click_button 'Iniciar Sesión'

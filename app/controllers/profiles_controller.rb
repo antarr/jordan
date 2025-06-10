@@ -20,6 +20,7 @@ class ProfilesController < ApplicationController
   private
 
   def profile_params
+    # Password updates are not allowed through profile updates for security
     params.require(:user).permit(
       :email, :username, :bio, :location_name,
       :latitude, :longitude, :location_private,
