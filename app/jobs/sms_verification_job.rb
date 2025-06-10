@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class SmsVerificationJob < ApplicationJob
   queue_as :default
 
