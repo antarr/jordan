@@ -413,13 +413,12 @@ RSpec.describe ProfilesController, type: :controller do
     end
 
     it 'uses the correct locale for success message' do
-      I18n.with_locale(:es) do
-        patch :update, params: {
-          user: { bio: 'Bio actualizada con más de veinticinco caracteres' }
-        }
+      patch :update, params: {
+        locale: 'es',
+        user: { bio: 'Bio actualizada con más de veinticinco caracteres' }
+      }
 
-        expect(flash[:notice]).to eq(I18n.t('profiles.update.success', locale: :es))
-      end
+      expect(flash[:notice]).to eq('Perfil actualizado exitosamente')
     end
   end
 end

@@ -313,8 +313,12 @@ RSpec.describe 'Email Verification Flow', type: :feature do
       fill_in 'password', with: test_user[:password]
       click_button 'Sign In'
 
-      # Should not show any verification warning
-      expect(page).not_to have_content('verify your email')
+      # Should be on dashboard, not on login page
+      expect(page).to have_content('Welcome to your dashboard')
+      expect(current_path).to eq('/en/dashboard')
+      
+      # Should not show any verification warning on dashboard
+      expect(page).not_to have_content('Your email address is not verified')
       expect(page).not_to have_content('Verification required')
     end
   end
