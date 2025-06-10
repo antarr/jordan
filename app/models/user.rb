@@ -40,6 +40,8 @@ class User < ApplicationRecord
 
   scope :verified, -> { where.not(email_verified_at: nil) }
   scope :unverified, -> { where(email_verified_at: nil) }
+  scope :phone_verified, -> { where.not(phone_verified_at: nil) }
+  scope :phone_unverified, -> { where(phone_verified_at: nil) }
 
   def email_verified?
     email_verified_at.present?
@@ -67,6 +69,34 @@ class User < ApplicationRecord
     return false if email_verification_token_expired?
 
     email_verification_token == token
+  end
+
+  def phone_verified?
+    phone_verified_at.present?
+  end
+
+  def verify_phone!
+    update!(
+      phone_verified_at: Time.current,
+      sms_verification_code: nil,
+      sms_verification_code_expires_at: nil
+    )
+  end
+
+  def generate_sms_verification_code!
+    generate_sms_verification_code
+    save!
+  end
+
+  def sms_verification_code_expired?
+    sms_verification_code_expires_at.present? && sms_verification_code_expires_at < Time.current
+  end
+
+  def sms_verification_code_valid?(code)
+    return false if sms_verification_code.blank?
+    return false if sms_verification_code_expired?
+
+    sms_verification_code == code
   end
 
   def registration_complete?
@@ -101,5 +131,10 @@ class User < ApplicationRecord
   def generate_email_verification_token
     self.email_verification_token = SecureRandom.urlsafe_base64(32)
     self.email_verification_token_expires_at = 24.hours.from_now
+  end
+
+  def generate_sms_verification_code
+    self.sms_verification_code = format('%06d', SecureRandom.random_number(1_000_000))
+    self.sms_verification_code_expires_at = 15.minutes.from_now
   end
 end

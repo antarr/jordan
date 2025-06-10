@@ -2,32 +2,104 @@
   <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
     <h2 class="text-2xl font-bold mb-6 text-center text-gray-800"><%= t('titles.sign_in') %></h2>
     
-    <%= form_with url: session_path, local: true, class: "space-y-4" do |f| %>
-      <div>
-        <%= f.label :email, t('forms.labels.email'), class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <%= f.email_field :email, 
-            placeholder: t('forms.placeholders.email'),
-            required: true,
-            autofocus: true,
-            autocomplete: "email",
-            value: @email,
-            class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+    <!-- Login method toggle -->
+    <div class="mb-6" data-controller="login-toggle">
+      <div class="flex bg-gray-100 rounded-lg p-1">
+        <button type="button" 
+                data-login-toggle-target="emailTab"
+                data-action="click->login-toggle#showEmail"
+                class="flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-500 hover:text-gray-900">
+          <%= t('buttons.email') %>
+        </button>
+        <button type="button" 
+                data-login-toggle-target="phoneTab"
+                data-action="click->login-toggle#showPhone"
+                class="flex-1 py-2 px-4 text-sm font-medium rounded-md bg-white text-gray-900 shadow-sm">
+          <%= t('buttons.phone') %>
+        </button>
       </div>
 
-      <div>
-        <%= f.label :password, t('forms.labels.password'), class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <%= f.password_field :password, 
-            placeholder: t('forms.placeholders.password'),
-            required: true,
-            autocomplete: "current-password",
-            class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+      <!-- Email Login Form -->
+      <div data-login-toggle-target="emailForm" class="mt-6 hidden">
+        <%= form_with url: session_path, local: true, class: "space-y-4" do |f| %>
+          <%= f.hidden_field :login_type, value: "email" %>
+          <div>
+            <%= f.label :email, t('forms.labels.email'), class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= f.email_field :email, 
+                placeholder: t('forms.placeholders.email'),
+                required: true,
+                autofocus: true,
+                autocomplete: "email",
+                value: @email,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+          </div>
+
+          <div>
+            <%= f.label :password, t('forms.labels.password'), class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= f.password_field :password, 
+                placeholder: t('forms.placeholders.password'),
+                required: true,
+                autocomplete: "current-password",
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+          </div>
+
+          <div>
+            <%= f.submit t('navigation.sign_in'), 
+                class: "w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium" %>
+          </div>
+        <% end %>
       </div>
 
-      <div>
-        <%= f.submit t('navigation.sign_in'), 
-            class: "w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium" %>
+      <!-- Phone Login Form -->
+      <div data-login-toggle-target="phoneForm" class="mt-6">
+        <%= form_with url: session_path, local: true, class: "space-y-4" do |f| %>
+          <%= f.hidden_field :login_type, value: "phone" %>
+          
+          <div>
+            <%= f.label :phone, "Phone Number", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= f.telephone_field :phone, 
+                placeholder: "+1234567890",
+                required: true,
+                autocomplete: "tel",
+                value: @phone,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+          </div>
+
+          <div>
+            <%= f.label :sms_code, "SMS Code (if you have one)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= f.text_field :sms_code, 
+                placeholder: "123456",
+                autocomplete: "one-time-code",
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+          </div>
+
+          <div class="text-center">
+            <p class="text-gray-600 text-sm mb-2">OR</p>
+          </div>
+
+          <div>
+            <%= f.label :password, t('forms.labels.password'), class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= f.password_field :password, 
+                placeholder: t('forms.placeholders.password'),
+                autocomplete: "current-password",
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+          </div>
+
+          <div>
+            <%= f.submit t('navigation.sign_in'), 
+                class: "w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium" %>
+          </div>
+        <% end %>
+
+        <div class="mt-4 text-center">
+          <button type="button" 
+                  onclick="requestSmsLoginCode()" 
+                  class="text-blue-600 hover:text-blue-800 text-sm">
+            Request SMS login code
+          </button>
+        </div>
       </div>
-    <% end %>
+    </div>
 
     <div class="mt-6 text-center space-y-2">
       <p class="text-sm text-gray-600">
@@ -41,3 +113,40 @@
     </div>
   </div>
 </div>
+
+<script>
+async function requestSmsLoginCode() {
+  const phone = document.querySelector('input[name="phone"]').value;
+  if (!phone) {
+    alert('Please enter your phone number first');
+    return;
+  }
+  
+  try {
+    const response = await fetch('<%= request_sms_login_path %>', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ phone: phone })
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      alert(data.message);
+      
+      // In development, log the SMS code to console for easy testing
+      if (data.development_sms_code) {
+        console.log('🔐 Development SMS Code:', data.development_sms_code);
+        console.log('📱 You can now use this code to login with your phone number');
+      }
+    } else {
+      alert(data.error);
+    }
+  } catch (error) {
+    alert('Failed to send SMS code');
+  }
+}
+</script>

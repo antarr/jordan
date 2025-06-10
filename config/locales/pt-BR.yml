@@ -89,6 +89,8 @@ pt-BR:
     notify_me: "Me Notifique"
     skip_for_now: "Pular por agora"
     verify_email_address: "Verificar Endereço de E-mail"
+    email: "E-mail"
+    phone: "Telefone"
   
   titles:
     default: "Ragged"

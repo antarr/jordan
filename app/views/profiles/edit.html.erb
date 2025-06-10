@@ -1,23 +1,40 @@
-<div class="max-w-2xl mx-auto">
-  <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
-    <h2 class="text-2xl font-bold mb-6 text-gray-800">Edit Profile</h2>
-    
-    <%= form_with model: @user, url: profile_path, method: :patch, local: true, 
-                  class: "space-y-6",
-                  data: { 
-                    controller: "profile-photo bio-counter geolocation",
-                    profile_photo_max_size_value: "5242880"
-                  } do |f| %>
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">Account Settings</h1>
+          <p class="mt-1 text-sm text-gray-500">Manage your account information and preferences</p>
+        </div>
+        <%= link_to dashboard_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          Back to Dashboard
+        <% end %>
+      </div>
+    </div>
+
+    <div data-controller="password-change">
+      <%= form_with model: @user, url: profile_path, method: :patch, local: true, 
+                    data: { 
+                      controller: "profile-photo bio-counter geolocation",
+                      profile_photo_max_size_value: "5242880"
+                    } do |f| %>
       
       <% if @user.errors.any? %>
-        <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
+        <div class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
           <div class="flex">
+            <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+            </svg>
             <div class="ml-3">
               <h3 class="text-sm font-medium text-red-800">
                 <%= pluralize(@user.errors.count, "error") %> prohibited your profile from being saved:
               </h3>
               <div class="mt-2 text-sm text-red-700">
-                <ul class="list-disc list-inside">
+                <ul class="list-disc list-inside space-y-1">
                   <% @user.errors.full_messages.each do |message| %>
                     <li><%= message %></li>
                   <% end %>
@@ -28,127 +45,299 @@
         </div>
       <% end %>
 
-      <!-- Account Information Section -->
-      <div class="border-b pb-6">
-        <h3 class="text-lg font-semibold text-gray-700 mb-4">Account Information</h3>
-        
-        <div class="space-y-4">
-          <div>
-            <%= f.label :email, class: "block text-sm font-medium text-gray-700 mb-1" %>
-            <%= f.email_field :email, 
-                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
-                required: true %>
-            <% unless @user.email_verified? %>
-              <p class="text-sm text-yellow-600 mt-1">Email not verified. <%= link_to "Resend verification", new_email_verification_request_path, class: "underline" %></p>
-            <% end %>
+      <div class="space-y-6">
+        <!-- Profile Information Card -->
+        <div class="bg-white shadow-sm rounded-lg">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Profile Information</h2>
+            <p class="mt-1 text-sm text-gray-500">Update your account's profile information and email address.</p>
           </div>
           
-          <div>
-            <%= f.label :username, class: "block text-sm font-medium text-gray-700 mb-1" %>
-            <%= f.text_field :username, 
-                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
-          </div>
-        </div>
-      </div>
-
-      <!-- Profile Photo Section -->
-      <div class="border-b pb-6">
-        <h3 class="text-lg font-semibold text-gray-700 mb-4">Profile Photo</h3>
-        
-        <div class="flex items-center space-x-6">
-          <div class="shrink-0">
-            <% if @user.profile_photo.attached? %>
-              <%= image_tag @user.profile_photo, 
-                  class: "h-20 w-20 object-cover rounded-full",
-                  data: { profile_photo_target: "preview" } %>
-            <% else %>
-              <div class="h-20 w-20 rounded-full bg-gray-200 flex items-center justify-center" 
-                   data-profile-photo-target="preview">
-                <svg class="h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+          <div class="px-6 py-6 space-y-6">
+            <!-- Profile Photo Section -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-4">Profile Photo</label>
+              <div class="flex items-center space-x-6">
+                <div class="shrink-0">
+                  <% if @user.profile_photo.attached? %>
+                    <%= image_tag @user.profile_photo, 
+                        class: "h-24 w-24 object-cover rounded-full ring-2 ring-gray-200",
+                        data: { profile_photo_target: "preview" } %>
+                  <% else %>
+                    <div class="h-24 w-24 rounded-full bg-gray-100 ring-2 ring-gray-200 flex items-center justify-center" 
+                         data-profile-photo-target="preview">
+                      <svg class="h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                  <% end %>
+                </div>
+                
+                <div class="flex-1">
+                  <div class="flex items-center space-x-4">
+                    <label for="user_profile_photo" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                      <span class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        Upload Photo
+                      </span>
+                      <%= f.file_field :profile_photo, 
+                          id: "user_profile_photo",
+                          accept: "image/*",
+                          data: { 
+                            profile_photo_target: "input",
+                            action: "change->profile-photo#preview"
+                          },
+                          class: "sr-only" %>
+                    </label>
+                    <% if @user.profile_photo.attached? %>
+                      <%= link_to "Remove", 
+                          remove_photo_profile_path, 
+                          method: :delete,
+                          data: { 
+                            confirm: "Are you sure you want to remove your profile photo?",
+                            turbo_method: :delete
+                          },
+                          class: "text-sm text-red-600 hover:text-red-500" %>
+                    <% end %>
+                  </div>
+                  <p class="mt-2 text-xs text-gray-500">JPG, PNG, or GIF up to 5MB</p>
+                  <p class="mt-1 text-xs text-red-600 hidden" data-profile-photo-target="error"></p>
+                </div>
               </div>
-            <% end %>
-          </div>
-          
-          <div class="flex-1">
-            <%= f.label :profile_photo, "Upload new photo", class: "block text-sm font-medium text-gray-700 mb-1" %>
-            <%= f.file_field :profile_photo, 
-                accept: "image/*",
-                data: { 
-                  profile_photo_target: "input",
-                  action: "change->profile-photo#preview"
-                },
-                class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" %>
-            <p class="mt-1 text-xs text-gray-500">JPG, PNG, GIF up to 5MB</p>
-            <p class="mt-1 text-xs text-red-600 hidden" data-profile-photo-target="error"></p>
+            </div>
+
+            <!-- Basic Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <%= f.label :username, "Username", class: "block text-sm font-medium text-gray-700 mb-2" %>
+                <%= f.text_field :username, 
+                    class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150",
+                    placeholder: "Enter your username" %>
+              </div>
+              
+              <div>
+                <%= f.label :email, "Email Address", class: "block text-sm font-medium text-gray-700 mb-2" %>
+                <div class="relative">
+                  <%= f.email_field :email, 
+                      class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150",
+                      required: true %>
+                  <% unless @user.email_verified? %>
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                      <svg class="h-4 w-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                  <% end %>
+                </div>
+                <% unless @user.email_verified? %>
+                  <p class="mt-1 text-sm text-yellow-600 flex items-center">
+                    <span>Email not verified.</span>
+                    <%= link_to "Resend verification", new_email_verification_request_path, class: "ml-1 font-medium underline hover:no-underline" %>
+                  </p>
+                <% end %>
+              </div>
+            </div>
+
+            <!-- Bio Section -->
+            <div>
+              <%= f.label :bio, "Bio", class: "block text-sm font-medium text-gray-700 mb-2" %>
+              <%= f.text_area :bio, 
+                  rows: 4,
+                  placeholder: "Tell us a bit about yourself...",
+                  data: { 
+                    bio_counter_target: "input",
+                    action: "input->bio-counter#updateCount"
+                  },
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 resize-none" %>
+              <div class="mt-1 flex justify-between text-xs text-gray-500">
+                <span>Write a brief description about yourself</span>
+                <span><span data-bio-counter-target="count"><%= @user.bio&.length || 0 %></span> / 500</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Bio Section -->
-      <div class="border-b pb-6">
-        <h3 class="text-lg font-semibold text-gray-700 mb-4">About You</h3>
-        
-        <div>
-          <%= f.label :bio, class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.text_area :bio, 
-              rows: 4,
-              placeholder: "Tell us a bit about yourself...",
-              data: { 
-                bio_counter_target: "input",
-                action: "input->bio-counter#updateCount"
-              },
-              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
-          <p class="text-xs text-gray-500 mt-1">
-            <span data-bio-counter-target="count"><%= @user.bio&.length || 0 %></span> / 500 characters
-          </p>
+        <!-- Location Settings Card -->
+        <div class="bg-white shadow-sm rounded-lg">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Location</h2>
+            <p class="mt-1 text-sm text-gray-500">Manage your location information and privacy settings.</p>
+          </div>
+          
+          <div class="px-6 py-6 space-y-6">
+            <!-- Location Detection -->
+            <div class="text-center p-6 bg-gray-50 rounded-lg">
+              <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <button type="button" 
+                      data-geolocation-target="detectButton"
+                      data-action="click->geolocation#detect"
+                      class="hidden mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                </svg>
+                Use My Current Location
+              </button>
+              <p data-geolocation-target="status" class="hidden text-sm mt-2"></p>
+            </div>
+            
+            <div>
+              <%= f.label :location_name, "Location Name", class: "block text-sm font-medium text-gray-700 mb-2" %>
+              <%= f.text_field :location_name, 
+                  placeholder: "e.g., San Francisco, CA",
+                  data: { geolocation_target: "locationName" },
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150" %>
+            </div>
+            
+            <!-- Hidden fields -->
+            <%= f.hidden_field :latitude, data: { geolocation_target: "latitude" } %>
+            <%= f.hidden_field :longitude, data: { geolocation_target: "longitude" } %>
+            
+            <!-- Privacy Settings -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div class="flex">
+                <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a5 5 0 0110 0z" clip-rule="evenodd"></path>
+                </svg>
+                <div class="ml-3">
+                  <div class="flex items-center">
+                    <%= f.check_box :location_private, class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" %>
+                    <%= f.label :location_private, "Keep my location private", class: "ml-2 text-sm font-medium text-blue-900" %>
+                  </div>
+                  <p class="mt-1 text-sm text-blue-700">When enabled, your location won't be visible to other users</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- Location Section -->
-      <div class="border-b pb-6">
-        <h3 class="text-lg font-semibold text-gray-700 mb-4">Location</h3>
-        
-        <div class="space-y-4">
-          <!-- Location detection button -->
-          <div class="text-center mb-4">
-            <button type="button" 
-                    data-geolocation-target="detectButton"
-                    data-action="click->geolocation#detect"
-                    class="hidden bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium">
-              Use My Current Location
-            </button>
-            <p data-geolocation-target="status" class="hidden text-sm mt-2"></p>
+        <!-- Security Settings Card -->
+        <div class="bg-white shadow-sm rounded-lg">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Security</h2>
+            <p class="mt-1 text-sm text-gray-500">Manage your account security and login preferences.</p>
           </div>
           
-          <div>
-            <%= f.label :location_name, "Location Name", class: "block text-sm font-medium text-gray-700 mb-1" %>
-            <%= f.text_field :location_name, 
-                placeholder: "e.g., San Francisco, CA",
-                data: { geolocation_target: "locationName" },
-                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
-          </div>
-          
-          <!-- Hidden latitude and longitude fields -->
-          <%= f.hidden_field :latitude, data: { geolocation_target: "latitude" } %>
-          <%= f.hidden_field :longitude, data: { geolocation_target: "longitude" } %>
-          
-          <div class="flex items-center">
-            <%= f.check_box :location_private, class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" %>
-            <%= f.label :location_private, "Keep my location private", class: "ml-2 block text-sm text-gray-700" %>
-            <p class="text-xs text-gray-500 ml-2">(Your location won't be visible to other users)</p>
+          <div class="px-6 py-6">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <h3 class="text-sm font-medium text-gray-900">Password</h3>
+                  <p class="text-sm text-gray-500">Last updated 3 months ago</p>
+                </div>
+                <button type="button" 
+                        data-action="click->password-change#showModal"
+                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  Change Password
+                </button>
+              </div>
+              
+              <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <h3 class="text-sm font-medium text-gray-900">Two-Factor Authentication</h3>
+                  <p class="text-sm text-gray-500">Add an extra layer of security to your account</p>
+                </div>
+                <button type="button" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  Enable
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Actions -->
-      <div class="flex items-center justify-between pt-4">
-        <%= link_to "Cancel", dashboard_path, 
-            class: "text-gray-600 hover:text-gray-800 font-medium" %>
-        <%= f.submit "Save Changes", 
-            class: "bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium" %>
+        <!-- Actions -->
+        <div class="flex items-center justify-between pt-6">
+          <button type="button" class="text-sm text-red-600 hover:text-red-500 font-medium">
+            Delete Account
+          </button>
+          
+          <div class="flex items-center space-x-4">
+            <%= link_to "Cancel", dashboard_path, 
+                class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+            <%= f.submit "Save Changes", 
+                class: "inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150" %>
+          </div>
+        </div>
       </div>
     <% end %>
+
+      <!-- Password Change Modal -->
+    <div data-password-change-target="modal" 
+         data-action="click->password-change#closeOnBackdrop"
+         class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+          <!-- Modal Header -->
+          <div class="flex items-center justify-between pb-4">
+            <h3 class="text-lg font-medium text-gray-900">Change Password</h3>
+            <button type="button" 
+                    data-action="click->password-change#hideModal"
+                    class="text-gray-400 hover:text-gray-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Password Change Form -->
+          <%= form_with url: change_password_profile_path, method: :patch, local: true,
+                        data: { 
+                          password_change_target: "form",
+                          action: "submit->password-change#submitForm"
+                        },
+                        class: "space-y-4" do |f| %>
+            
+            <div>
+              <%= label_tag "password_change[current_password]", "Current Password", 
+                  class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= password_field_tag "password_change[current_password]", "",
+                  data: { password_change_target: "currentPassword" },
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150",
+                  placeholder: "Enter your current password",
+                  required: true %>
+            </div>
+
+            <div>
+              <%= label_tag "password_change[new_password]", "New Password", 
+                  class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= password_field_tag "password_change[new_password]", "",
+                  data: { password_change_target: "newPassword" },
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150",
+                  placeholder: "Enter new password",
+                  required: true %>
+              <p class="mt-1 text-xs text-gray-500">Must be at least 8 characters long</p>
+            </div>
+
+            <div>
+              <%= label_tag "password_change[new_password_confirmation]", "Confirm New Password", 
+                  class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= password_field_tag "password_change[new_password_confirmation]", "",
+                  data: { password_change_target: "newPasswordConfirmation" },
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150",
+                  placeholder: "Confirm new password",
+                  required: true %>
+            </div>
+
+            <!-- Modal Actions -->
+            <div class="flex items-center justify-end space-x-4 pt-4">
+              <button type="button" 
+                      data-action="click->password-change#hideModal"
+                      class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Cancel
+              </button>
+              <button type="submit" 
+                      class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Change Password
+              </button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    </div> <!-- Close password-change controller -->
   </div>
 </div>

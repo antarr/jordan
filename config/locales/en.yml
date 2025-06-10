@@ -57,6 +57,11 @@ en:
       create:
         unverified_email: "Please verify your email address before signing in."
         invalid_credentials: "Invalid email or password."
+      request_sms:
+        sent: "SMS login code sent to your phone"
+        phone_not_found: "Phone number not found"
+        phone_not_verified: "Phone number is not verified"
+        failed: "Failed to send SMS code"
   
   activerecord:
     attributes:
@@ -113,6 +118,11 @@ en:
   profiles:
     update:
       success: "Profile updated successfully"
+    change_password:
+      success: "Password changed successfully"
+    remove_photo:
+      success: "Profile photo removed successfully"
+      no_photo: "No profile photo to remove"
   
   buttons:
     continue: "Continue"
@@ -123,6 +133,8 @@ en:
     notify_me: "Notify Me"
     skip_for_now: "Skip for now"
     verify_email_address: "Verify Email Address"
+    email: "Email"
+    phone: "Phone"
   
   titles:
     default: "Ragged"
@@ -217,3 +229,26 @@ en:
       disclaimer: "If you didn't create an account, you can safely ignore this email."
       closing: "Thanks!"
       text_instruction: "Welcome! Please verify your email address by visiting this link:"
+  
+  sms_verifications:
+    verify:
+      success: "Your phone number has been verified successfully!"
+      invalid_code: "Invalid or expired verification code"
+      user_not_found: "Phone number not found"
+    resend:
+      sent: "A new verification code has been sent to your phone"
+      user_not_found: "Phone number not found"
+      already_verified: "Phone number is already verified"
+  
+  phone_sessions:
+    create:
+      phone_not_found: "Phone number not found"
+      phone_not_verified: "Phone number is not verified"
+      invalid_sms_code: "Invalid or expired SMS code"
+      invalid_password: "Invalid password"
+      missing_credentials: "Please provide either SMS code or password"
+    request_sms:
+      sent: "SMS login code sent to your phone"
+      phone_not_found: "Phone number not found"
+      phone_not_verified: "Phone number is not verified"
+      failed: "Failed to send SMS code"
