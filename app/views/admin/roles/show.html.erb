@@ -1,0 +1,99 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-8">
+    <%= link_to "← Back to Roles", admin_roles_path, class: "text-sm text-gray-500 hover:text-gray-700" %>
+  </div>
+
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">
+        <%= @role.name.humanize %> Role
+      </h3>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500">
+        <%= @role.description %>
+      </p>
+    </div>
+    <div class="border-t border-gray-200">
+      <dl>
+        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Type</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <% if @role.system_role? %>
+              <span class="inline-flex rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800">System Role</span>
+            <% else %>
+              <span class="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">Custom Role</span>
+            <% end %>
+          </dd>
+        </div>
+        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">Users with this role</dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <%= @role.users.count %> users
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="mt-8 bg-white shadow overflow-hidden sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">
+        Permissions
+      </h3>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500">
+        Select the permissions this role should have
+      </p>
+    </div>
+    <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+      <%= form_with url: admin_role_permissions_path(@role), method: :patch, local: true do |form| %>
+        <div class="space-y-4">
+          <% Permission.order(:resource, :action).group_by(&:resource).each do |resource, permissions| %>
+            <div class="border rounded-lg p-4">
+              <h4 class="font-medium text-gray-900 mb-3 capitalize"><%= resource %></h4>
+              <div class="space-y-2">
+                <% permissions.each do |permission| %>
+                  <label class="flex items-center">
+                    <%= check_box_tag "permission_ids[]", permission.id, @role.permissions.include?(permission), 
+                        class: "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" %>
+                    <span class="ml-3 text-sm">
+                      <span class="font-medium"><%= permission.action.humanize %></span>
+                      <span class="text-gray-500">- <%= permission.description %></span>
+                    </span>
+                  </label>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        
+        <div class="mt-6">
+          <%= form.submit "Update Permissions", class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @users.any? %>
+    <div class="mt-8 bg-white shadow overflow-hidden sm:rounded-lg">
+      <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          Users with this Role
+        </h3>
+      </div>
+      <div class="border-t border-gray-200">
+        <ul class="divide-y divide-gray-200">
+          <% @users.each do |user| %>
+            <li class="px-4 py-4 sm:px-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-medium text-gray-900"><%= user.username || user.email %></p>
+                  <p class="text-sm text-gray-500"><%= user.email %></p>
+                </div>
+                <%= link_to "Change Role", edit_admin_user_role_path(user), class: "text-sm text-blue-600 hover:text-blue-900" %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+</div>

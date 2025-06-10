@@ -40,6 +40,16 @@ Rails.application.routes.draw do
       delete :remove_photo
     end
 
+    # Admin routes
+    namespace :admin do
+      resources :roles do
+        resources :role_permissions, only: [:create, :destroy], path: 'permissions'
+      end
+      resources :users, only: [:index] do
+        resource :role, only: [:edit, :update], controller: 'user_roles'
+      end
+    end
+
     # Coming soon page
     get 'coming-soon' => 'pages#coming_soon', as: :coming_soon
 

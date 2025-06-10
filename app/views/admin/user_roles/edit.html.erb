@@ -1,0 +1,113 @@
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-8">
+    <%= link_to "← Back to Users", admin_users_path, class: "text-sm text-gray-500 hover:text-gray-700" %>
+  </div>
+
+  <div class="bg-white shadow sm:rounded-lg">
+    <div class="px-4 py-5 sm:p-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900 mb-6">
+        Change User Role
+      </h3>
+
+      <div class="mb-6 border-b border-gray-200 pb-6">
+        <div class="flex items-center">
+          <% if @user.profile_photo.attached? %>
+            <div class="h-12 w-12 flex-shrink-0">
+              <%= image_tag @user.profile_photo, class: "h-12 w-12 rounded-full", alt: @user.username %>
+            </div>
+          <% else %>
+            <div class="h-12 w-12 rounded-full bg-gray-300 flex items-center justify-center">
+              <span class="text-gray-600 font-medium text-lg"><%= @user.username&.first&.upcase || @user.email.first.upcase %></span>
+            </div>
+          <% end %>
+          <div class="ml-4">
+            <h4 class="text-lg font-medium text-gray-900"><%= @user.username || "No username" %></h4>
+            <p class="text-sm text-gray-500"><%= @user.email %></p>
+          </div>
+        </div>
+      </div>
+
+      <%= form_with model: @user, url: admin_user_role_path(@user), method: :patch, local: true do |form| %>
+        <% if @user.errors.any? %>
+          <div class="rounded-md bg-red-50 p-4 mb-4">
+            <div class="flex">
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">
+                  There were <%= pluralize(@user.errors.count, "error") %> with your submission
+                </h3>
+                <div class="mt-2 text-sm text-red-700">
+                  <ul class="list-disc pl-5 space-y-1">
+                    <% @user.errors.full_messages.each do |message| %>
+                      <li><%= message %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <div>
+          <%= form.label :role_id, "Select Role", class: "block text-sm font-medium text-gray-700 mb-3" %>
+          <div class="space-y-3">
+            <% @roles.each do |role| %>
+              <label class="relative flex items-start py-4 px-4 border rounded-lg cursor-pointer hover:bg-gray-50 <%= 'bg-blue-50 border-blue-200' if @user.role_id == role.id %>">
+                <div class="min-w-0 flex-1 text-sm">
+                  <%= form.radio_button :role_id, role.id, class: "sr-only", 'aria-labelledby': "role-#{role.id}-label", 'aria-describedby': "role-#{role.id}-description" %>
+                  <span id="role-<%= role.id %>-label" class="font-medium text-gray-900">
+                    <%= role.name.humanize %>
+                    <% if role.system_role? %>
+                      <span class="ml-2 inline-flex rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800">System</span>
+                    <% end %>
+                  </span>
+                  <span id="role-<%= role.id %>-description" class="text-gray-500 block mt-1">
+                    <%= role.description %>
+                  </span>
+                  <% if role.permissions.any? %>
+                    <div class="mt-2">
+                      <span class="text-xs text-gray-500">Permissions: </span>
+                      <span class="text-xs text-gray-700"><%= role.permissions.limit(3).pluck(:name).join(', ') %><%= role.permissions.count > 3 ? " and #{role.permissions.count - 3} more" : "" %></span>
+                    </div>
+                  <% end %>
+                </div>
+                <div class="ml-3 flex items-center h-5">
+                  <span class="<%= @user.role_id == role.id ? 'bg-blue-600' : 'bg-white' %> h-4 w-4 rounded-full border <%= @user.role_id == role.id ? 'border-transparent' : 'border-gray-300' %> flex items-center justify-center">
+                    <% if @user.role_id == role.id %>
+                      <svg class="h-2.5 w-2.5 text-white" fill="currentColor" viewBox="0 0 12 12">
+                        <path d="M3.707 5.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L5 6.586 3.707 5.293z" />
+                      </svg>
+                    <% end %>
+                  </span>
+                </div>
+              </label>
+            <% end %>
+            
+            <label class="relative flex items-start py-4 px-4 border rounded-lg cursor-pointer hover:bg-gray-50 <%= 'bg-blue-50 border-blue-200' if @user.role_id.nil? %>">
+              <div class="min-w-0 flex-1 text-sm">
+                <%= form.radio_button :role_id, '', class: "sr-only", 'aria-labelledby': "role-none-label", 'aria-describedby': "role-none-description" %>
+                <span id="role-none-label" class="font-medium text-gray-900">No Role</span>
+                <span id="role-none-description" class="text-gray-500 block mt-1">
+                  Remove all role-based permissions from this user
+                </span>
+              </div>
+              <div class="ml-3 flex items-center h-5">
+                <span class="<%= @user.role_id.nil? ? 'bg-blue-600' : 'bg-white' %> h-4 w-4 rounded-full border <%= @user.role_id.nil? ? 'border-transparent' : 'border-gray-300' %> flex items-center justify-center">
+                  <% if @user.role_id.nil? %>
+                    <svg class="h-2.5 w-2.5 text-white" fill="currentColor" viewBox="0 0 12 12">
+                      <path d="M3.707 5.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414L5 6.586 3.707 5.293z" />
+                    </svg>
+                  <% end %>
+                </span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="mt-6 flex items-center justify-end space-x-3">
+          <%= link_to "Cancel", admin_users_path, class: "inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+          <%= form.submit "Update Role", class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
