@@ -21,7 +21,7 @@ class Admin::UsersController < ApplicationController
       return
     end
 
-    @user.lock_account!
+    @user.lock_account!(admin_locked: true)
     redirect_to admin_users_path, notice: "#{@user.email} has been locked."
   end
 

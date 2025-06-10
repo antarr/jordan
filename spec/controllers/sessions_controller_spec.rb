@@ -102,7 +102,7 @@ RSpec.describe SessionsController, type: :controller do
       end
 
       it 'rejects login with locked account' do
-        phone_user.lock_account!
+        phone_user.lock_account!(admin_locked: true)
         
         post :create, params: { 
           login_type: 'phone',
@@ -198,7 +198,7 @@ RSpec.describe SessionsController, type: :controller do
       context 'for locked user' do
         before do
           user.verify_email!
-          user.lock_account!
+          user.lock_account!(admin_locked: true)
         end
 
         it 'redirects to login with account locked message' do

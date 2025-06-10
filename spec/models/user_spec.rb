@@ -653,6 +653,26 @@ RSpec.describe User, type: :model do
         expect(User.unlocked).to include(unlocked_user)
         expect(User.unlocked).not_to include(locked_user)
       end
+
+      it 'includes auto-locked users in auto_locked scope' do
+        auto_locked_user = create(:user, :complete_registration, locked_at: Time.current, locked_by_admin: false)
+        admin_locked_user = create(:user, :complete_registration, locked_at: Time.current, locked_by_admin: true)
+        unlocked_user = create(:user, :complete_registration, locked_at: nil)
+
+        expect(User.auto_locked).to include(auto_locked_user)
+        expect(User.auto_locked).not_to include(admin_locked_user)
+        expect(User.auto_locked).not_to include(unlocked_user)
+      end
+
+      it 'includes admin-locked users in admin_locked scope' do
+        auto_locked_user = create(:user, :complete_registration, locked_at: Time.current, locked_by_admin: false)
+        admin_locked_user = create(:user, :complete_registration, locked_at: Time.current, locked_by_admin: true)
+        unlocked_user = create(:user, :complete_registration, locked_at: nil)
+
+        expect(User.admin_locked).to include(admin_locked_user)
+        expect(User.admin_locked).not_to include(auto_locked_user)
+        expect(User.admin_locked).not_to include(unlocked_user)
+      end
     end
 
     describe '#locked?' do

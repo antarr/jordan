@@ -1,0 +1,33 @@
+<div class="max-w-md mx-auto">
+  <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
+    <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Unlock Your Account</h2>
+    
+    <p class="text-sm text-gray-600 mb-6 text-center">
+      If your account was automatically locked due to failed login attempts, you can request an unlock link to be sent to your email address.
+    </p>
+    
+    <%= form_with url: account_unlock_path, local: true, class: "space-y-4" do |f| %>
+      <div>
+        <%= f.label :email, "Email Address", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= f.email_field :email, 
+            placeholder: "Enter your email address",
+            required: true,
+            autofocus: true,
+            autocomplete: "email",
+            class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" %>
+      </div>
+
+      <div>
+        <%= f.submit "Send Unlock Link", 
+            class: "w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium" %>
+      </div>
+    <% end %>
+    
+    <div class="mt-6 text-center">
+      <p class="text-sm text-gray-600">
+        Remember your password? 
+        <%= link_to "Back to Sign In", new_session_path, class: "text-blue-600 hover:text-blue-500 font-medium" %>
+      </p>
+    </div>
+  </div>
+</div>

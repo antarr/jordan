@@ -31,6 +31,10 @@ Rails.application.routes.draw do
     post 'sms_verification', to: 'sms_verifications#verify', as: :sms_verification
     post 'sms_verification/resend', to: 'sms_verifications#resend', as: :resend_sms_verification
 
+    # Account unlock routes
+    resource :account_unlock, only: %i[new create], path: 'unlock-account'
+    get 'unlock-account/:token', to: 'account_unlocks#unlock', as: :unlock_account_token
+
     # Dashboard routes
     get 'dashboard' => 'dashboard#index', as: :dashboard
 

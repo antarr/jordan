@@ -58,6 +58,8 @@ en:
         unverified_email: "Please verify your email address before signing in."
         invalid_credentials: "Invalid email or password."
         account_locked: "This account has been locked. Please contact an administrator."
+        account_auto_locked: "Your account has been temporarily locked due to too many failed login attempts. You can unlock it by clicking the link below or by clicking 'Unlock Account' and following the instructions."
+        account_just_locked: "Your account has been locked due to too many failed login attempts. We've sent an email to your registered email address with instructions on how to unlock your account."
       request_sms:
         sent: "SMS login code sent to your phone"
         phone_not_found: "Phone number not found"
@@ -107,6 +109,30 @@ en:
   user_mailer:
     email_verification:
       subject: "Please verify your email address"
+    account_unlock:
+      subject: "Unlock your account"
+      heading: "Unlock Your Account"
+      greeting: "Hi there,"
+      instruction: "Your account was temporarily locked due to multiple failed login attempts. You can unlock it by clicking the button below:"
+      unlock_button: "Unlock My Account"
+      fallback_instruction: "If the button above doesn't work, you can copy and paste this link into your browser:"
+      security_notice: "This unlock link will expire after you use it or after 24 hours for security."
+      disclaimer: "If you didn't request this unlock, you can safely ignore this email."
+      closing: "Thanks!"
+      text_instruction: "Your account was temporarily locked due to multiple failed login attempts. You can unlock it by visiting this link:"
+    account_locked:
+      subject: "Your account has been locked"
+      heading: "Account Locked"
+      warning_title: "Security Alert"
+      greeting: "Hi there,"
+      explanation: "Your account has been temporarily locked due to multiple failed login attempts. This is a security measure to protect your account."
+      instruction: "You can unlock your account immediately by clicking the button below:"
+      unlock_button: "Unlock My Account"
+      fallback_instruction: "If the button above doesn't work, you can copy and paste this link into your browser:"
+      security_tip: "If you didn't attempt to log in, please consider changing your password after unlocking your account."
+      disclaimer: "If you didn't attempt to access your account, you can safely ignore this email and your account will remain locked for security."
+      closing: "Thanks!"
+      text_instruction: "Your account has been temporarily locked due to multiple failed login attempts. You can unlock it by visiting this link:"
   
   navigation:
     brand: "Ragged"
@@ -139,6 +165,7 @@ en:
     verify_email_address: "Verify Email Address"
     email: "Email"
     phone: "Phone"
+    unlock_account: "Unlock account"
   
   titles:
     default: "Ragged"
@@ -220,6 +247,7 @@ en:
   auth:
     dont_have_account: "Don't have an account?"
     need_to_verify: "Need to verify your email?"
+    account_locked: "Account locked?"
     remember_password: "Remember your password?"
     resend_instruction: "Enter your email address and we'll send you a new verification link."
   
@@ -249,6 +277,8 @@ en:
       phone_not_found: "Phone number not found"
       phone_not_verified: "Phone number is not verified"
       account_locked: "This account has been locked. Please contact an administrator."
+      account_auto_locked: "Your account has been temporarily locked due to too many failed login attempts. Please unlock your account using your email address."
+      account_just_locked: "Your account has been locked due to too many failed login attempts. We've sent an email to your registered email address with instructions on how to unlock your account."
       invalid_sms_code: "Invalid or expired SMS code"
       invalid_password: "Invalid password"
       missing_credentials: "Please provide either SMS code or password"
@@ -257,3 +287,10 @@ en:
       phone_not_found: "Phone number not found"
       phone_not_verified: "Phone number is not verified"
       failed: "Failed to send SMS code"
+
+  account_unlocks:
+    create:
+      sent: "If an account with that email address was automatically locked, we have sent an unlock link to the email address."
+    unlock:
+      success: "Your account has been successfully unlocked. You can now sign in."
+      invalid_token: "Invalid or expired unlock link."

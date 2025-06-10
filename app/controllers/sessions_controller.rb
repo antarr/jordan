@@ -58,9 +58,15 @@ class SessionsController < ApplicationController
 
     if user&.authenticate(params[:password])
       if user.locked?
-        flash[:alert] = I18n.t('controllers.sessions.create.account_locked')
+        if user.auto_locked?
+          flash[:alert] = I18n.t('controllers.sessions.create.account_auto_locked')
+        else
+          flash[:alert] = I18n.t('controllers.sessions.create.account_locked')
+        end
         redirect_to new_session_path
       elsif user.email_verified?
+        # Reset failed login attempts on successful login
+        user.reset_failed_login_attempts!
         sign_in(user)
         redirect_to dashboard_path
       else
@@ -68,7 +74,19 @@ class SessionsController < ApplicationController
         redirect_to new_session_path
       end
     else
-      flash.now[:alert] = I18n.t('controllers.sessions.create.invalid_credentials')
+      # Check if user will be locked before recording failed attempt
+      will_be_locked = user && user.failed_login_attempts >= (Lockable::MAX_FAILED_LOGIN_ATTEMPTS - 1)
+      
+      # Record failed login attempt if user exists
+      user&.record_failed_login!
+      
+      # Show appropriate message based on whether account was just locked
+      if will_be_locked && user&.locked?
+        flash.now[:alert] = I18n.t('controllers.sessions.create.account_just_locked')
+      else
+        flash.now[:alert] = I18n.t('controllers.sessions.create.invalid_credentials')
+      end
+      
       # Clear password for security when authentication fails
       params[:password] = nil
       render :new, status: :unprocessable_entity

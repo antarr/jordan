@@ -25,4 +25,38 @@ RSpec.describe UserMailer, type: :mailer do
       expect(mail.body.encoded).to include(verification_url)
     end
   end
+
+  describe '#account_locked' do
+    let(:user) { create(:user, :complete_registration) }
+    
+    before do
+      user.update!(locked_at: Time.current, locked_by_admin: false, auto_unlock_token: 'test_token_123')
+    end
+
+    let(:mail) { UserMailer.account_locked(user) }
+
+    it 'renders the subject' do
+      expect(mail.subject).to eq(I18n.t('user_mailer.account_locked.subject'))
+    end
+
+    it 'renders the receiver email' do
+      expect(mail.to).to eq([user.email])
+    end
+
+    it 'renders the sender email' do
+      expect(mail.from).to eq(['noreply@example.com'])
+    end
+
+    it 'contains the unlock token in body' do
+      expect(mail.body.encoded).to include('test_token_123')
+    end
+
+    it 'contains account locked heading' do
+      expect(mail.body.encoded).to include(I18n.t('user_mailer.account_locked.heading'))
+    end
+
+    it 'contains security alert warning' do
+      expect(mail.body.encoded).to include(I18n.t('user_mailer.account_locked.warning_title'))
+    end
+  end
 end

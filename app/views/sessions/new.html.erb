@@ -110,6 +110,10 @@
         <%= t('auth.need_to_verify') %> 
         <%= link_to t('buttons.resend_verification_email'), new_email_verification_request_path, class: "text-blue-600 hover:text-blue-500 font-medium" %>
       </p>
+      <p class="text-sm text-gray-600">
+        <%= t('auth.account_locked') %> 
+        <%= link_to t('buttons.unlock_account'), new_account_unlock_path, class: "text-blue-600 hover:text-blue-500 font-medium" %>
+      </p>
     </div>
   </div>
 </div>
