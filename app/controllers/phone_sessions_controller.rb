@@ -9,42 +9,17 @@ class PhoneSessionsController < ApplicationController
 
   def create
     @phone = params[:phone]
-    user = User.find_by(phone: params[:phone])
+    auth_service = PhoneAuthenticationService.new(
+      phone: params[:phone],
+      sms_code: params[:sms_code],
+      password: params[:password]
+    )
 
-    unless user
-      flash.now[:alert] = I18n.t('phone_sessions.create.phone_not_found')
-      render :new, status: :unprocessable_entity
-      return
-    end
-
-    unless user.phone_verified?
-      flash.now[:alert] = I18n.t('phone_sessions.create.phone_not_verified')
-      render :new, status: :unprocessable_entity
-      return
-    end
-
-    # Check if user provided SMS code (for SMS login)
-    if params[:sms_code].present?
-      if user.sms_verification_code_valid?(params[:sms_code])
-        sign_in(user)
-        # Clear the SMS code after successful login
-        user.update!(sms_verification_code: nil, sms_verification_code_expires_at: nil)
-        redirect_to dashboard_path
-      else
-        flash.now[:alert] = I18n.t('phone_sessions.create.invalid_sms_code')
-        render :new, status: :unprocessable_entity
-      end
-    # Check if user provided password (for password login)
-    elsif params[:password].present?
-      if user.password_digest.present? && user.authenticate(params[:password])
-        sign_in(user)
-        redirect_to dashboard_path
-      else
-        flash.now[:alert] = I18n.t('phone_sessions.create.invalid_password')
-        render :new, status: :unprocessable_entity
-      end
+    if auth_service.authenticate
+      sign_in(auth_service.user)
+      redirect_to dashboard_path
     else
-      flash.now[:alert] = I18n.t('phone_sessions.create.missing_credentials')
+      flash.now[:alert] = auth_service.error_message
       render :new, status: :unprocessable_entity
     end
   end
