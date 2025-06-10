@@ -17,6 +17,22 @@ class ProfilesController < ApplicationController
     end
   end
 
+  def change_password
+    @user = current_user
+
+    unless valid_current_password?
+      @user.errors.add(:current_password, 'is incorrect')
+      render :edit, status: :unprocessable_entity
+      return
+    end
+
+    if update_user_password
+      redirect_to edit_profile_path, notice: t('profiles.change_password.success')
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def profile_params
@@ -25,6 +41,23 @@ class ProfilesController < ApplicationController
       :email, :username, :bio, :location_name,
       :latitude, :longitude, :location_private,
       :profile_photo
+    )
+  end
+
+  def password_change_params
+    params.require(:password_change).permit(
+      :current_password, :new_password, :new_password_confirmation
+    )
+  end
+
+  def valid_current_password?
+    @user.authenticate(password_change_params[:current_password])
+  end
+
+  def update_user_password
+    @user.update(
+      password: password_change_params[:new_password],
+      password_confirmation: password_change_params[:new_password_confirmation]
     )
   end
 end

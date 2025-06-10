@@ -118,6 +118,8 @@ en:
   profiles:
     update:
       success: "Profile updated successfully"
+    change_password:
+      success: "Password changed successfully"
   
   buttons:
     continue: "Continue"

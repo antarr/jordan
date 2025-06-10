@@ -325,6 +325,9 @@ RSpec.describe 'Authentication Flow', type: :feature do
       fill_in 'password', with: 'SomePassword123!'
       click_button 'Sign In'
 
+      # Wait for error message to appear
+      expect(page).to have_content('Invalid email or password', wait: 5)
+      
       non_existent_message = page.text
 
       # Try with wrong password
@@ -347,6 +350,9 @@ RSpec.describe 'Authentication Flow', type: :feature do
       fill_in 'password', with: 'WrongPassword'
       click_button 'Sign In'
 
+      # Wait for error message to appear  
+      expect(page).to have_content('Invalid email or password', wait: 5)
+      
       wrong_password_message = page.text
 
       # Messages should be identical

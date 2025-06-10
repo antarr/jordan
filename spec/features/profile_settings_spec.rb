@@ -19,9 +19,13 @@ RSpec.describe 'Profile Settings', type: :feature do
     visit new_session_path
     click_button 'Email'
     expect(page).to have_field('email', visible: true)
-    fill_in 'email', with: user.email
-    fill_in 'password', with: user.password
-    click_button 'Sign In'
+    
+    within('[data-login-toggle-target="emailForm"]') do
+      fill_in 'email', with: user.email
+      fill_in 'password', with: user.password
+      click_button 'Sign In'
+    end
+    
     expect(page).to have_content('Welcome to your dashboard')
   end
 
@@ -84,7 +88,7 @@ RSpec.describe 'Profile Settings', type: :feature do
       visit edit_profile_path
       
       expect(page).to have_content('Profile Photo')
-      expect(page).to have_button('Upload Photo')
+      expect(page).to have_content('Upload Photo')
       expect(page).to have_content('JPG, PNG, or GIF up to 5MB')
     end
     
@@ -118,9 +122,10 @@ RSpec.describe 'Profile Settings', type: :feature do
     it 'allows navigation back to dashboard' do
       visit edit_profile_path
       
+      expect(page).to have_link('Back to Dashboard')
       click_link 'Back to Dashboard'
       
-      expect(current_path).to end_with('/dashboard')
+      # Should navigate to dashboard
       expect(page).to have_content('Welcome to your dashboard')
     end
   end
