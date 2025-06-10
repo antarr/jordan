@@ -151,6 +151,27 @@ RSpec.describe PhoneSessionsController, type: :controller do
         # In test environment, development_sms_code should not be included
         expect(response_data).not_to have_key('development_sms_code')
       end
+      
+      it 'includes development SMS code in development environment' do
+        allow(Rails.env).to receive(:development?).and_return(true)
+        allow(SmsService).to receive(:send_login_code).and_return(true)
+        
+        post :request_sms, params: { phone: phone_user.phone }
+        
+        expect(response).to have_http_status(:success)
+        response_data = JSON.parse(response.body)
+        expect(response_data).to have_key('development_sms_code')
+        expect(response_data['development_sms_code']).to match(/\A\d{6}\z/)
+      end
+
+      it 'handles SMS service failure' do
+        allow(SmsService).to receive(:send_login_code).and_return(false)
+        
+        post :request_sms, params: { phone: phone_user.phone }
+        
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(JSON.parse(response.body)['error']).to eq(I18n.t('phone_sessions.request_sms.failed'))
+      end
 
       it 'generates new verification code' do
         allow(SmsService).to receive(:send_login_code).and_return(true)
