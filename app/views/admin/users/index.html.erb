@@ -1,0 +1,137 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="sm:flex sm:items-center">
+    <div class="sm:flex-auto">
+      <h1 class="text-2xl font-semibold text-gray-900">Users</h1>
+      <p class="mt-2 text-sm text-gray-700">Manage user roles and permissions</p>
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <%= form_with url: admin_users_path, method: :get, local: true, class: "sm:flex sm:items-center" do |form| %>
+      <div class="w-full sm:max-w-xs">
+        <%= form.text_field :search, value: params[:search], placeholder: "Search by email or username", class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
+      </div>
+      <%= form.submit "Search", class: "mt-3 sm:mt-0 sm:ml-3 inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" %>
+      <% if params[:search].present? %>
+        <%= link_to "Clear", admin_users_path, class: "mt-3 sm:mt-0 sm:ml-3 inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="mt-8 flex flex-col">
+    <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+          <table class="min-w-full divide-y divide-gray-300">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">User</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Email</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Role</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Account</th>
+                <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                  <span class="sr-only">Actions</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-white">
+              <% @users.each do |user| %>
+                <tr>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm">
+                    <div class="flex items-center">
+                      <% if user.profile_photo.attached? %>
+                        <div class="h-10 w-10 flex-shrink-0">
+                          <%= image_tag user.profile_photo, class: "h-10 w-10 rounded-full", alt: user.username %>
+                        </div>
+                      <% else %>
+                        <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
+                          <span class="text-gray-600 font-medium text-sm">
+                            <%= user&.username&.upcase || user&.email&.upcase %>
+                            </span>
+                        </div>
+                      <% end %>
+                      <div class="ml-4">
+                        <div class="font-medium text-gray-900"><%= user.username || "No username" %></div>
+                        <% if user.bio.present? %>
+                          <div class="text-gray-500 text-xs truncate max-w-xs"><%= user.bio %></div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <%= user.email %>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm">
+                    <% if user.role %>
+                      <span class="inline-flex rounded-full bg-green-100 px-2 text-xs font-semibold leading-5 text-green-800">
+                        <%= user.role.name.humanize %>
+                      </span>
+                    <% else %>
+                      <span class="inline-flex rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800">
+                        No role
+                      </span>
+                    <% end %>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm">
+                    <% if user.email_verified? %>
+                      <span class="inline-flex items-center text-green-700">
+                        <svg class="mr-1.5 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        Verified
+                      </span>
+                    <% else %>
+                      <span class="inline-flex items-center text-yellow-700">
+                        <svg class="mr-1.5 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                        Unverified
+                      </span>
+                    <% end %>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-4 text-sm">
+                    <% if user.locked? %>
+                      <span class="inline-flex items-center text-red-700">
+                        <svg class="mr-1.5 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a5 5 0 0110 0z" clip-rule="evenodd" />
+                        </svg>
+                        Locked
+                      </span>
+                    <% else %>
+                      <span class="inline-flex items-center text-green-700">
+                        <svg class="mr-1.5 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 015.905-.75 1 1 0 001.937-.5A5.002 5.002 0 0010 2z" clip-rule="evenodd" />
+                        </svg>
+                        Active
+                      </span>
+                    <% end %>
+                  </td>
+                  <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                    <div class="flex items-center justify-end space-x-2">
+                      <%= link_to "Change Role", edit_admin_user_role_path(user), class: "text-blue-600 hover:text-blue-900" %>
+                      
+                      <% unless user.admin? || user == current_user %>
+                        <% if user.locked? %>
+                          <%= link_to "Unlock", unlock_admin_user_path(user), 
+                              method: :patch,
+                              data: { confirm: "Are you sure you want to unlock #{user.email}?" },
+                              class: "text-green-600 hover:text-green-900" %>
+                        <% else %>
+                          <%= link_to "Lock", lock_admin_user_path(user), 
+                              method: :patch,
+                              data: { confirm: "Are you sure you want to lock #{user.email}?" },
+                              class: "text-red-600 hover:text-red-900" %>
+                        <% end %>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

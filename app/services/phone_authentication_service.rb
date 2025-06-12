@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class PhoneAuthenticationService
   include ActiveModel::Model
 
@@ -16,8 +14,27 @@ class PhoneAuthenticationService
   def authenticate
     return false unless find_user
     return false unless verify_phone_status
+    return false unless verify_account_status
 
-    authenticate_with_credentials
+    success = authenticate_with_credentials
+    
+    if success
+      # Reset failed login attempts on successful login
+      @user.reset_failed_login_attempts!
+    else
+      # Check if user will be locked before recording failed attempt
+      will_be_locked = @user.failed_login_attempts >= (Lockable::MAX_FAILED_LOGIN_ATTEMPTS - 1)
+      
+      # Record failed login attempt
+      @user.record_failed_login!
+      
+      # Update error message if account was just locked
+      if will_be_locked && @user.locked?
+        @errors = [I18n.t('phone_sessions.create.account_just_locked')]
+      end
+    end
+    
+    success
   end
 
   def success?
@@ -44,6 +61,19 @@ class PhoneAuthenticationService
   def verify_phone_status
     unless @user.phone_verified?
       @errors << I18n.t('phone_sessions.create.phone_not_verified')
+      return false
+    end
+
+    true
+  end
+
+  def verify_account_status
+    if @user.locked?
+      if @user.auto_locked?
+        @errors << I18n.t('phone_sessions.create.account_auto_locked')
+      else
+        @errors << I18n.t('phone_sessions.create.account_locked')
+      end
       return false
     end
 

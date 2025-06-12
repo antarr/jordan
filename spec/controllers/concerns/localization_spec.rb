@@ -208,7 +208,7 @@ RSpec.describe Localization, type: :controller do
     it 'updates when locale changes' do
       I18n.locale = :en
       expect(controller.send(:default_url_options)).to eq({ locale: :en })
-      
+
       I18n.locale = :'pt-BR'
       expect(controller.send(:default_url_options)).to eq({ locale: :'pt-BR' })
     end

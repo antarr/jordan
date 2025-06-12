@@ -57,15 +57,46 @@ class SessionsController < ApplicationController
     user = User.find_by(email: params[:email].to_s.strip.downcase)
 
     if user&.authenticate(params[:password])
-      if user.email_verified?
-        sign_in(user)
-        redirect_to dashboard_path
+      if user.locked?
+        if user.auto_locked?
+          flash[:alert] = I18n.t('controllers.sessions.create.account_auto_locked')
+        else
+          flash[:alert] = I18n.t('controllers.sessions.create.account_locked')
+        end
+        redirect_to new_session_path
+      elsif user.email_verified?
+        # Reset failed login attempts on successful login
+        user.reset_failed_login_attempts!
+        
+        if user.two_factor_enabled?
+          # Store user ID in session for 2FA verification
+          session[:pending_user_id] = user.id
+          session[:two_factor_verified] = false
+          redirect_to two_factor_verification_path
+        else
+          sign_in(user)
+          redirect_to dashboard_path
+        end
       else
         flash[:alert] = I18n.t('controllers.sessions.create.unverified_email')
         redirect_to new_session_path
       end
     else
-      flash.now[:alert] = I18n.t('controllers.sessions.create.invalid_credentials')
+      # Check if user will be locked before recording failed attempt
+      will_be_locked = user && user.failed_login_attempts >= (Lockable::MAX_FAILED_LOGIN_ATTEMPTS - 1)
+      
+      # Record failed login attempt if user exists
+      user&.record_failed_login!
+      
+      # Show appropriate message based on whether account was just locked
+      if will_be_locked && user&.locked?
+        flash.now[:alert] = I18n.t('controllers.sessions.create.account_just_locked')
+      else
+        flash.now[:alert] = I18n.t('controllers.sessions.create.invalid_credentials')
+      end
+      
+      # Clear password for security when authentication fails
+      params[:password] = nil
       render :new, status: :unprocessable_entity
     end
   end
@@ -79,10 +110,20 @@ class SessionsController < ApplicationController
     )
 
     if auth_service.authenticate
-      sign_in(auth_service.user)
-      redirect_to dashboard_path
+      user = auth_service.user
+      if user.two_factor_enabled?
+        # Store user ID in session for 2FA verification
+        session[:pending_user_id] = user.id
+        session[:two_factor_verified] = false
+        redirect_to two_factor_verification_path
+      else
+        sign_in(user)
+        redirect_to dashboard_path
+      end
     else
       flash.now[:alert] = auth_service.error_message
+      # Clear password for security when authentication fails
+      params[:password] = nil
       render :new, status: :unprocessable_entity
     end
   end

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class SmsService
   class << self
     def send_verification_code(phone_number, code)

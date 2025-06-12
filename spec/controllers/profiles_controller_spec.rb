@@ -94,7 +94,7 @@ RSpec.describe ProfilesController, type: :controller do
 
         context 'with profile photo upload' do
           it 'attaches the profile photo' do
-            file = fixture_file_upload(Rails.root.join('spec', 'fixtures', 'test_image.jpg'), 'image/jpeg')
+            file = fixture_file_upload(Rails.root.join('spec/fixtures/test_image.jpg'), 'image/jpeg')
 
             patch :update, params: {
               user: {
@@ -356,14 +356,14 @@ RSpec.describe ProfilesController, type: :controller do
     context 'when user has a profile photo' do
       before do
         # Create a mock file and attach it
-        file = fixture_file_upload(Rails.root.join('spec', 'fixtures', 'test_image.jpg'), 'image/jpeg')
+        file = fixture_file_upload(Rails.root.join('spec/fixtures/test_image.jpg'), 'image/jpeg')
         user.profile_photo.attach(file)
       end
 
       it 'removes the profile photo' do
-        expect {
+        expect do
           delete :remove_photo
-        }.to change { user.reload.profile_photo.attached? }.from(true).to(false)
+        end.to change { user.reload.profile_photo.attached? }.from(true).to(false)
       end
 
       it 'redirects to edit profile page' do
@@ -379,9 +379,9 @@ RSpec.describe ProfilesController, type: :controller do
 
     context 'when user has no profile photo' do
       it 'does not change anything' do
-        expect {
+        expect do
           delete :remove_photo
-        }.not_to change { user.reload.profile_photo.attached? }
+        end.not_to(change { user.reload.profile_photo.attached? })
       end
 
       it 'redirects to edit profile page' do

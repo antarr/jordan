@@ -32,9 +32,12 @@
 class User < ApplicationRecord
   include Locatable
   include Validatable
+  include Authorizable
+  include Lockable
 
   has_secure_password validations: false
   has_one_attached :profile_photo
+  has_many :webauthn_credentials, dependent: :destroy
 
   before_create :generate_email_verification_token, if: -> { email.present? }
 
@@ -101,6 +104,23 @@ class User < ApplicationRecord
 
   def registration_complete?
     registration_step && registration_step >= 6
+  end
+
+  def two_factor_enabled?
+    two_factor_enabled && webauthn_credentials.any?
+  end
+
+  def enable_two_factor!
+    update!(two_factor_enabled: true)
+  end
+
+  def disable_two_factor!
+    webauthn_credentials.destroy_all
+    update!(two_factor_enabled: false)
+  end
+
+  def webauthn_user_id
+    id.to_s
   end
 
   def can_advance_to_step?(step)

@@ -22,6 +22,12 @@ gem 'tailwindcss-rails'
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem 'bcrypt', '~> 3.1.7'
 
+# JWT for API authentication
+gem 'jwt'
+
+# WebAuthn for hardware-based 2FA (fingerprint, security keys)
+gem 'webauthn'
+
 # Multi-step form wizard [https://github.com/zombocom/wicked]
 gem 'wicked'
 
@@ -54,6 +60,12 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem 'rubocop-rails-omakase', require: false
+
+  # RuboCop extensions for better code quality
+  gem 'rubocop-capybara', require: false
+  gem 'rubocop-factory_bot', require: false
+  gem 'rubocop-rspec', require: false
+  gem 'rubocop-rspec_rails', require: false
 
   # Testing framework
   gem 'factory_bot_rails'

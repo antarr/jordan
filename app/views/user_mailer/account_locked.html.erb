@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+      }
+      .header {
+        background-color: #f8f9fa;
+        padding: 20px;
+        text-align: center;
+        border-radius: 8px 8px 0 0;
+      }
+      .content {
+        background-color: #ffffff;
+        padding: 30px;
+        border: 1px solid #e9ecef;
+      }
+      .footer {
+        background-color: #f8f9fa;
+        padding: 20px;
+        text-align: center;
+        border-radius: 0 0 8px 8px;
+        font-size: 12px;
+        color: #6c757d;
+      }
+      .unlock-button {
+        display: inline-block;
+        background-color: #dc3545;
+        color: white;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 4px;
+        margin: 20px 0;
+        font-weight: bold;
+      }
+      .unlock-button:hover {
+        background-color: #c82333;
+      }
+      .warning-box {
+        background-color: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 4px;
+        padding: 15px;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1><%= t('user_mailer.account_locked.heading') %></h1>
+      </div>
+      
+      <div class="content">
+        <div class="warning-box">
+          <strong>⚠️ <%= t('user_mailer.account_locked.warning_title') %></strong>
+        </div>
+        
+        <p><%= t('user_mailer.account_locked.greeting') %></p>
+        
+        <p><%= t('user_mailer.account_locked.explanation') %></p>
+        
+        <p><%= t('user_mailer.account_locked.instruction') %></p>
+        
+        <div style="text-align: center;">
+          <a href="<%= @unlock_url %>" class="unlock-button">
+            <%= t('user_mailer.account_locked.unlock_button') %>
+          </a>
+        </div>
+        
+        <p><%= t('user_mailer.account_locked.fallback_instruction') %></p>
+        <p style="background-color: #f8f9fa; padding: 10px; border-radius: 4px; word-break: break-all;">
+          <%= @unlock_url %>
+        </p>
+        
+        <p><%= t('user_mailer.account_locked.security_tip') %></p>
+        
+        <p><%= t('user_mailer.account_locked.disclaimer') %></p>
+        
+        <p><%= t('user_mailer.account_locked.closing') %></p>
+      </div>
+      
+      <div class="footer">
+        <p>© <%= Date.current.year %> <%= t('navigation.brand') %>. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>
