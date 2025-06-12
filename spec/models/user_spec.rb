@@ -36,14 +36,14 @@ RSpec.describe User, type: :model do
     context 'when contact_method is email and registration_step >= 2' do
       subject { build(:user, :email_user, :step_two) }
 
-      it { should validate_presence_of(:email) }
-      it { should validate_uniqueness_of(:email).case_insensitive }
-      it { should allow_value(Faker::Internet.email).for(:email) }
-      it { should_not allow_value('invalid-email').for(:email) }
-      it { should_not allow_value('user@').for(:email) }
-      it { should_not allow_value('@example.com').for(:email) }
-      it { should_not allow_value('user example@test.com').for(:email) }
-      it { should_not allow_value('user@example..com').for(:email) }
+      it { is_expected.to validate_presence_of(:email) }
+      it { is_expected.to validate_uniqueness_of(:email).case_insensitive }
+      it { is_expected.to allow_value(Faker::Internet.email).for(:email) }
+      it { is_expected.not_to allow_value('invalid-email').for(:email) }
+      it { is_expected.not_to allow_value('user@').for(:email) }
+      it { is_expected.not_to allow_value('@example.com').for(:email) }
+      it { is_expected.not_to allow_value('user example@test.com').for(:email) }
+      it { is_expected.not_to allow_value('user@example..com').for(:email) }
 
       it 'accepts valid email formats' do
         valid_emails = [
@@ -71,36 +71,36 @@ RSpec.describe User, type: :model do
     context 'when contact_method is phone and registration_step >= 2' do
       subject { build(:user, :phone_user, :step_two) }
 
-      it { should validate_presence_of(:phone) }
-      it { should validate_uniqueness_of(:phone).case_insensitive }
-      it { should allow_value('+1234567890').for(:phone) }
-      it { should allow_value('+12345678901234').for(:phone) }
-      it { should_not allow_value('invalid-phone').for(:phone) }
-      it { should_not allow_value('123').for(:phone) }
+      it { is_expected.to validate_presence_of(:phone) }
+      it { is_expected.to validate_uniqueness_of(:phone).case_insensitive }
+      it { is_expected.to allow_value('+1234567890').for(:phone) }
+      it { is_expected.to allow_value('+12345678901234').for(:phone) }
+      it { is_expected.not_to allow_value('invalid-phone').for(:phone) }
+      it { is_expected.not_to allow_value('123').for(:phone) }
     end
 
     context 'when registration_step >= 3' do
       subject { build(:user, :step_three) }
 
-      it { should validate_presence_of(:username) }
-      it { should validate_uniqueness_of(:username).case_insensitive }
-      it { should allow_value(Faker::Internet.username(specifier: 5..12, separators: %w[_])).for(:username) }
-      it { should_not allow_value('invalid@username!').for(:username) }
+      it { is_expected.to validate_presence_of(:username) }
+      it { is_expected.to validate_uniqueness_of(:username).case_insensitive }
+      it { is_expected.to allow_value(Faker::Internet.username(specifier: 5..12, separators: %w[_])).for(:username) }
+      it { is_expected.not_to allow_value('invalid@username!').for(:username) }
     end
 
     context 'when registration_step >= 4' do
       subject { build(:user, :step_four) }
 
-      it { should validate_presence_of(:bio) }
-      it { should validate_length_of(:bio).is_at_least(25) }
+      it { is_expected.to validate_presence_of(:bio) }
+      it { is_expected.to validate_length_of(:bio).is_at_least(25) }
     end
 
     context 'password validations' do
       subject { build(:user, :step_two) }
 
-      it { should validate_presence_of(:password) }
-      it { should validate_length_of(:password).is_at_least(6).is_at_most(72) }
-      it { should validate_presence_of(:password_confirmation) }
+      it { is_expected.to validate_presence_of(:password) }
+      it { is_expected.to validate_length_of(:password).is_at_least(6).is_at_most(72) }
+      it { is_expected.to validate_presence_of(:password_confirmation) }
 
       it 'validates password confirmation matches' do
         user = build(:user, password: 'password123', password_confirmation: 'different')
@@ -110,18 +110,18 @@ RSpec.describe User, type: :model do
     end
 
     context 'contact_method validation' do
-      it { should allow_value('email').for(:contact_method) }
-      it { should allow_value('phone').for(:contact_method) }
-      it { should_not allow_value('invalid').for(:contact_method) }
+      it { is_expected.to allow_value('email').for(:contact_method) }
+      it { is_expected.to allow_value('phone').for(:contact_method) }
+      it { is_expected.not_to allow_value('invalid').for(:contact_method) }
     end
 
     context 'location validations' do
-      it { should allow_value(37.7749).for(:latitude) }
-      it { should allow_value(-122.4194).for(:longitude) }
-      it { should_not allow_value(91).for(:latitude) }
-      it { should_not allow_value(-91).for(:latitude) }
-      it { should_not allow_value(181).for(:longitude) }
-      it { should_not allow_value(-181).for(:longitude) }
+      it { is_expected.to allow_value(37.7749).for(:latitude) }
+      it { is_expected.to allow_value(-122.4194).for(:longitude) }
+      it { is_expected.not_to allow_value(91).for(:latitude) }
+      it { is_expected.not_to allow_value(-91).for(:latitude) }
+      it { is_expected.not_to allow_value(181).for(:longitude) }
+      it { is_expected.not_to allow_value(-181).for(:longitude) }
 
       it 'requires longitude when latitude is present' do
         user = build(:user, latitude: 37.7749, longitude: nil)
@@ -192,15 +192,15 @@ RSpec.describe User, type: :model do
 
     describe '.verified' do
       it 'returns only verified users' do
-        expect(User.verified).to include(verified_user)
-        expect(User.verified).not_to include(unverified_user)
+        expect(described_class.verified).to include(verified_user)
+        expect(described_class.verified).not_to include(unverified_user)
       end
     end
 
     describe '.unverified' do
       it 'returns only unverified users' do
-        expect(User.unverified).to include(unverified_user)
-        expect(User.unverified).not_to include(verified_user)
+        expect(described_class.unverified).to include(unverified_user)
+        expect(described_class.unverified).not_to include(verified_user)
       end
     end
   end
@@ -398,7 +398,8 @@ RSpec.describe User, type: :model do
     end
 
     it 'returns true for step 4 when username is present' do
-      user = create(:user, :step_three, username: Faker::Internet.username(specifier: 5..12, separators: %w[_]).gsub(/[^a-zA-Z0-9_]/, '_'))
+      user = create(:user, :step_three,
+                    username: Faker::Internet.username(specifier: 5..12, separators: %w[_]).gsub(/[^a-zA-Z0-9_]/, '_'))
       expect(user.can_advance_to_step?(4)).to be true
     end
 
@@ -423,17 +424,20 @@ RSpec.describe User, type: :model do
     end
 
     it 'returns false for step 4 when username is missing' do
-      user = build_stubbed(:user, contact_method: 'email', email: 'test@example.com', username: nil, registration_step: 3)
+      user = build_stubbed(:user, contact_method: 'email', email: 'test@example.com', username: nil,
+                                  registration_step: 3)
       expect(user.can_advance_to_step?(4)).to be false
     end
 
     it 'returns false for step 5 when bio is missing' do
-      user = build_stubbed(:user, contact_method: 'email', email: 'test@example.com', username: 'testuser', bio: nil, registration_step: 4)
+      user = build_stubbed(:user, contact_method: 'email', email: 'test@example.com', username: 'testuser', bio: nil,
+                                  registration_step: 4)
       expect(user.can_advance_to_step?(5)).to be false
     end
 
     it 'returns false for step 5 when bio is too short' do
-      user = build_stubbed(:user, contact_method: 'email', email: 'test@example.com', username: 'testuser', bio: 'too short', registration_step: 4)
+      user = build_stubbed(:user, contact_method: 'email', email: 'test@example.com', username: 'testuser',
+                                  bio: 'too short', registration_step: 4)
       expect(user.can_advance_to_step?(5)).to be false
     end
 
@@ -450,21 +454,21 @@ RSpec.describe User, type: :model do
       user = build_stubbed(:user, contact_method: 'email', registration_step: 1)
       allow(user).to receive(:can_advance_to_step?).with(2).and_return(true)
       allow(user).to receive(:update!).with(registration_step: 2).and_return(true)
-      
+
       expect(user.advance_to_next_step!).to be true
     end
 
     it 'returns false when conditions are not met' do
       user = build_stubbed(:user, contact_method: nil, registration_step: 1)
       allow(user).to receive(:can_advance_to_step?).with(2).and_return(false)
-      
+
       expect(user.advance_to_next_step!).to be false
     end
 
     it 'updates the registration_step in database' do
       user = create(:user, :step_one, contact_method: 'email', email: 'test@example.com')
       user.advance_to_next_step!
-      user_from_db = User.find(user.id)
+      user_from_db = described_class.find(user.id)
       expect(user_from_db.registration_step).to eq(2)
     end
 
@@ -642,16 +646,16 @@ RSpec.describe User, type: :model do
         locked_user = create(:user, :complete_registration, locked_at: Time.current)
         unlocked_user = create(:user, :complete_registration, locked_at: nil)
 
-        expect(User.locked).to include(locked_user)
-        expect(User.locked).not_to include(unlocked_user)
+        expect(described_class.locked).to include(locked_user)
+        expect(described_class.locked).not_to include(unlocked_user)
       end
 
       it 'includes unlocked users in unlocked scope' do
         locked_user = create(:user, :complete_registration, locked_at: Time.current)
         unlocked_user = create(:user, :complete_registration, locked_at: nil)
 
-        expect(User.unlocked).to include(unlocked_user)
-        expect(User.unlocked).not_to include(locked_user)
+        expect(described_class.unlocked).to include(unlocked_user)
+        expect(described_class.unlocked).not_to include(locked_user)
       end
 
       it 'includes auto-locked users in auto_locked scope' do
@@ -659,9 +663,9 @@ RSpec.describe User, type: :model do
         admin_locked_user = create(:user, :complete_registration, locked_at: Time.current, locked_by_admin: true)
         unlocked_user = create(:user, :complete_registration, locked_at: nil)
 
-        expect(User.auto_locked).to include(auto_locked_user)
-        expect(User.auto_locked).not_to include(admin_locked_user)
-        expect(User.auto_locked).not_to include(unlocked_user)
+        expect(described_class.auto_locked).to include(auto_locked_user)
+        expect(described_class.auto_locked).not_to include(admin_locked_user)
+        expect(described_class.auto_locked).not_to include(unlocked_user)
       end
 
       it 'includes admin-locked users in admin_locked scope' do
@@ -669,9 +673,9 @@ RSpec.describe User, type: :model do
         admin_locked_user = create(:user, :complete_registration, locked_at: Time.current, locked_by_admin: true)
         unlocked_user = create(:user, :complete_registration, locked_at: nil)
 
-        expect(User.admin_locked).to include(admin_locked_user)
-        expect(User.admin_locked).not_to include(auto_locked_user)
-        expect(User.admin_locked).not_to include(unlocked_user)
+        expect(described_class.admin_locked).to include(admin_locked_user)
+        expect(described_class.admin_locked).not_to include(auto_locked_user)
+        expect(described_class.admin_locked).not_to include(unlocked_user)
       end
     end
 

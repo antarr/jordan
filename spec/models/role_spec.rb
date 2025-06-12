@@ -2,19 +2,20 @@ require 'rails_helper'
 
 RSpec.describe Role, type: :model do
   subject { build(:role) }
+
   let(:role) { create(:role) }
   let(:permission) { create(:permission) }
 
   describe 'associations' do
-    it { should have_many(:role_permissions).dependent(:destroy) }
-    it { should have_many(:permissions).through(:role_permissions) }
-    it { should have_many(:users).dependent(:nullify) }
+    it { is_expected.to have_many(:role_permissions).dependent(:destroy) }
+    it { is_expected.to have_many(:permissions).through(:role_permissions) }
+    it { is_expected.to have_many(:users).dependent(:nullify) }
   end
 
   describe 'validations' do
-    it { should validate_presence_of(:name) }
-    it { should validate_uniqueness_of(:name) }
-    it { should validate_presence_of(:description) }
+    it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to validate_uniqueness_of(:name) }
+    it { is_expected.to validate_presence_of(:description) }
   end
 
   describe 'scopes' do
@@ -22,13 +23,13 @@ RSpec.describe Role, type: :model do
     let!(:custom_role) { create(:role, :custom_role) }
 
     it 'filters system roles' do
-      expect(Role.system_roles).to include(system_role)
-      expect(Role.system_roles).not_to include(custom_role)
+      expect(described_class.system_roles).to include(system_role)
+      expect(described_class.system_roles).not_to include(custom_role)
     end
 
     it 'filters custom roles' do
-      expect(Role.custom_roles).to include(custom_role)
-      expect(Role.custom_roles).not_to include(system_role)
+      expect(described_class.custom_roles).to include(custom_role)
+      expect(described_class.custom_roles).not_to include(system_role)
     end
   end
 

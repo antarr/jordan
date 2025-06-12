@@ -3,12 +3,12 @@ require 'rails_helper'
 RSpec.describe 'Api::V1::Authentication', type: :request do
   describe 'POST /api/v1/login' do
     let(:user) { create(:user, email: 'test@example.com', password: 'password123') }
-    
+
     context 'when refresh tokens disabled' do
       before do
         allow(Rails.application.config).to receive(:jwt).and_return({
-          refresh_tokens_enabled: false
-        })
+                                                                      refresh_tokens_enabled: false
+                                                                    })
       end
 
       it 'returns a single JWT token' do
@@ -20,7 +20,7 @@ RSpec.describe 'Api::V1::Authentication', type: :request do
         }
 
         expect(response).to have_http_status(:ok)
-        
+
         json_response = JSON.parse(response.body)
         expect(json_response['token']).to be_present
         expect(json_response['access_token']).to be_nil
@@ -37,12 +37,12 @@ RSpec.describe 'Api::V1::Authentication', type: :request do
     context 'when refresh tokens enabled' do
       before do
         allow(Rails.application.config).to receive(:jwt).and_return({
-          refresh_tokens_enabled: true,
-          access_token_expiry: 15.minutes,
-          refresh_token_expiry: 30.days,
-          access_token_type: 'access',
-          refresh_token_type: 'refresh'
-        })
+                                                                      refresh_tokens_enabled: true,
+                                                                      access_token_expiry: 15.minutes,
+                                                                      refresh_token_expiry: 30.days,
+                                                                      access_token_type: 'access',
+                                                                      refresh_token_type: 'refresh'
+                                                                    })
       end
 
       it 'returns access and refresh tokens' do
@@ -54,13 +54,13 @@ RSpec.describe 'Api::V1::Authentication', type: :request do
         }
 
         expect(response).to have_http_status(:ok)
-        
+
         json_response = JSON.parse(response.body)
         expect(json_response['access_token']).to be_present
         expect(json_response['refresh_token']).to be_present
         expect(json_response['expires_in']).to eq(900) # 15 minutes
         expect(json_response['token']).to be_nil
-        
+
         # Verify tokens are stored
         user.reload
         expect(user.refresh_token).to eq(json_response['refresh_token'])
@@ -78,7 +78,7 @@ RSpec.describe 'Api::V1::Authentication', type: :request do
         }
 
         expect(response).to have_http_status(:unauthorized)
-        
+
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to eq('Invalid email or password')
       end
@@ -94,7 +94,7 @@ RSpec.describe 'Api::V1::Authentication', type: :request do
         }
 
         expect(response).to have_http_status(:unauthorized)
-        
+
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to eq('Invalid email or password')
       end
@@ -103,23 +103,23 @@ RSpec.describe 'Api::V1::Authentication', type: :request do
 
   describe 'DELETE /api/v1/logout' do
     let(:user) { create(:user) }
-    
+
     context 'when refresh tokens disabled' do
       let(:token) { JwtService.encode_access_token(user.id) }
       let(:headers) { { 'Authorization' => "Bearer #{token}" } }
 
       before do
         allow(Rails.application.config).to receive(:jwt).and_return({
-          refresh_tokens_enabled: false,
-          access_token_type: 'access'
-        })
+                                                                      refresh_tokens_enabled: false,
+                                                                      access_token_type: 'access'
+                                                                    })
       end
 
       it 'returns success message' do
         delete '/api/v1/logout', headers: headers
 
         expect(response).to have_http_status(:ok)
-        
+
         json_response = JSON.parse(response.body)
         expect(json_response['message']).to eq('Logged out successfully')
       end
@@ -131,13 +131,13 @@ RSpec.describe 'Api::V1::Authentication', type: :request do
 
       before do
         allow(Rails.application.config).to receive(:jwt).and_return({
-          refresh_tokens_enabled: true,
-          access_token_type: 'access',
-          refresh_token_type: 'refresh',
-          access_token_expiry: 15.minutes,
-          refresh_token_expiry: 30.days
-        })
-        
+                                                                      refresh_tokens_enabled: true,
+                                                                      access_token_type: 'access',
+                                                                      refresh_token_type: 'refresh',
+                                                                      access_token_expiry: 15.minutes,
+                                                                      refresh_token_expiry: 30.days
+                                                                    })
+
         user.update(
           refresh_token: 'some-refresh-token',
           refresh_token_expires_at: 30.days.from_now
@@ -148,7 +148,7 @@ RSpec.describe 'Api::V1::Authentication', type: :request do
         delete '/api/v1/logout', headers: headers
 
         expect(response).to have_http_status(:ok)
-        
+
         user.reload
         expect(user.refresh_token).to be_nil
         expect(user.refresh_token_expires_at).to be_nil
@@ -178,15 +178,15 @@ RSpec.describe 'Api::V1::Authentication', type: :request do
     context 'when refresh tokens disabled' do
       before do
         allow(Rails.application.config).to receive(:jwt).and_return({
-          refresh_tokens_enabled: false
-        })
+                                                                      refresh_tokens_enabled: false
+                                                                    })
       end
 
       it 'returns not implemented' do
         post '/api/v1/refresh', headers: { 'Authorization' => 'Bearer some-token' }
 
         expect(response).to have_http_status(:not_implemented)
-        
+
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to eq('Refresh tokens are not enabled')
       end
@@ -195,12 +195,12 @@ RSpec.describe 'Api::V1::Authentication', type: :request do
     context 'when refresh tokens enabled' do
       before do
         allow(Rails.application.config).to receive(:jwt).and_return({
-          refresh_tokens_enabled: true,
-          access_token_expiry: 15.minutes,
-          refresh_token_expiry: 30.days,
-          access_token_type: 'access',
-          refresh_token_type: 'refresh'
-        })
+                                                                      refresh_tokens_enabled: true,
+                                                                      access_token_expiry: 15.minutes,
+                                                                      refresh_token_expiry: 30.days,
+                                                                      access_token_type: 'access',
+                                                                      refresh_token_type: 'refresh'
+                                                                    })
       end
 
       context 'with valid refresh token' do
@@ -217,11 +217,11 @@ RSpec.describe 'Api::V1::Authentication', type: :request do
           post '/api/v1/refresh', headers: { 'Authorization' => "Bearer #{refresh_token}" }
 
           expect(response).to have_http_status(:ok)
-          
+
           json_response = JSON.parse(response.body)
           expect(json_response['access_token']).to be_present
           expect(json_response['expires_in']).to eq(900)
-          
+
           # Verify it's a valid access token
           decoded = JwtService.decode(json_response['access_token'])
           expect(decoded[:user_id]).to eq(user.id)
@@ -243,7 +243,7 @@ RSpec.describe 'Api::V1::Authentication', type: :request do
           post '/api/v1/refresh', headers: { 'Authorization' => "Bearer #{refresh_token}" }
 
           expect(response).to have_http_status(:unauthorized)
-          
+
           json_response = JSON.parse(response.body)
           expect(json_response['error']).to eq('Invalid or expired refresh token')
         end
@@ -254,7 +254,7 @@ RSpec.describe 'Api::V1::Authentication', type: :request do
           post '/api/v1/refresh', headers: { 'Authorization' => 'Bearer invalid.token' }
 
           expect(response).to have_http_status(:unauthorized)
-          
+
           json_response = JSON.parse(response.body)
           expect(json_response['error']).to eq('Invalid refresh token')
         end
@@ -267,7 +267,7 @@ RSpec.describe 'Api::V1::Authentication', type: :request do
           post '/api/v1/refresh', headers: { 'Authorization' => "Bearer #{access_token}" }
 
           expect(response).to have_http_status(:unauthorized)
-          
+
           json_response = JSON.parse(response.body)
           expect(json_response['error']).to eq('Invalid refresh token')
         end

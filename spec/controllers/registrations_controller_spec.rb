@@ -128,7 +128,7 @@ RSpec.describe RegistrationsController, type: :controller do
 
       it 'advances to location step with profile photo' do
         # Create a test image file
-        file = fixture_file_upload(Rails.root.join('spec', 'fixtures', 'test_image.jpg'), 'image/jpeg')
+        file = fixture_file_upload(Rails.root.join('spec/fixtures/test_image.jpg'), 'image/jpeg')
 
         patch :update, params: {
           id: 'profile_photo',

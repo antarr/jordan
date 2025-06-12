@@ -58,9 +58,9 @@ RSpec.describe Admin::UserRolesController, type: :controller do
 
       context 'with invalid user' do
         it 'raises RecordNotFound' do
-          expect {
-            get :edit, params: { user_id: 99999 }
-          }.to raise_error(ActiveRecord::RecordNotFound)
+          expect do
+            get :edit, params: { user_id: 99_999 }
+          end.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
     end
@@ -96,23 +96,23 @@ RSpec.describe Admin::UserRolesController, type: :controller do
 
       context 'with invalid role' do
         it 'raises foreign key constraint error' do
-          expect {
-            patch :update, params: { user_id: target_user.id, user: { role_id: 99999 } }
-          }.to raise_error(ActiveRecord::InvalidForeignKey)
+          expect do
+            patch :update, params: { user_id: target_user.id, user: { role_id: 99_999 } }
+          end.to raise_error(ActiveRecord::InvalidForeignKey)
         end
       end
 
       context 'with invalid user' do
         it 'raises RecordNotFound' do
-          expect {
-            patch :update, params: { user_id: 99999, user: { role_id: new_role.id } }
-          }.to raise_error(ActiveRecord::RecordNotFound)
+          expect do
+            patch :update, params: { user_id: 99_999, user: { role_id: new_role.id } }
+          end.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
 
       context 'when update fails' do
         let(:user_with_validation_error) { create(:user, :complete_registration, role: user_role) }
-        
+
         before do
           allow_any_instance_of(User).to receive(:update).and_return(false)
         end
@@ -129,10 +129,10 @@ RSpec.describe Admin::UserRolesController, type: :controller do
       it 'preserves other user attributes when changing role' do
         original_email = target_user.email
         original_username = target_user.username
-        
+
         patch :update, params: { user_id: target_user.id, user: { role_id: new_role.id } }
         target_user.reload
-        
+
         expect(target_user.email).to eq(original_email)
         expect(target_user.username).to eq(original_username)
         expect(target_user.role).to eq(new_role)
@@ -140,9 +140,9 @@ RSpec.describe Admin::UserRolesController, type: :controller do
 
       it 'logs role change activity' do
         # This would be useful for audit trails in a real application
-        expect {
+        expect do
           patch :update, params: { user_id: target_user.id, user: { role_id: new_role.id } }
-        }.to change { target_user.reload.role }.from(target_user.role).to(new_role)
+        end.to change { target_user.reload.role }.from(target_user.role).to(new_role)
       end
     end
   end
@@ -151,7 +151,6 @@ RSpec.describe Admin::UserRolesController, type: :controller do
 
   def sign_in(user)
     session[:user_id] = user.id
-    allow(controller).to receive(:current_user).and_return(user)
-    allow(controller).to receive(:user_signed_in?).and_return(true)
+    allow(controller).to receive_messages(current_user: user, user_signed_in?: true)
   end
 end

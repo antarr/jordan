@@ -9,6 +9,13 @@
 #
 # See https://docs.rubocop.org/rubocop/configuration
 
+plugins:
+  - rubocop-rails
+  - rubocop-capybara
+  - rubocop-factory_bot
+  - rubocop-rspec
+  - rubocop-rspec_rails
+
 # Disable documentation requirement for classes and modules
 Style/Documentation:
   Enabled: false

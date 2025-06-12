@@ -77,9 +77,9 @@ RSpec.describe Admin::RolesController, type: :controller do
         let(:valid_attributes) { { name: 'editor', description: 'Content editor role' } }
 
         it 'creates a new Role' do
-          expect {
+          expect do
             post :create, params: { role: valid_attributes }
-          }.to change(Role, :count).by(1)
+          end.to change(Role, :count).by(1)
         end
 
         it 'redirects to the roles index' do
@@ -92,9 +92,9 @@ RSpec.describe Admin::RolesController, type: :controller do
         let(:invalid_attributes) { { name: '', description: '' } }
 
         it 'does not create a new Role' do
-          expect {
+          expect do
             post :create, params: { role: invalid_attributes }
-          }.to change(Role, :count).by(0)
+          end.not_to change(Role, :count)
         end
 
         it 'returns a success response (to display the form with errors)' do
@@ -141,9 +141,9 @@ RSpec.describe Admin::RolesController, type: :controller do
       context 'with custom role' do
         context 'with no assigned users' do
           it 'destroys the requested role' do
-            expect {
+            expect do
               delete :destroy, params: { id: role_to_delete.id }
-            }.to change(Role, :count).by(-1)
+            end.to change(Role, :count).by(-1)
           end
 
           it 'redirects to the roles list' do
@@ -156,9 +156,9 @@ RSpec.describe Admin::RolesController, type: :controller do
           before { create(:user, role: role_to_delete) }
 
           it 'does not destroy the role' do
-            expect {
+            expect do
               delete :destroy, params: { id: role_to_delete.id }
-            }.not_to change(Role, :count)
+            end.not_to change(Role, :count)
           end
 
           it 'redirects with error message' do
@@ -173,9 +173,9 @@ RSpec.describe Admin::RolesController, type: :controller do
         let!(:system_role) { create(:role, name: 'system', system_role: true) }
 
         it 'does not destroy the role' do
-          expect {
+          expect do
             delete :destroy, params: { id: system_role.id }
-          }.not_to change(Role, :count)
+          end.not_to change(Role, :count)
         end
 
         it 'redirects with error message' do
@@ -191,7 +191,6 @@ RSpec.describe Admin::RolesController, type: :controller do
 
   def sign_in(user)
     session[:user_id] = user.id
-    allow(controller).to receive(:current_user).and_return(user)
-    allow(controller).to receive(:user_signed_in?).and_return(true)
+    allow(controller).to receive_messages(current_user: user, user_signed_in?: true)
   end
 end

@@ -9,12 +9,12 @@ RSpec.describe Api::Authentication, type: :controller do
 
   before do
     allow(Rails.application.config).to receive(:jwt).and_return({
-      refresh_tokens_enabled: true,
-      access_token_type: 'access',
-      refresh_token_type: 'refresh',
-      access_token_expiry: 15.minutes,
-      refresh_token_expiry: 30.days
-    })
+                                                                  refresh_tokens_enabled: true,
+                                                                  access_token_type: 'access',
+                                                                  refresh_token_type: 'refresh',
+                                                                  access_token_expiry: 15.minutes,
+                                                                  refresh_token_expiry: 30.days
+                                                                })
   end
 
   let(:user) { create(:user) }
@@ -26,7 +26,7 @@ RSpec.describe Api::Authentication, type: :controller do
       it 'authenticates the request' do
         request.headers['Authorization'] = "Bearer #{valid_token}"
         get :index
-        
+
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
         expect(json_response['user_id']).to eq(user.id)
@@ -36,7 +36,7 @@ RSpec.describe Api::Authentication, type: :controller do
     context 'without token' do
       it 'returns unauthorized' do
         get :index
-        
+
         expect(response).to have_http_status(:unauthorized)
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to eq('Invalid token')
@@ -47,7 +47,7 @@ RSpec.describe Api::Authentication, type: :controller do
       it 'returns unauthorized' do
         request.headers['Authorization'] = 'Bearer invalid.token'
         get :index
-        
+
         expect(response).to have_http_status(:unauthorized)
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to eq('Invalid token')
@@ -58,7 +58,7 @@ RSpec.describe Api::Authentication, type: :controller do
       it 'returns unauthorized' do
         request.headers['Authorization'] = "Bearer #{expired_token}"
         get :index
-        
+
         expect(response).to have_http_status(:unauthorized)
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to eq('Token has expired')
@@ -67,10 +67,10 @@ RSpec.describe Api::Authentication, type: :controller do
 
     context 'when user does not exist' do
       it 'returns unauthorized' do
-        token = JwtService.encode({ user_id: 999999, type: 'access' })
+        token = JwtService.encode({ user_id: 999_999, type: 'access' })
         request.headers['Authorization'] = "Bearer #{token}"
         get :index
-        
+
         expect(response).to have_http_status(:unauthorized)
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to eq('User not found')
@@ -82,7 +82,7 @@ RSpec.describe Api::Authentication, type: :controller do
         refresh_token = JwtService.encode_refresh_token(user.id)
         request.headers['Authorization'] = "Bearer #{refresh_token}"
         get :index
-        
+
         expect(response).to have_http_status(:unauthorized)
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to eq('Cannot use refresh token for authentication')
@@ -94,7 +94,7 @@ RSpec.describe Api::Authentication, type: :controller do
     it 'returns the authenticated user' do
       request.headers['Authorization'] = "Bearer #{valid_token}"
       get :index
-      
+
       expect(controller.send(:current_user)).to eq(user)
     end
   end

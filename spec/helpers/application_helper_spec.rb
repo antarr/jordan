@@ -99,7 +99,7 @@ RSpec.describe ApplicationHelper, type: :helper do
         I18n.config.available_locales += [:fr]
         I18n.locale = :fr
       end
-      
+
       after do
         I18n.locale = :en
         I18n.config.available_locales -= [:fr]

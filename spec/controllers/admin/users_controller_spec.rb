@@ -6,8 +6,12 @@ RSpec.describe Admin::UsersController, type: :controller do
   let(:moderator_role) { create(:role, name: 'moderator') }
   let(:admin_user) { create(:user, :complete_registration, role: admin_role) }
   let(:regular_user) { create(:user, :complete_registration, role: user_role) }
-  let!(:user1) { create(:user, :complete_registration, email: 'alice@example.com', username: 'alice', role: user_role) }
-  let!(:user2) { create(:user, :complete_registration, email: 'bob@example.com', username: 'bob', role: moderator_role) }
+  let!(:user1) do
+    create(:user, :complete_registration, email: Faker::Internet.email, username: 'alice', role: user_role)
+  end
+  let!(:user2) do
+    create(:user, :complete_registration, email: Faker::Internet.email, username: 'bob', role: user_role)
+  end
 
   describe 'authentication and authorization' do
     context 'when not signed in' do
@@ -62,7 +66,7 @@ RSpec.describe Admin::UsersController, type: :controller do
       it 'limits results to 50 users' do
         # Create more than 50 users
         51.times { |i| create(:user, email: "user#{i}@example.com") }
-        
+
         get :index
         expect(assigns(:users).count).to eq(50)
       end
@@ -149,7 +153,7 @@ RSpec.describe Admin::UsersController, type: :controller do
       it 'shows verification status' do
         user1.update!(email_verified_at: Time.current)
         user2.update!(email_verified_at: nil)
-        
+
         get :index
         expect(response.body).to include('Verified')
         expect(response.body).to include('Unverified')
@@ -243,7 +247,6 @@ RSpec.describe Admin::UsersController, type: :controller do
 
   def sign_in(user)
     session[:user_id] = user.id
-    allow(controller).to receive(:current_user).and_return(user)
-    allow(controller).to receive(:user_signed_in?).and_return(true)
+    allow(controller).to receive_messages(current_user: user, user_signed_in?: true)
   end
 end

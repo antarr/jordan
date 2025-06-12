@@ -39,9 +39,9 @@ RSpec.describe Admin::RolePermissionsController, type: :controller do
     describe 'POST #create' do
       context 'with valid parameters' do
         it 'creates a new role permission association' do
-          expect {
+          expect do
             post :create, params: { role_id: role.id, id: permission.id }
-          }.to change(RolePermission, :count).by(1)
+          end.to change(RolePermission, :count).by(1)
         end
 
         it 'redirects to the role page with success message' do
@@ -60,9 +60,9 @@ RSpec.describe Admin::RolePermissionsController, type: :controller do
         before { role.permissions << permission }
 
         it 'does not create duplicate association' do
-          expect {
+          expect do
             post :create, params: { role_id: role.id, id: permission.id }
-          }.not_to change(RolePermission, :count)
+          end.not_to change(RolePermission, :count)
         end
 
         it 'redirects with alert message' do
@@ -74,17 +74,17 @@ RSpec.describe Admin::RolePermissionsController, type: :controller do
 
       context 'with invalid role' do
         it 'raises RecordNotFound' do
-          expect {
-            post :create, params: { role_id: 99999, id: permission.id }
-          }.to raise_error(ActiveRecord::RecordNotFound)
+          expect do
+            post :create, params: { role_id: 99_999, id: permission.id }
+          end.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
 
       context 'with invalid permission' do
         it 'raises RecordNotFound' do
-          expect {
-            post :create, params: { role_id: role.id, id: 99999 }
-          }.to raise_error(ActiveRecord::RecordNotFound)
+          expect do
+            post :create, params: { role_id: role.id, id: 99_999 }
+          end.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
     end
@@ -128,9 +128,9 @@ RSpec.describe Admin::RolePermissionsController, type: :controller do
 
       context 'with invalid role' do
         it 'raises RecordNotFound' do
-          expect {
-            patch :update, params: { role_id: 99999, permission_ids: [permission1.id] }
-          }.to raise_error(ActiveRecord::RecordNotFound)
+          expect do
+            patch :update, params: { role_id: 99_999, permission_ids: [permission1.id] }
+          end.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
 
@@ -152,9 +152,9 @@ RSpec.describe Admin::RolePermissionsController, type: :controller do
 
       context 'with valid parameters' do
         it 'destroys the role permission association' do
-          expect {
+          expect do
             delete :destroy, params: { role_id: role.id, id: permission.id }
-          }.to change(RolePermission, :count).by(-1)
+          end.to change(RolePermission, :count).by(-1)
         end
 
         it 'redirects to the role page with success message' do
@@ -173,9 +173,9 @@ RSpec.describe Admin::RolePermissionsController, type: :controller do
         before { role_permission.destroy }
 
         it 'does not change association count' do
-          expect {
+          expect do
             delete :destroy, params: { role_id: role.id, id: permission.id }
-          }.not_to change(RolePermission, :count)
+          end.not_to change(RolePermission, :count)
         end
 
         it 'redirects with alert message' do
@@ -187,17 +187,17 @@ RSpec.describe Admin::RolePermissionsController, type: :controller do
 
       context 'with invalid role' do
         it 'raises RecordNotFound' do
-          expect {
-            delete :destroy, params: { role_id: 99999, id: permission.id }
-          }.to raise_error(ActiveRecord::RecordNotFound)
+          expect do
+            delete :destroy, params: { role_id: 99_999, id: permission.id }
+          end.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
 
       context 'with invalid permission' do
         it 'raises RecordNotFound' do
-          expect {
-            delete :destroy, params: { role_id: role.id, id: 99999 }
-          }.to raise_error(ActiveRecord::RecordNotFound)
+          expect do
+            delete :destroy, params: { role_id: role.id, id: 99_999 }
+          end.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
     end
@@ -207,7 +207,6 @@ RSpec.describe Admin::RolePermissionsController, type: :controller do
 
   def sign_in(user)
     session[:user_id] = user.id
-    allow(controller).to receive(:current_user).and_return(user)
-    allow(controller).to receive(:user_signed_in?).and_return(true)
+    allow(controller).to receive_messages(current_user: user, user_signed_in?: true)
   end
 end

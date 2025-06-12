@@ -160,7 +160,7 @@ RSpec.describe Lockable, type: :concern do
 
     it 'clears all locking-related fields' do
       lockable_object.unlock_account!
-      
+
       expect(lockable_object.locked_at).to be_nil
       expect(lockable_object.locked_by_admin).to be false
       expect(lockable_object.failed_login_attempts).to eq(0)
@@ -170,9 +170,9 @@ RSpec.describe Lockable, type: :concern do
 
   describe '#record_failed_login!' do
     it 'increments failed login attempts' do
-      expect {
+      expect do
         lockable_object.record_failed_login!
-      }.to change { lockable_object.failed_login_attempts }.from(0).to(1)
+      end.to change(lockable_object, :failed_login_attempts).from(0).to(1)
     end
 
     it 'sets last_failed_login_at to current time' do
@@ -184,10 +184,10 @@ RSpec.describe Lockable, type: :concern do
 
     it 'auto-locks account when max attempts reached' do
       lockable_object.failed_login_attempts = 4
-      
+
       travel_to Time.current do
         lockable_object.record_failed_login!
-        
+
         expect(lockable_object.locked_at).to eq(Time.current)
         expect(lockable_object.locked_by_admin).to be false
         expect(lockable_object.auto_unlock_token).to be_present
@@ -197,18 +197,18 @@ RSpec.describe Lockable, type: :concern do
     it 'resets failed attempts if last failed login was more than 24 hours ago' do
       lockable_object.failed_login_attempts = 3
       lockable_object.last_failed_login_at = 25.hours.ago
-      
+
       lockable_object.record_failed_login!
-      
+
       expect(lockable_object.failed_login_attempts).to eq(1)
     end
 
     it 'does not reset failed attempts if last failed login was less than 24 hours ago' do
       lockable_object.failed_login_attempts = 3
       lockable_object.last_failed_login_at = 23.hours.ago
-      
+
       lockable_object.record_failed_login!
-      
+
       expect(lockable_object.failed_login_attempts).to eq(4)
     end
   end
@@ -221,7 +221,7 @@ RSpec.describe Lockable, type: :concern do
 
     it 'resets failed login attempts and last failed login time' do
       lockable_object.reset_failed_login_attempts!
-      
+
       expect(lockable_object.failed_login_attempts).to eq(0)
       expect(lockable_object.last_failed_login_at).to be_nil
     end
@@ -237,10 +237,10 @@ RSpec.describe Lockable, type: :concern do
     it 'generates different tokens each time' do
       lockable_object.generate_auto_unlock_token
       token1 = lockable_object.auto_unlock_token
-      
+
       lockable_object.generate_auto_unlock_token
       token2 = lockable_object.auto_unlock_token
-      
+
       expect(token1).not_to eq(token2)
     end
   end

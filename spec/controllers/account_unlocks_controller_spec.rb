@@ -15,36 +15,36 @@ RSpec.describe AccountUnlocksController, type: :controller do
       let!(:unlocked_user) { create(:user, :complete_registration) }
 
       it 'sends unlock email for auto-locked user' do
-        expect {
+        expect do
           post :create, params: { email: auto_locked_user.email }
-        }.to change { ActionMailer::Base.deliveries.count }.by(1)
+        end.to change { ActionMailer::Base.deliveries.count }.by(1)
 
         expect(response).to redirect_to(new_session_path)
         expect(flash[:notice]).to eq(I18n.t('account_unlocks.create.sent'))
       end
 
       it 'does not send email for admin-locked user but shows same message' do
-        expect {
+        expect do
           post :create, params: { email: admin_locked_user.email }
-        }.not_to change { ActionMailer::Base.deliveries.count }
+        end.not_to(change { ActionMailer::Base.deliveries.count })
 
         expect(response).to redirect_to(new_session_path)
         expect(flash[:notice]).to eq(I18n.t('account_unlocks.create.sent'))
       end
 
       it 'does not send email for unlocked user but shows same message' do
-        expect {
+        expect do
           post :create, params: { email: unlocked_user.email }
-        }.not_to change { ActionMailer::Base.deliveries.count }
+        end.not_to(change { ActionMailer::Base.deliveries.count })
 
         expect(response).to redirect_to(new_session_path)
         expect(flash[:notice]).to eq(I18n.t('account_unlocks.create.sent'))
       end
 
       it 'does not send email for non-existent user but shows same message' do
-        expect {
+        expect do
           post :create, params: { email: 'nonexistent@example.com' }
-        }.not_to change { ActionMailer::Base.deliveries.count }
+        end.not_to(change { ActionMailer::Base.deliveries.count })
 
         expect(response).to redirect_to(new_session_path)
         expect(flash[:notice]).to eq(I18n.t('account_unlocks.create.sent'))
@@ -52,8 +52,14 @@ RSpec.describe AccountUnlocksController, type: :controller do
     end
 
     describe 'GET #unlock' do
-      let!(:auto_locked_user) { create(:user, :complete_registration, locked_at: Time.current, locked_by_admin: false, auto_unlock_token: 'valid_token') }
-      let!(:admin_locked_user) { create(:user, :complete_registration, locked_at: Time.current, locked_by_admin: true, auto_unlock_token: 'admin_token') }
+      let!(:auto_locked_user) do
+        create(:user, :complete_registration, locked_at: Time.current, locked_by_admin: false,
+                                              auto_unlock_token: 'valid_token')
+      end
+      let!(:admin_locked_user) do
+        create(:user, :complete_registration, locked_at: Time.current, locked_by_admin: true,
+                                              auto_unlock_token: 'admin_token')
+      end
 
       it 'unlocks auto-locked user with valid token' do
         get :unlock, params: { token: 'valid_token' }
@@ -105,7 +111,6 @@ RSpec.describe AccountUnlocksController, type: :controller do
 
   def sign_in(user)
     session[:user_id] = user.id
-    allow(controller).to receive(:current_user).and_return(user)
-    allow(controller).to receive(:user_signed_in?).and_return(true)
+    allow(controller).to receive_messages(current_user: user, user_signed_in?: true)
   end
 end

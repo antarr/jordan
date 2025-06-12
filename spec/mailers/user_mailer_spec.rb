@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe UserMailer, type: :mailer do
   describe '#email_verification' do
     let(:user) { create(:user, :email_user, :step_two, :unverified) }
-    let(:mail) { UserMailer.email_verification(user) }
+    let(:mail) { described_class.email_verification(user) }
 
     it 'renders the headers' do
       expect(mail.subject).to eq('Please verify your email address')
@@ -28,12 +28,11 @@ RSpec.describe UserMailer, type: :mailer do
 
   describe '#account_locked' do
     let(:user) { create(:user, :complete_registration) }
-    
+    let(:mail) { described_class.account_locked(user) }
+
     before do
       user.update!(locked_at: Time.current, locked_by_admin: false, auto_unlock_token: 'test_token_123')
     end
-
-    let(:mail) { UserMailer.account_locked(user) }
 
     it 'renders the subject' do
       expect(mail.subject).to eq(I18n.t('user_mailer.account_locked.subject'))

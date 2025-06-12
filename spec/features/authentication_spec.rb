@@ -13,13 +13,13 @@ RSpec.describe 'Authentication Flow', type: :feature do
     it 'successfully registers a new user through multi-step form' do
       # Step 1: Start registration with email
       start_registration_with_email
-      
+
       # Step 2: Contact details
       expect(page).to have_content('Step 2 of 6')
       expect(page).to have_field('user[email]')
       expect(page).to have_field('user[password]')
       expect(page).to have_field('user[password_confirmation]')
-      
+
       fill_in 'user[email]', with: test_user.email
       fill_in 'user[password]', with: test_user.password
       fill_in 'user[password_confirmation]', with: test_user.password
@@ -28,14 +28,14 @@ RSpec.describe 'Authentication Flow', type: :feature do
       # Step 3: Username
       expect(page).to have_content('Step 3 of 6')
       expect(page).to have_field('user[username]')
-      
+
       fill_in 'user[username]', with: test_user.username
       click_button 'Continue'
 
       # Step 4: Bio
       expect(page).to have_content('Step 4 of 6')
       expect(page).to have_field('user[bio]')
-      
+
       fill_in 'user[bio]', with: test_user.bio
       click_button 'Continue'
 
@@ -48,7 +48,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
       click_button 'Complete Registration'
 
       # Should redirect to login with verification notice
-      expect(current_path).to eq("/#{I18n.locale}/session/new")
+      expect(page).to have_current_path("/#{I18n.locale}/session/new", ignore_query: true)
       expect(page).to have_content('Account created successfully! Please check your email to verify your account.')
     end
 
@@ -73,7 +73,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
       click_button 'Continue'
 
       # Should stay on same page with error
-      expect(current_path).to eq("/#{I18n.locale}/registration/contact_details")
+      expect(page).to have_current_path("/#{I18n.locale}/registration/contact_details", ignore_query: true)
       expect(page).to have_content("Password confirmation doesn't match Password")
     end
 
@@ -116,14 +116,14 @@ RSpec.describe 'Authentication Flow', type: :feature do
       )
     end
 
-    it 'successfully logs in with valid credentials', js: true do
+    it 'successfully logs in with valid credentials', :js do
       visit new_session_path
 
       expect(page).to have_css('h2', text: 'Sign In')
-      
+
       # Switch to email login (since form defaults to phone)
       click_button 'Email'
-      
+
       # Wait for fields to become visible
       expect(page).to have_field('email', visible: true)
       expect(page).to have_field('password', visible: true)
@@ -136,7 +136,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
       expect(page).to have_content('Welcome to your dashboard')
     end
 
-    it 'shows error for invalid credentials', js: true do
+    it 'shows error for invalid credentials', :js do
       visit new_session_path
 
       # Switch to email login
@@ -144,17 +144,17 @@ RSpec.describe 'Authentication Flow', type: :feature do
 
       # Wait for fields to become visible
       expect(page).to have_field('email', visible: true)
-      
+
       fill_in 'email', with: test_user.email
       fill_in 'password', with: 'WrongPassword'
       click_button 'Sign In'
 
       expect(page).to have_content('Invalid email or password')
       # When authentication fails, we're redirected back to the login form
-      expect(current_path).to eq("/session/new")
+      expect(page).to have_current_path('/session/new', ignore_query: true)
     end
 
-    it 'shows error for non-existent user', js: true do
+    it 'shows error for non-existent user', :js do
       visit new_session_path
 
       # Switch to email login
@@ -162,14 +162,14 @@ RSpec.describe 'Authentication Flow', type: :feature do
 
       # Wait for fields to become visible
       expect(page).to have_field('email', visible: true)
-      
+
       fill_in 'email', with: 'nonexistent@example.com'
       fill_in 'password', with: 'SomePassword123!'
       click_button 'Sign In'
 
       expect(page).to have_content('Invalid email or password')
       # When authentication fails, we're redirected back to the login form
-      expect(current_path).to eq("/session/new")
+      expect(page).to have_current_path('/session/new', ignore_query: true)
     end
 
     context 'with unverified email' do
@@ -186,7 +186,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
         )
       end
 
-      it 'prevents login and shows verification message', js: true do
+      it 'prevents login and shows verification message', :js do
         visit new_session_path
 
         # Switch to email login
@@ -194,14 +194,14 @@ RSpec.describe 'Authentication Flow', type: :feature do
 
         # Wait for fields to become visible
         expect(page).to have_field('email', visible: true)
-        
+
         fill_in 'email', with: 'unverified@example.com'
         fill_in 'password', with: 'Password123!'
         click_button 'Sign In'
 
         expect(page).to have_content('Please verify your email address before signing in')
         expect(page).to have_link('Resend verification email')
-        expect(current_path).to eq("/en/session/new")
+        expect(page).to have_current_path('/en/session/new', ignore_query: true)
       end
     end
   end
@@ -209,12 +209,12 @@ RSpec.describe 'Authentication Flow', type: :feature do
   describe 'Dashboard Access' do
     it 'redirects to login when not authenticated' do
       visit dashboard_path
-      expect(current_path).to eq("/#{I18n.locale}/session/new")
+      expect(page).to have_current_path("/#{I18n.locale}/session/new", ignore_query: true)
     end
 
     context 'Protection' do
-      it 'allows authenticated users to access dashboard', js: true do
-        user = User.create!(
+      it 'allows authenticated users to access dashboard', :js do
+        User.create!(
           email: test_user.email,
           password: test_user.password,
           password_confirmation: test_user.password,
@@ -237,16 +237,16 @@ RSpec.describe 'Authentication Flow', type: :feature do
 
         # Should be able to access dashboard
         expect(page).to have_content('Welcome to your dashboard')
-        
+
         # Try visiting dashboard directly after login
-        visit "/en/dashboard"
+        visit '/en/dashboard'
         expect(page).to have_content('Welcome to your dashboard')
       end
     end
   end
 
   describe 'User Logout' do
-    it 'successfully logs out user', js: true do
+    it 'successfully logs out user', :js do
       User.create!(
         email: test_user.email,
         password: test_user.password,
@@ -279,12 +279,12 @@ RSpec.describe 'Authentication Flow', type: :feature do
 
       # Should not be able to access protected pages
       visit dashboard_path
-      expect(current_path).to eq("/#{I18n.locale}/session/new")
+      expect(page).to have_current_path("/#{I18n.locale}/session/new", ignore_query: true)
     end
   end
 
   describe 'Form Error Handling' do
-    it 'preserves email on login failure', js: true do
+    it 'preserves email on login failure', :js do
       visit new_session_path
 
       # Switch to email login
@@ -292,21 +292,21 @@ RSpec.describe 'Authentication Flow', type: :feature do
 
       # Wait for fields to become visible
       expect(page).to have_field('email', visible: true)
-      
+
       fill_in 'email', with: test_user.email
       fill_in 'password', with: 'WrongPassword'
       click_button 'Sign In'
 
       # The form should show an error message
       expect(page).to have_content(I18n.t('controllers.sessions.create.invalid_credentials'))
-      
+
       # After error, the form may have switched back to phone tab, so switch to email
       unless page.has_field?('email', visible: true)
         click_button 'Email'
         # Wait for email form to become visible
         expect(page).to have_field('email', visible: true)
       end
-      
+
       # Email should still be filled in
       expect(page.find_field('email').value).to eq(test_user.email)
       # Password should be cleared for security
@@ -315,7 +315,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
   end
 
   describe 'Security Features' do
-    it 'does not expose whether email exists', js: true do
+    it 'does not expose whether email exists', :js do
       visit new_session_path
 
       # Switch to email login
@@ -323,7 +323,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
 
       # Wait for fields to become visible
       expect(page).to have_field('email', visible: true)
-      
+
       # Try with non-existent email
       fill_in 'email', with: 'doesnotexist@example.com'
       fill_in 'password', with: 'SomePassword123!'
@@ -331,7 +331,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
 
       # Wait for error message to appear
       expect(page).to have_content('Invalid email or password', wait: 5)
-      
+
       non_existent_message = page.text
 
       # Try with wrong password
@@ -349,14 +349,14 @@ RSpec.describe 'Authentication Flow', type: :feature do
       # Switch to email form again for the second test
       click_button 'Email'
       expect(page).to have_field('email', visible: true)
-      
+
       fill_in 'email', with: test_user.email
       fill_in 'password', with: 'WrongPassword'
       click_button 'Sign In'
 
-      # Wait for error message to appear  
+      # Wait for error message to appear
       expect(page).to have_content('Invalid email or password', wait: 5)
-      
+
       wrong_password_message = page.text
 
       # Messages should be identical
@@ -379,7 +379,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
       expect(password_confirmation_field['autocomplete']).to eq('new-password')
     end
 
-    it 'has proper form attributes', js: true do
+    it 'has proper form attributes', :js do
       visit new_session_path
 
       # Switch to email login to access email fields
@@ -387,7 +387,7 @@ RSpec.describe 'Authentication Flow', type: :feature do
 
       # Wait for fields to become visible
       expect(page).to have_field('email', visible: true)
-      
+
       email_field = find_field('email')
       password_field = find_field('password')
 

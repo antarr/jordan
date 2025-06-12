@@ -11,10 +11,10 @@ RSpec.describe SessionsController, 'auto-lock notifications', type: :controller 
       end
 
       it 'shows account just locked message' do
-        post :create, params: { 
+        post :create, params: {
           login_type: 'email',
-          email: user.email, 
-          password: 'wrong_password' 
+          email: user.email,
+          password: 'wrong_password'
         }
 
         expect(flash.now[:alert]).to eq(I18n.t('controllers.sessions.create.account_just_locked'))
@@ -22,20 +22,20 @@ RSpec.describe SessionsController, 'auto-lock notifications', type: :controller 
       end
 
       it 'sends email notification' do
-        expect {
-          post :create, params: { 
+        expect do
+          post :create, params: {
             login_type: 'email',
-            email: user.email, 
-            password: 'wrong_password' 
+            email: user.email,
+            password: 'wrong_password'
           }
-        }.to change { ActionMailer::Base.deliveries.count }.by(1)
+        end.to change { ActionMailer::Base.deliveries.count }.by(1)
       end
 
       it 'locks the account' do
-        post :create, params: { 
+        post :create, params: {
           login_type: 'email',
-          email: user.email, 
-          password: 'wrong_password' 
+          email: user.email,
+          password: 'wrong_password'
         }
 
         user.reload
@@ -51,23 +51,23 @@ RSpec.describe SessionsController, 'auto-lock notifications', type: :controller 
       end
 
       it 'shows normal invalid credentials message' do
-        post :create, params: { 
+        post :create, params: {
           login_type: 'email',
-          email: user.email, 
-          password: 'wrong_password' 
+          email: user.email,
+          password: 'wrong_password'
         }
 
         expect(flash.now[:alert]).to eq(I18n.t('controllers.sessions.create.invalid_credentials'))
       end
 
       it 'does not send email notification' do
-        expect {
-          post :create, params: { 
+        expect do
+          post :create, params: {
             login_type: 'email',
-            email: user.email, 
-            password: 'wrong_password' 
+            email: user.email,
+            password: 'wrong_password'
           }
-        }.not_to change { ActionMailer::Base.deliveries.count }
+        end.not_to(change { ActionMailer::Base.deliveries.count })
       end
     end
 
@@ -77,10 +77,10 @@ RSpec.describe SessionsController, 'auto-lock notifications', type: :controller 
       end
 
       it 'shows already locked message for auto-locked account' do
-        post :create, params: { 
+        post :create, params: {
           login_type: 'email',
-          email: user.email, 
-          password: user.password 
+          email: user.email,
+          password: user.password
         }
 
         expect(flash[:alert]).to eq(I18n.t('controllers.sessions.create.account_auto_locked'))
@@ -89,11 +89,11 @@ RSpec.describe SessionsController, 'auto-lock notifications', type: :controller 
 
       it 'shows admin locked message for admin-locked account' do
         user.update!(locked_by_admin: true)
-        
-        post :create, params: { 
+
+        post :create, params: {
           login_type: 'email',
-          email: user.email, 
-          password: user.password 
+          email: user.email,
+          password: user.password
         }
 
         expect(flash[:alert]).to eq(I18n.t('controllers.sessions.create.account_locked'))
@@ -115,10 +115,10 @@ RSpec.describe SessionsController, 'auto-lock notifications', type: :controller 
       end
 
       it 'shows account just locked message' do
-        post :create, params: { 
+        post :create, params: {
           login_type: 'phone',
-          phone: phone_user.phone, 
-          password: 'wrong_password' 
+          phone: phone_user.phone,
+          password: 'wrong_password'
         }
 
         expect(flash.now[:alert]).to eq(I18n.t('phone_sessions.create.account_just_locked'))
@@ -126,13 +126,13 @@ RSpec.describe SessionsController, 'auto-lock notifications', type: :controller 
       end
 
       it 'sends email notification if user has email' do
-        expect {
-          post :create, params: { 
+        expect do
+          post :create, params: {
             login_type: 'phone',
-            phone: phone_user.phone, 
-            password: 'wrong_password' 
+            phone: phone_user.phone,
+            password: 'wrong_password'
           }
-        }.to change { ActionMailer::Base.deliveries.count }.by(1)
+        end.to change { ActionMailer::Base.deliveries.count }.by(1)
       end
     end
   end

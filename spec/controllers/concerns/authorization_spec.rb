@@ -4,11 +4,10 @@ RSpec.describe Authorization, type: :controller do
   # Helper to simulate user sign in
   def sign_in(user)
     session[:user_id] = user.id
-    allow(controller).to receive(:current_user).and_return(user)
-    allow(controller).to receive(:user_signed_in?).and_return(true)
+    allow(controller).to receive_messages(current_user: user, user_signed_in?: true)
   end
   controller(ApplicationController) do
-    include Authorization
+    include Authorization # rubocop:disable RSpec/DescribedClass
 
     def index
       render json: { status: 'ok' }
@@ -16,21 +15,25 @@ RSpec.describe Authorization, type: :controller do
 
     def admin_action
       return unless require_admin!
+
       render json: { status: 'admin ok' }
     end
 
     def moderator_action
       return unless require_moderator_or_admin!
+
       render json: { status: 'moderator ok' }
     end
 
     def authorized_action
       return unless authorize!('users.read')
+
       render json: { status: 'authorized' }
     end
 
     def resource_action
       return unless authorize_resource!('users', 'update')
+
       render json: { status: 'resource authorized' }
     end
   end
@@ -381,7 +384,7 @@ RSpec.describe Authorization, type: :controller do
         expect(controller.send(:current_user_moderator?)).to be false
       end
     end
-    
+
     describe 'helper method availability in views' do
       it 'makes helper methods available to views' do
         expect(controller.class._helper_methods).to include(

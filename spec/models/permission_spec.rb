@@ -2,19 +2,20 @@ require 'rails_helper'
 
 RSpec.describe Permission, type: :model do
   subject { build(:permission) }
+
   let(:permission) { create(:permission) }
 
   describe 'associations' do
-    it { should have_many(:role_permissions).dependent(:destroy) }
-    it { should have_many(:roles).through(:role_permissions) }
+    it { is_expected.to have_many(:role_permissions).dependent(:destroy) }
+    it { is_expected.to have_many(:roles).through(:role_permissions) }
   end
 
   describe 'validations' do
-    it { should validate_presence_of(:name) }
-    it { should validate_uniqueness_of(:name) }
-    it { should validate_presence_of(:resource) }
-    it { should validate_presence_of(:action) }
-    it { should validate_presence_of(:description) }
+    it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to validate_uniqueness_of(:name) }
+    it { is_expected.to validate_presence_of(:resource) }
+    it { is_expected.to validate_presence_of(:action) }
+    it { is_expected.to validate_presence_of(:description) }
 
     describe 'unique_resource_action_combination' do
       it 'validates resource and action combination is unique' do
@@ -55,15 +56,15 @@ RSpec.describe Permission, type: :model do
 
     describe '.for_resource' do
       it 'returns permissions for specific resource' do
-        expect(Permission.for_resource('users')).to include(user_read, user_create)
-        expect(Permission.for_resource('users')).not_to include(post_read)
+        expect(described_class.for_resource('users')).to include(user_read, user_create)
+        expect(described_class.for_resource('users')).not_to include(post_read)
       end
     end
 
     describe '.for_action' do
       it 'returns permissions for specific action' do
-        expect(Permission.for_action('read')).to include(user_read, post_read)
-        expect(Permission.for_action('read')).not_to include(user_create)
+        expect(described_class.for_action('read')).to include(user_read, post_read)
+        expect(described_class.for_action('read')).not_to include(user_create)
       end
     end
   end
@@ -78,13 +79,13 @@ RSpec.describe Permission, type: :model do
   describe '.find_by_resource_action' do
     it 'finds permission by resource and action' do
       permission = create(:permission, resource: 'users', action: 'read')
-      found = Permission.find_by_resource_action('users', 'read')
+      found = described_class.find_by_resource_action('users', 'read')
 
       expect(found).to eq(permission)
     end
 
     it 'returns nil when permission not found' do
-      found = Permission.find_by_resource_action('nonexistent', 'read')
+      found = described_class.find_by_resource_action('nonexistent', 'read')
       expect(found).to be_nil
     end
   end

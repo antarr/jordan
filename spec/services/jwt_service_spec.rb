@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe JwtService do
   describe '.encode' do
     let(:payload) { { user_id: 1 } }
-    
+
     it 'returns a JWT token' do
       token = described_class.encode(payload)
       expect(token).to be_a(String)
@@ -41,28 +41,28 @@ RSpec.describe JwtService do
     end
 
     it 'raises JWT::DecodeError for invalid token' do
-      expect {
+      expect do
         described_class.decode('invalid.token.here')
-      }.to raise_error(JWT::DecodeError)
+      end.to raise_error(JWT::DecodeError)
     end
 
     it 'raises JWT::ExpiredSignature for expired token' do
       expired_token = described_class.encode(payload, 1.second.ago)
-      expect {
+      expect do
         described_class.decode(expired_token)
-      }.to raise_error(JWT::ExpiredSignature)
+      end.to raise_error(JWT::ExpiredSignature)
     end
   end
 
   describe 'refresh token functionality' do
     before do
       allow(Rails.application.config).to receive(:jwt).and_return({
-        refresh_tokens_enabled: true,
-        access_token_expiry: 15.minutes,
-        refresh_token_expiry: 30.days,
-        access_token_type: 'access',
-        refresh_token_type: 'refresh'
-      })
+                                                                    refresh_tokens_enabled: true,
+                                                                    access_token_expiry: 15.minutes,
+                                                                    refresh_token_expiry: 30.days,
+                                                                    access_token_type: 'access',
+                                                                    refresh_token_type: 'refresh'
+                                                                  })
     end
 
     describe '.encode_access_token' do
@@ -97,14 +97,14 @@ RSpec.describe JwtService do
       context 'when refresh tokens disabled' do
         before do
           allow(Rails.application.config).to receive(:jwt).and_return({
-            refresh_tokens_enabled: false
-          })
+                                                                        refresh_tokens_enabled: false
+                                                                      })
         end
 
         it 'raises error' do
-          expect {
+          expect do
             described_class.encode_refresh_token(1)
-          }.to raise_error('Refresh tokens are not enabled')
+          end.to raise_error('Refresh tokens are not enabled')
         end
       end
     end
@@ -119,9 +119,9 @@ RSpec.describe JwtService do
 
       it 'raises error for access token' do
         token = described_class.encode_access_token(1)
-        expect {
+        expect do
           described_class.decode_refresh_token(token)
-        }.to raise_error(JWT::DecodeError, 'Invalid token type')
+        end.to raise_error(JWT::DecodeError, 'Invalid token type')
       end
     end
   end

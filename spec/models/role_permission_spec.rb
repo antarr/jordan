@@ -5,14 +5,14 @@ RSpec.describe RolePermission, type: :model do
   let(:permission) { create(:permission) }
 
   describe 'associations' do
-    it { should belong_to(:role) }
-    it { should belong_to(:permission) }
+    it { is_expected.to belong_to(:role) }
+    it { is_expected.to belong_to(:permission) }
   end
 
   describe 'validations' do
     subject { build(:role_permission, role: role, permission: permission) }
 
-    it { should validate_uniqueness_of(:role_id).scoped_to(:permission_id) }
+    it { is_expected.to validate_uniqueness_of(:role_id).scoped_to(:permission_id) }
 
     it 'prevents duplicate role-permission combinations' do
       create(:role_permission, role: role, permission: permission)
@@ -78,7 +78,7 @@ RSpec.describe RolePermission, type: :model do
 
       role.destroy
 
-      expect(RolePermission.find_by(id: role_permission_id)).to be_nil
+      expect(described_class.find_by(id: role_permission_id)).to be_nil
     end
 
     it 'is destroyed when permission is destroyed' do
@@ -87,7 +87,7 @@ RSpec.describe RolePermission, type: :model do
 
       permission.destroy
 
-      expect(RolePermission.find_by(id: role_permission_id)).to be_nil
+      expect(described_class.find_by(id: role_permission_id)).to be_nil
     end
   end
 end
