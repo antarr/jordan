@@ -68,4 +68,13 @@ Rails.application.routes.draw do
 
   # Redirect root without locale to default locale
   get '/', to: redirect("/#{I18n.default_locale}")
+
+  # API routes (outside locale scope)
+  namespace :api do
+    namespace :v1 do
+      post 'login', to: 'authentication#login'
+      delete 'logout', to: 'authentication#logout'
+      post 'refresh', to: 'authentication#refresh'
+    end
+  end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_10_042514) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_12_023022) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -98,12 +98,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_10_042514) do
     t.datetime "last_failed_login_at"
     t.boolean "locked_by_admin", default: false, null: false
     t.string "auto_unlock_token"
+    t.string "refresh_token"
+    t.datetime "refresh_token_expires_at"
     t.index ["auto_unlock_token"], name: "index_users_on_auto_unlock_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["email_verification_token"], name: "index_users_on_email_verification_token", unique: true
     t.index ["failed_login_attempts"], name: "index_users_on_failed_login_attempts"
     t.index ["latitude", "longitude"], name: "index_users_on_latitude_and_longitude"
     t.index ["phone"], name: "index_users_on_phone", unique: true
+    t.index ["refresh_token"], name: "index_users_on_refresh_token", unique: true
     t.index ["role_id"], name: "index_users_on_role_id"
     t.index ["sms_verification_code"], name: "index_users_on_sms_verification_code", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
