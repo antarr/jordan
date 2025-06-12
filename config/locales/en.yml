@@ -154,6 +154,14 @@ en:
   authorization:
     access_denied: "You don't have permission to access this resource"
   
+  admin:
+    role_permissions:
+      create:
+        success: "Permission was successfully added to role."
+        already_assigned: "Permission is already assigned to this role."
+      update:
+        success: "Permissions updated successfully."
+  
   buttons:
     continue: "Continue"
     back: "Back"
