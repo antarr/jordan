@@ -21,7 +21,7 @@ class Admin::RolesController < ApplicationController
     @role = Role.new(role_params)
     
     if @role.save
-      redirect_to admin_roles_path, notice: 'Role was successfully created.'
+      redirect_to admin_roles_path, notice: I18n.t('admin.roles.create.success')
     else
       render :new, status: :unprocessable_entity
     end
