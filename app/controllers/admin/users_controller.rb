@@ -12,22 +12,22 @@ class Admin::UsersController < ApplicationController
 
   def lock
     if @user == current_user
-      redirect_to admin_users_path, alert: 'Cannot lock your own account.'
+      redirect_to admin_users_path, alert: t('admin.users.lock.cannot_lock_own_account')
       return
     end
 
     if @user.admin?
-      redirect_to admin_users_path, alert: 'Cannot lock admin accounts.'
+      redirect_to admin_users_path, alert: t('admin.users.lock.cannot_lock_admin_accounts')
       return
     end
 
     @user.lock_account!(admin_locked: true)
-    redirect_to admin_users_path, notice: "#{@user.email} has been locked."
+    redirect_to admin_users_path, notice: t('admin.users.lock.account_locked', email: @user.email)
   end
 
   def unlock
     @user.unlock_account!
-    redirect_to admin_users_path, notice: "#{@user.email} has been unlocked."
+    redirect_to admin_users_path, notice: t('admin.users.unlock.account_unlocked', email: @user.email)
   end
 
   private
