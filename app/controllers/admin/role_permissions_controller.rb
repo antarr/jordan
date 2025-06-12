@@ -13,19 +13,19 @@ class Admin::RolePermissionsController < ApplicationController
       @role.permission_ids = permission_ids
     end
     
-    redirect_to admin_role_path(@role), notice: 'Permissions updated successfully.'
+    redirect_to admin_role_path(@role), notice: I18n.t('admin.role_permissions.update.success')
   rescue ActiveRecord::RecordInvalid => e
     redirect_to admin_role_path(@role), alert: "Failed to update permissions: #{e.message}"
   end
   
   def create
     if @role.permissions.include?(@permission)
-      redirect_to admin_role_path(@role), alert: 'Permission is already assigned to this role.'
+      redirect_to admin_role_path(@role), alert: I18n.t('admin.role_permissions.create.already_assigned')
       return
     end
     
     @role.permissions << @permission
-    redirect_to admin_role_path(@role), notice: 'Permission was successfully added to role.'
+    redirect_to admin_role_path(@role), notice: I18n.t('admin.role_permissions.create.success')
   rescue ActiveRecord::RecordInvalid => e
     redirect_to admin_role_path(@role), alert: "Failed to add permission: #{e.message}"
   end
