@@ -67,8 +67,16 @@ class SessionsController < ApplicationController
       elsif user.email_verified?
         # Reset failed login attempts on successful login
         user.reset_failed_login_attempts!
-        sign_in(user)
-        redirect_to dashboard_path
+        
+        if user.two_factor_enabled?
+          # Store user ID in session for 2FA verification
+          session[:pending_user_id] = user.id
+          session[:two_factor_verified] = false
+          redirect_to two_factor_verification_path
+        else
+          sign_in(user)
+          redirect_to dashboard_path
+        end
       else
         flash[:alert] = I18n.t('controllers.sessions.create.unverified_email')
         redirect_to new_session_path
@@ -102,8 +110,16 @@ class SessionsController < ApplicationController
     )
 
     if auth_service.authenticate
-      sign_in(auth_service.user)
-      redirect_to dashboard_path
+      user = auth_service.user
+      if user.two_factor_enabled?
+        # Store user ID in session for 2FA verification
+        session[:pending_user_id] = user.id
+        session[:two_factor_verified] = false
+        redirect_to two_factor_verification_path
+      else
+        sign_in(user)
+        redirect_to dashboard_path
+      end
     else
       flash.now[:alert] = auth_service.error_message
       # Clear password for security when authentication fails

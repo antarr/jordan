@@ -161,6 +161,13 @@ en:
         already_assigned: "Permission is already assigned to this role."
       update:
         success: "Permissions updated successfully."
+    users:
+      lock:
+        account_locked: "%{email} has been locked."
+        cannot_lock_admin_accounts: "Cannot lock admin accounts."
+        cannot_lock_own_account: "Cannot lock your own account."
+      unlock:
+        account_unlocked: "%{email} has been unlocked."
   
   buttons:
     continue: "Continue"

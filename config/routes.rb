@@ -44,6 +44,18 @@ Rails.application.routes.draw do
       delete :remove_photo
     end
 
+    # WebAuthn/2FA routes
+    resources :webauthn_credentials, only: [:index, :new, :create, :destroy] do
+      collection do
+        get :auth_options
+        post :verify
+      end
+    end
+
+    # Two-factor authentication verification
+    get 'two_factor_verification', to: 'two_factor_verifications#show'
+    post 'two_factor_verification/verify', to: 'two_factor_verifications#verify', as: :two_factor_verification_verify
+
     # Admin routes
     namespace :admin do
       resources :roles do

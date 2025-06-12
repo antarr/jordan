@@ -25,6 +25,9 @@ gem 'bcrypt', '~> 3.1.7'
 # JWT for API authentication
 gem 'jwt'
 
+# WebAuthn for hardware-based 2FA (fingerprint, security keys)
+gem 'webauthn'
+
 # Multi-step form wizard [https://github.com/zombocom/wicked]
 gem 'wicked'
 
