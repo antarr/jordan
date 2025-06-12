@@ -1,0 +1,60 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">Security Keys</h1>
+      <p class="mt-1 text-sm text-gray-500">Manage your two-factor authentication security keys</p>
+    </div>
+
+    <div class="bg-white shadow-sm rounded-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900">Registered Security Keys</h2>
+      </div>
+      
+      <% if @credentials.any? %>
+        <div class="divide-y divide-gray-200">
+          <% @credentials.each do |credential| %>
+            <div class="p-6 flex items-center justify-between">
+              <div class="flex items-center">
+                <svg class="h-8 w-8 text-gray-400 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <div>
+                  <h3 class="text-sm font-medium text-gray-900"><%= credential.nickname %></h3>
+                  <p class="text-sm text-gray-500">Added <%= time_ago_in_words(credential.created_at) %> ago</p>
+                </div>
+              </div>
+              
+              <%= link_to "Remove", webauthn_credential_path(credential), 
+                  method: :delete,
+                  class: "text-sm text-red-600 hover:text-red-500 font-medium",
+                  data: { 
+                    confirm: "Are you sure you want to remove this security key?",
+                    turbo_method: :delete
+                  } %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="p-6 text-center">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">No security keys</h3>
+          <p class="mt-1 text-sm text-gray-500">You haven't registered any security keys yet.</p>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="mt-6 flex justify-between">
+      <%= link_to "Back to Profile", profile_path, 
+          class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+      
+      <button type="button" 
+              data-controller="webauthn"
+              data-action="click->webauthn#addCredential"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+        Add Security Key
+      </button>
+    </div>
+  </div>
+</div>

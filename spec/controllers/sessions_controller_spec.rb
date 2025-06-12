@@ -174,7 +174,7 @@ RSpec.describe SessionsController, type: :controller do
     end
 
     context 'with valid credentials' do
-      context 'for verified user' do
+      context 'for verified user without 2FA' do
         before { user.verify_email! }
 
         it 'signs in the user and redirects to dashboard' do
@@ -182,6 +182,35 @@ RSpec.describe SessionsController, type: :controller do
 
           expect(session[:user_id]).to eq(user.id)
           expect(response).to redirect_to(dashboard_path)
+        end
+      end
+
+      context 'for verified user with 2FA enabled' do
+        let(:user_with_2fa) { create(:user, :email_user, :step_two) }
+        
+        before do
+          user_with_2fa.verify_email!
+          create(:webauthn_credential, user: user_with_2fa)
+          user_with_2fa.enable_two_factor!
+        end
+
+        it 'redirects to 2FA verification page' do
+          post :create, params: { email: user_with_2fa.email, password: user_with_2fa.password }
+
+          expect(session[:pending_user_id]).to eq(user_with_2fa.id)
+          expect(session[:two_factor_verified]).to be false
+          expect(response).to redirect_to(two_factor_verification_path)
+        end
+
+        it 'always requires 2FA verification regardless of session state' do
+          session[:two_factor_verified] = true
+          session[:two_factor_verified_at] = Time.current.to_i
+
+          post :create, params: { email: user_with_2fa.email, password: user_with_2fa.password }
+
+          expect(session[:pending_user_id]).to eq(user_with_2fa.id)
+          expect(session[:two_factor_verified]).to be false
+          expect(response).to redirect_to(two_factor_verification_path)
         end
       end
 
