@@ -64,8 +64,8 @@ RSpec.describe Admin::UsersController, type: :controller do
       end
 
       it 'limits results to 50 users' do
-        # Create more than 50 users
-        51.times { |i| create(:user, email: "user#{i}@example.com") }
+        # Create more than 50 users with unique emails and usernames
+        51.times { |i| create(:user, email: "user#{i}@example.com", username: "user#{i}") }
 
         get :index
         expect(assigns(:users).count).to eq(50)
