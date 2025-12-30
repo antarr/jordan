@@ -35,7 +35,7 @@ RSpec.feature 'Registration Form', :js, type: :feature do
 
   scenario 'Submit button works with phone option if feature is enabled', :js do
     # Skip this test if phone registration is not enabled
-    skip 'Phone registration is not enabled' unless feature_enabled?(:phone_registration_enabled)
+    skip 'Phone registration is not enabled' unless Rails.application.config.features[:phone_registration_enabled]
 
     visit new_registration_path
 

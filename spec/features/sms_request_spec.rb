@@ -1,19 +1,8 @@
 require 'rails_helper'
 
 RSpec.feature 'SMS Request', :js, type: :feature do
-  scenario 'User can request SMS code from login page', :js do
-    visit new_session_path
-
-    # Wait for page to load and Stimulus to connect
-    expect(page).to have_content('Sign In')
-
-    # Phone form should be visible by default
-    expect(page).to have_field('phone', visible: true)
-
-    # Fill in phone number
-    fill_in 'phone', with: '+1234567890'
-
-    # Mock the fetch request to prevent actual SMS sending in tests
+  # Helper method to mock fetch requests for SMS code sending
+  def mock_sms_request_success
     page.execute_script(<<~JS)
       window.originalFetch = window.fetch;
       window.fetch = function(url, options) {
@@ -29,6 +18,22 @@ RSpec.feature 'SMS Request', :js, type: :feature do
         return window.originalFetch(url, options);
       };
     JS
+  end
+
+  scenario 'User can request SMS code from login page', :js do
+    visit new_session_path
+
+    # Wait for page to load and Stimulus to connect
+    expect(page).to have_content('Sign In')
+
+    # Phone form should be visible by default
+    expect(page).to have_field('phone', visible: true)
+
+    # Fill in phone number
+    fill_in 'phone', with: '+1234567890'
+
+    # Mock the fetch request to prevent actual SMS sending in tests
+    mock_sms_request_success
 
     # Click the request SMS code button
     click_button 'Request SMS login code'
@@ -64,21 +69,7 @@ RSpec.feature 'SMS Request', :js, type: :feature do
     fill_in 'phone', with: '+1234567890'
 
     # Mock the fetch request
-    page.execute_script(<<~JS)
-      window.originalFetch = window.fetch;
-      window.fetch = function(url, options) {
-        if (url.includes('request_sms_login')) {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({
-              message: 'SMS code sent successfully',
-              development_sms_code: '123456'
-            })
-          });
-        }
-        return window.originalFetch(url, options);
-      };
-    JS
+    mock_sms_request_success
 
     # Click the request SMS code button
     click_button 'Request SMS login code'
