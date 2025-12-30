@@ -1,4 +1,4 @@
-<div class="max-w-md mx-auto">
+<div class="max-w-md mx-auto" data-controller="sms-request" data-sms-request-url-value="<%= request_sms_login_path %>">
   <div class="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
     <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">
       Phone Login
@@ -54,47 +54,10 @@
 
     <div class="mt-4 text-center">
       <button type="button" 
-              onclick="requestSmsCode()" 
+              data-action="click->sms-request#requestCode"
               class="text-blue-600 hover:text-blue-800 text-sm">
         Request SMS login code
       </button>
     </div>
   </div>
 </div>
-
-<script>
-async function requestSmsCode() {
-  const phone = document.querySelector('input[name="phone"]').value;
-  if (!phone) {
-    alert('Please enter your phone number first');
-    return;
-  }
-  
-  try {
-    const response = await fetch('<%= request_sms_login_path %>', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-      },
-      body: JSON.stringify({ phone: phone })
-    });
-    
-    const data = await response.json();
-    
-    if (response.ok) {
-      alert(data.message);
-      
-      // In development, log the SMS code to console for easy testing
-      if (data.development_sms_code) {
-        console.log('🔐 Development SMS Code:', data.development_sms_code);
-        console.log('📱 You can now use this code to login with your phone number');
-      }
-    } else {
-      alert(data.error);
-    }
-  } catch (error) {
-    alert('Failed to send SMS code');
-  }
-}
-</script>
