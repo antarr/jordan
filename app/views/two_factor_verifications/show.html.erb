@@ -36,7 +36,7 @@
         </div>
 
         <!-- Authentication button -->
-        <div class="text-center" data-controller="webauthn">
+        <div class="text-center" data-controller="webauthn" data-webauthn-redirect-url-value="<%= two_factor_verification_verify_path %>">
           <button type="button" 
                   data-action="click->webauthn#authenticateAndContinue"
                   class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
@@ -67,21 +67,3 @@
     </div>
   </div>
 </div>
-
-<script>
-// Add JavaScript to handle successful authentication
-document.addEventListener('webauthn:success', function() {
-  // Redirect to complete login
-  window.location.href = '<%= two_factor_verification_verify_path %>';
-});
-
-// Alternative event listener for direct dispatch
-document.addEventListener('DOMContentLoaded', function() {
-  const webauthnController = document.querySelector('[data-controller="webauthn"]');
-  if (webauthnController) {
-    webauthnController.addEventListener('webauthn:success', function() {
-      window.location.href = '<%= two_factor_verification_verify_path %>';
-    });
-  }
-});
-</script>

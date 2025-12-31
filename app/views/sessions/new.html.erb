@@ -51,7 +51,7 @@
       </div>
 
       <!-- Phone Login Form -->
-      <div data-login-toggle-target="phoneForm" class="mt-6">
+      <div data-login-toggle-target="phoneForm" class="mt-6" data-controller="sms-request" data-sms-request-url-value="<%= request_sms_login_path %>">
         <%= form_with url: session_path, local: true, class: "space-y-4" do |f| %>
           <%= f.hidden_field :login_type, value: "phone" %>
           
@@ -93,7 +93,7 @@
 
         <div class="mt-4 text-center">
           <button type="button" 
-                  onclick="requestSmsLoginCode()" 
+                  data-action="click->sms-request#requestCode"
                   class="text-blue-600 hover:text-blue-800 text-sm">
             Request SMS login code
           </button>
@@ -117,40 +117,3 @@
     </div>
   </div>
 </div>
-
-<script>
-async function requestSmsLoginCode() {
-  const phone = document.querySelector('input[name="phone"]').value;
-  if (!phone) {
-    alert('Please enter your phone number first');
-    return;
-  }
-  
-  try {
-    const response = await fetch('<%= request_sms_login_path %>', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-      },
-      body: JSON.stringify({ phone: phone })
-    });
-    
-    const data = await response.json();
-    
-    if (response.ok) {
-      alert(data.message);
-      
-      // In development, log the SMS code to console for easy testing
-      if (data.development_sms_code) {
-        console.log('🔐 Development SMS Code:', data.development_sms_code);
-        console.log('📱 You can now use this code to login with your phone number');
-      }
-    } else {
-      alert(data.error);
-    }
-  } catch (error) {
-    alert('Failed to send SMS code');
-  }
-}
-</script>

@@ -2,6 +2,9 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["status"]
+  static values = {
+    redirectUrl: String
+  }
 
   connect() {
     // Check if WebAuthn is supported
@@ -239,6 +242,11 @@ export default class extends Controller {
     if (success) {
       // Dispatch success event for the 2FA page to handle
       this.dispatch('success', { detail: { message: 'Authentication successful' } })
+      
+      // Redirect if URL is provided
+      if (this.hasRedirectUrlValue && this.redirectUrlValue) {
+        window.location.href = this.redirectUrlValue
+      }
     }
   }
 
